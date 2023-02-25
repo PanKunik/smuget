@@ -7,7 +7,7 @@ Smuget is smart home bugdet manager application for your home finances and piggy
 - [Setup](#setup)
 - [Usage](#usage)
 - [How to contribute](#how-to-contribute)
-- [Found a bug?](#found-a-bug?)
+- [Found a bug](#found-a-bug)
 
 ## General info
 This repository is part of set of applications that works together. This module is responsible for the backend part of the `smuget` application.
@@ -30,4 +30,4 @@ dotnet run
 
 ## How to contribute
 
-## Found a bug?
+## Found a bug
