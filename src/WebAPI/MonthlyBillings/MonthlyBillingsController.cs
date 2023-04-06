@@ -1,5 +1,5 @@
 using Application.Abstractions.CQRS;
-using Application.MonthlyBillings.Commands;
+using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.MonthlyBillings;

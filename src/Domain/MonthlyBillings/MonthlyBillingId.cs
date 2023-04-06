@@ -1,6 +1,6 @@
 using Domain.Exceptions;
 
-namespace Domain.MonthlyBillings.ValueObjects;
+namespace Domain.MonthlyBillings;
 
 public sealed record MonthlyBillingId
 {
@@ -10,7 +10,7 @@ public sealed record MonthlyBillingId
     {
         if (value == Guid.Empty)
         {
-            throw new InvalidEntityIdException();
+            throw new InvalidMonthlyBillingIdException();
         }
 
         Value = value;

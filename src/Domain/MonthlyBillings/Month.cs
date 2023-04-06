@@ -1,6 +1,6 @@
 using Domain.Exceptions;
 
-namespace Domain.MonthlyBillings.ValueObjects;
+namespace Domain.MonthlyBillings;
 
 public sealed record Month
 {

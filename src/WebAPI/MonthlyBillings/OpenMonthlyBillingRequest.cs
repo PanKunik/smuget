@@ -1,5 +1,5 @@
 namespace WebAPI.MonthlyBillings;
 
 public sealed record OpenMonthlyBillingRequest(
-    int Year,
-    int Month);
+    ushort Year,
+    byte Month);

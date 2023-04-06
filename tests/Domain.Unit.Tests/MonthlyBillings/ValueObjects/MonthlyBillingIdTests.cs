@@ -1,6 +1,6 @@
 using System;
 using Domain.Exceptions;
-using Domain.MonthlyBillings.ValueObjects;
+using Domain.MonthlyBillings;
 
 namespace Domain.Unit.Tests.MonthlyBillings.ValueObjects;
 
@@ -29,7 +29,7 @@ public sealed class MonthlyBillingIdTests
         var createMonthlyBillingId = () => new MonthlyBillingId(emptyGuid);
 
         // Act & Assert
-        Assert.Throws<InvalidEntityIdException>(createMonthlyBillingId);
+        Assert.Throws<InvalidMonthlyBillingIdException>(createMonthlyBillingId);
     }
 
     [Fact]

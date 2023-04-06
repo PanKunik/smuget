@@ -1,5 +1,5 @@
 using Domain.Exceptions;
-using Domain.MonthlyBillings.ValueObjects;
+using Domain.MonthlyBillings;
 
 namespace Domain.Unit.Tests.MonthlyBillings.ValueObjects;
 
