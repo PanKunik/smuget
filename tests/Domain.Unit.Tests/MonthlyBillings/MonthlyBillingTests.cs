@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Domain.Exceptions;
 using Domain.MonthlyBillings;
 
@@ -25,6 +26,7 @@ public sealed class MonthlyBillingTests
         result.Should().Match<MonthlyBilling>(
               m => m.Year == new Year(2000)
               && m.Month == new Month(2)
+              && m.State == State.Open
         );
     }
 
@@ -54,5 +56,116 @@ public sealed class MonthlyBillingTests
 
         // Act & Assert
         Assert.Throws<MonthIsNullException>(createMonthlyBilling);
+    }
+
+    [Fact]
+    public void AddIncome_WhenPassedProperData_ShouldAddIncomeToMonthlyBilling()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            new Year(2007),
+            new Month(9)
+        );
+
+        // Act
+        cut.AddIncome(new Income(
+            new Name("TEST"),
+            new Money(10m, Currency.PLN),
+            true
+        ));
+
+        // Assert
+        cut.Incomes.Should().HaveCount(1);
+        cut.Incomes.Should().BeEquivalentTo(
+            new List<Income>()
+            {
+                new Income(
+                    new Name("TEST"),
+                    new Money(10m, Currency.PLN),
+                    true
+                )
+            }.AsReadOnly(),
+        c => c.Excluding(e => e.Id));
+    }
+
+    [Fact]
+    public void AddIncome_WhenPassedNull_ShouldThrowIncomeIsNullException()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            new Year(2007),
+            new Month(9)
+        );
+
+        var addIncome = () => cut.AddIncome(null);
+
+        // Act & Assert
+        Assert.Throws<IncomeIsNullException>(addIncome);
+    }
+
+    [Fact]
+    public void AddIncome_WHenTryingToAddIncomeWithNotUniqueName_ShouldThrowIncomeNameNotUniqueException()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            new Year(2007),
+            new Month(5)
+        );
+
+        cut.AddIncome(
+            new Income(
+                new Name("Wpłata"),
+                new Money(
+                    3500.75m,
+                    Currency.USD
+                ),
+                true
+        ));
+
+        var addIncomeWithNotUniqueName = () => cut.AddIncome(
+            new Income(
+                new Name("Wpłata"),
+                new Money(
+                    1456.91M,
+                    Currency.EUR
+                ),
+                true
+        ));
+
+        // Act & Assert
+        Assert.Throws<IncomeNameNotUniqueException>(addIncomeWithNotUniqueName);
+    }
+
+    [Fact]
+    public void Close_WhenCalled_ShouldChangeState()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            new Year(2007),
+            new Month(3)
+        );
+
+        // Act
+        cut.Close();
+
+        // Assert
+        cut.State.Should().Be(State.Closed);
+    }
+
+    [Fact]
+    public void Close_WhenCalledForClosedMonthlyBilling_ShouldThrowMonthlyBillingAlreadyClosed()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            new Year(2007),
+            new Month(3)
+        );
+
+        cut.Close();
+
+        var close = () => cut.Close();
+
+        // Act & Assert
+        Assert.Throws<MonthlyBillingAlreadyClosedException>(close);
     }
 }

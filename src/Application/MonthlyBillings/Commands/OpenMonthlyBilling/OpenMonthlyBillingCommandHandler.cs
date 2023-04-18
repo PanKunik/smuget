@@ -32,12 +32,12 @@ public sealed class OpenMonthlyBillingCommandHandler : ICommandHandler<OpenMonth
                 year.Value);
         }
 
-        var monthlyBillingCommand = new MonthlyBilling(
+        var monthlyBilling = new MonthlyBilling(
             year,
             month);
 
         await _dbContext.MonthlyBillings.AddAsync(
-            monthlyBillingCommand,
+            monthlyBilling,
             cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
