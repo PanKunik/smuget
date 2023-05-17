@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Abstractions.CQRS;
 using Application.MonthlyBillings.Commands.AddIncome;
+using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
 using Domain.MonthlyBillings;
 using Microsoft.AspNetCore.Mvc;
@@ -17,15 +18,18 @@ public sealed class MonthlyBillingsControllerTests
 
     private readonly Mock<ICommandHandler<OpenMonthlyBillingCommand>> _mockOpenMonthlyBillingCommandHandler;
     private readonly Mock<ICommandHandler<AddIncomeCommand>> _mockAddIncomeCommandHandler;
+    private readonly Mock<ICommandHandler<AddPlanCommand>> _mockAddPlanCommandHandler;
 
     public MonthlyBillingsControllerTests()
     {
         _mockOpenMonthlyBillingCommandHandler = new Mock<ICommandHandler<OpenMonthlyBillingCommand>>();
         _mockAddIncomeCommandHandler = new Mock<ICommandHandler<AddIncomeCommand>>();
+        _mockAddPlanCommandHandler = new Mock<ICommandHandler<AddPlanCommand>>();
 
         _cut = new MonthlyBillingsController(
             _mockOpenMonthlyBillingCommandHandler.Object,
-            _mockAddIncomeCommandHandler.Object
+            _mockAddIncomeCommandHandler.Object,
+            _mockAddPlanCommandHandler.Object
         );
     }
 
@@ -91,13 +95,12 @@ public sealed class MonthlyBillingsControllerTests
     {
         // Arrange
         var request = new AddIncomeRequest(
-            Guid.NewGuid(),
             "TEST",
             5284M,
             Currency.PLN);
 
         // Act
-        var result = await _cut.AddIncome(request);
+        var result = await _cut.AddIncome(Guid.NewGuid(), request);
 
         // Assert
         result.Should().NotBeNull();
@@ -109,13 +112,12 @@ public sealed class MonthlyBillingsControllerTests
     {
         // Arrange
         var request = new AddIncomeRequest(
-            Guid.NewGuid(),
             "TEST",
             8761.97M,
             Currency.PLN);
 
         // Act
-        var result = (CreatedResult)await _cut.AddIncome(request);
+        var result = (CreatedResult)await _cut.AddIncome(Guid.NewGuid(), request);
 
         // Assert
         result.StatusCode.Should().Be(201);
@@ -126,13 +128,12 @@ public sealed class MonthlyBillingsControllerTests
     {
         // Arrange
         var request = new AddIncomeRequest(
-            Guid.NewGuid(),
             "TEST",
             3456.20M,
             Currency.EUR);
 
         // Act
-        await _cut.AddIncome(request);
+        await _cut.AddIncome(Guid.NewGuid(), request);
 
         // Assert
         _mockAddIncomeCommandHandler.Verify(
@@ -148,7 +149,6 @@ public sealed class MonthlyBillingsControllerTests
     {
         // Arrange
         var request = new AddIncomeRequest(
-            monthlyBillingId,
             name,
             amount,
             currency,
@@ -158,6 +158,7 @@ public sealed class MonthlyBillingsControllerTests
 
         // Act
         await _cut.AddIncome(
+            monthlyBillingId,
             request,
             token);
 
@@ -173,5 +174,94 @@ public sealed class MonthlyBillingsControllerTests
                 ),
                 token),
             Times.Once);
+    }
+
+    [Fact]
+    public async Task AddPlan_OnSuccess_ShouldReturnCreatedResult()
+    {
+        // Act
+        var result = await _cut.AddPlan(
+            Guid.NewGuid(),
+            new AddPlanRequest(
+                "Shopping",
+                100.0M,
+                Currency.PLN,
+                1
+            )
+        );
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeOfType<CreatedResult>();
+    }
+
+    [Fact]
+    public async Task AddPlan_OnSuccess_ShouldReturn201StatusCode()
+    {
+        // Act
+        var result = (CreatedResult)await _cut.AddPlan(
+            Guid.NewGuid(),
+            new AddPlanRequest(
+                "Shopping",
+                100.0M,
+                Currency.PLN,
+                1
+            ));
+
+        // Assert
+        result.StatusCode.Should().Be(201);
+    }
+
+    [Fact]
+    public async Task AddPlan_WhenCalled_ShouldCallAddPlanCommandHandler()
+    {
+        // Arrange
+        var addPlanRequest = new AddPlanRequest(
+            "Food",
+            10.0M,
+            Currency.PLN,
+            1
+        );
+
+        // Act
+        await _cut.AddPlan(
+            Guid.NewGuid(),
+            addPlanRequest
+        );
+
+        // Assert
+        _mockAddPlanCommandHandler.Verify(m => m.HandleAsync(
+            It.IsAny<AddPlanCommand>(),
+            default), Times.Once);
+    }
+
+    [Fact]
+    public async Task AddPlan_WhenCalled_ShouldPassParametersToCommand()
+    {
+        // Arrange
+        var addPlanRequest = new AddPlanRequest(
+            "Fuel",
+            87.96M,
+            Currency.PLN,
+            5
+        );
+
+        // Act
+        await _cut.AddPlan(
+            Guid.NewGuid(),
+            addPlanRequest
+        );
+
+        // Assert
+        _mockAddPlanCommandHandler.Verify(
+            m => m.HandleAsync(
+                It.Is<AddPlanCommand>(
+                    c => c.Category == "Fuel"
+                    && c.MoneyAmount == 87.96M
+                    && c.Currency == Currency.PLN
+                    && c.SortOrder == 5
+                ),
+                default
+            ), Times.Once);
     }
 }

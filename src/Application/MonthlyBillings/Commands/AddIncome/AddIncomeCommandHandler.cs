@@ -35,7 +35,7 @@ public sealed class AddIncomeCommandHandler : ICommandHandler<AddIncomeCommand>
             command.Include
         );
 
-        monthlyBilling.AddIncome(income);
+        monthlyBilling.AddIncome(income);   // TODO: Pass values here
 
         await _dbContext.SaveChangesAsync(cancellationToken);
     }

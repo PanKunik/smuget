@@ -1,5 +1,4 @@
 using Domain.MonthlyBillings;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.MonthlyBillings;
 

@@ -7,7 +7,7 @@ namespace Domain.Unit.Tests.MonthlyBillings.ValueObjects;
 public sealed class IncomeIdTests
 {
     [Fact]
-    public void IncomeId_WhenPassedPRoperData_ShouldReturnExpectedObject()
+    public void IncomeId_WhenPassedProperData_ShouldReturnExpectedObject()
     {
         // Arrange
         Guid guid = Guid.NewGuid();

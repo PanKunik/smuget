@@ -1,0 +1,13 @@
+@host = https://localhost:7188
+
+@id = 623ade79-d27f-47b3-b175-62737d5e3e8f
+
+POST {{host}}/api/monthlyBillings/{{id}}/incomes
+Content-Type: application/json
+
+{
+    "name": "Earn",
+    "moneyAmount": 1500.09,
+    "currency": 1,
+    "includeInBilling": true
+}

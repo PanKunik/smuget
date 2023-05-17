@@ -9,28 +9,28 @@ internal sealed class IncomesConfiguration : IEntityTypeConfiguration<Income>
     public void Configure(EntityTypeBuilder<Income> builder)
     {
         builder
-            .HasKey(b => b.Id);
+            .HasKey(i => i.Id);
 
         builder
-            .Property(b => b.Id)
+            .Property(i => i.Id)
             .IsRequired()
             .HasConversion(
-                v => v.Value,
-                v => new(v));
+                id => id.Value,
+                value => new(value));
 
         builder
-            .Property(b => b.Name)
+            .Property(i => i.Name)
             .IsRequired()
             .HasMaxLength(50)
             .HasConversion(
-                v => v.Value,
-                v => new(v));
+                name => name.Value,
+                value => new(value));
 
         builder
-            .OwnsOne<Money>(m => m.Money);
+            .OwnsOne(i => i.Money);
 
         builder
-            .Property(b => b.Include)
+            .Property(i => i.Include)
             .IsRequired();
     }
 }

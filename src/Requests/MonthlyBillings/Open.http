@@ -1,0 +1,9 @@
+@host = https://localhost:7188
+
+POST {{host}}/api/monthlyBillings
+Content-Type: application/json
+
+{
+    "Year": 2023,
+    "Month": 4
+}

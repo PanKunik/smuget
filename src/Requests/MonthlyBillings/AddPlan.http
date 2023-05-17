@@ -1,0 +1,13 @@
+@host = https://localhost:7188
+
+@id = 9c74571b-08e9-486b-8dd2-bb7ca53bc069
+
+POST {{host}}/api/monthlyBillings/{{id}}/plans
+Content-Type: application/json
+
+{
+    "category": "Fuel",
+    "moneyAmount": 1500.09,
+    "currency": 1,
+    "sortOrder": 1
+}
