@@ -2,9 +2,9 @@ using Domain.Exceptions;
 
 namespace Domain.MonthlyBillings;
 
-public sealed class Income
+public sealed class Income // TODO: Make internal?
 {
-    public IncomeId Id { get; } = new IncomeId(Guid.NewGuid());
+    public IncomeId Id { get; } = new IncomeId(Guid.NewGuid()); // TODO: Remove identity from this class
     public Name Name { get; }
     public Money Money { get; }
     public bool Include { get; }

@@ -137,6 +137,54 @@ public sealed class MonthlyBillingTests
     }
 
     [Fact]
+    public void AddPlan_WhenPassedProperData_ShouldAddPlanToMonthlyBilling()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            new Year(2023),
+            new Month(4));
+
+        var plan = new Plan(
+            new Category("Fuel"),
+            new Money(156.84M, Currency.PLN),
+            1
+        );
+
+        // Act
+        cut.AddPlan(plan);
+
+        // Assert
+        cut.Plans.Should().HaveCount(1);
+        cut.Plans.Should().BeEquivalentTo(
+            new List<Plan>()
+            {
+                new Plan(
+                    new Category("Fuel"),
+                    new Money(156.84M, Currency.PLN),
+                    1u
+                )
+            }.AsReadOnly(),
+        c => c.Excluding(e => e.Id));
+    }
+
+    [Fact]
+    public async void AddPlan_WhenPlanIsNull_ShouldThrowPlanIsNullException()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            new Year(2023),
+            new Month(2)
+        );
+
+        Plan plan = null;
+
+        var addPlan = () => cut.AddPlan(plan);
+
+        // Act & Assert
+        Assert.Throws<PlanIsNullException>(addPlan);
+    }
+
+    [Fact]
     public void Close_WhenCalled_ShouldChangeState()
     {
         // Arrange

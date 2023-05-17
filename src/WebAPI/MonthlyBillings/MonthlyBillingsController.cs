@@ -1,6 +1,8 @@
 using Application.Abstractions.CQRS;
 using Application.MonthlyBillings.Commands.AddIncome;
+using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
+using Domain.MonthlyBillings;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.MonthlyBillings;
@@ -11,14 +13,17 @@ public sealed class MonthlyBillingsController : ControllerBase
 {
     private readonly ICommandHandler<OpenMonthlyBillingCommand> _openMonthlyBilling;
     private readonly ICommandHandler<AddIncomeCommand> _addIncome;
+    private readonly ICommandHandler<AddPlanCommand> _addPlan;
 
     public MonthlyBillingsController(
         ICommandHandler<OpenMonthlyBillingCommand> openMonthlyBilling,
-        ICommandHandler<AddIncomeCommand> addIncome
+        ICommandHandler<AddIncomeCommand> addIncome,
+        ICommandHandler<AddPlanCommand> addPlan
     )
     {
         _openMonthlyBilling = openMonthlyBilling;
         _addIncome = addIncome;
+        _addPlan = addPlan;
     }
 
     [HttpPost]
@@ -51,6 +56,27 @@ public sealed class MonthlyBillingsController : ControllerBase
                 amount,
                 currency,
                 include),
+            token);
+
+        return Created("", null);
+    }
+
+    [HttpPost("{id}/plans")]
+    public async Task<IActionResult> AddPlan(
+        [FromRoute(Name = "id")] Guid monthlyBillingId,
+        [FromBody] AddPlanRequest request,
+        CancellationToken token = default
+    )
+    {
+        var (category, amount, currency, sortOrder) = request;
+
+        await _addPlan.HandleAsync(
+            new AddPlanCommand(
+                monthlyBillingId,
+                category,
+                amount,
+                currency,
+                sortOrder),
             token);
 
         return Created("", null);
