@@ -1,5 +1,7 @@
+using System.Runtime.CompilerServices;
 using Domain.Exceptions;
 
+[assembly: InternalsVisibleTo("Domain.Unit.Tests")]
 namespace Domain.MonthlyBillings;
 
 public sealed class Plan
@@ -8,6 +10,9 @@ public sealed class Plan
     public Category Category { get; private set; }
     public Money MoneyAmount { get; private set; }
     public uint SortOrder { get; private set; }
+    public IReadOnlyCollection<Expense> Expenses => _expenses.AsReadOnly();
+
+    private readonly List<Expense> _expenses = new List<Expense>();
 
     public Plan(
         Category category,
@@ -29,6 +34,11 @@ public sealed class Plan
 
         MoneyAmount = amount;
         SortOrder = sortOrder;
+    }
+
+    internal void AddExpense(Expense expense)
+    {
+        _expenses.Add(expense);
     }
 
     private Plan() { }

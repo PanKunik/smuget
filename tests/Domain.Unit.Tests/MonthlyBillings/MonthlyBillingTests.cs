@@ -168,7 +168,7 @@ public sealed class MonthlyBillingTests
     }
 
     [Fact]
-    public async void AddPlan_WhenPlanIsNull_ShouldThrowPlanIsNullException()
+    public void AddPlan_WhenPlanIsNull_ShouldThrowPlanIsNullException()
     {
         // Arrange
         var cut = new MonthlyBilling(
@@ -182,6 +182,61 @@ public sealed class MonthlyBillingTests
 
         // Act & Assert
         Assert.Throws<PlanIsNullException>(addPlan);
+    }
+
+    [Fact]
+    public void AddExpense_WhenPassedNullPlanId_ShouldThrowPlanIdIsNullException()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            new Year(2023),
+            new Month(3)
+        );
+
+        PlanId planId = null;
+
+        var addExpense = () => cut.AddExpense(planId, null);
+
+        // Act & Assert
+        Assert.Throws<PlanIdIsNullException>(addExpense);
+    }
+
+    [Fact]
+    public void AddExpense_WhenPassedNullExpense_ShouldThrowExpenseIsNullException()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            new Year(2023),
+            new Month(3)
+        );
+
+        Expense expense = null;
+
+        var addExpense = () => cut.AddExpense(new PlanId(Guid.NewGuid()), expense);
+
+        // Act & Assert
+        Assert.Throws<ExpenseIsNullException>(addExpense);
+    }
+
+    [Fact]
+    public void AddExpense_WhenPlanNotFound_ShouldThrowPlanNotFoundException()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            new Year(2023),
+            new Month(3)
+        );
+
+        Expense expense = new Expense(
+            new Money(125.0M, Currency.PLN),
+            new DateTimeOffset(new DateTime(2020, 5, 6)),
+            "eBay"
+        );
+
+        var addExpense = () => cut.AddExpense(new PlanId(Guid.NewGuid()), expense);
+
+        // Act & Assert
+        Assert.Throws<PlanNotFoundException>(addExpense);
     }
 
     [Fact]

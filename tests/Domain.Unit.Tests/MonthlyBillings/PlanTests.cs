@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Domain.Exceptions;
 using Domain.MonthlyBillings;
 
@@ -57,5 +59,40 @@ public sealed class PlanTest
 
         // Act & Assert
         Assert.Throws<MoneyIsNullException>(createPlan);
+    }
+
+    [Fact]
+    public void AddExpense_WhenCalledWithProperData_ShouldAddExpenseToPlan()
+    {
+        // Arrange
+        var cut = new Plan(
+            new Category("Groceries"),
+            new Money(400M, Currency.USD),
+            1
+        );
+
+        var expense = new Expense(
+            new Money(150M, Currency.PLN),
+            new DateTimeOffset(new DateTime(2020, 3, 4)),
+            "Farmer's market"
+        );
+
+        // Act
+        cut.AddExpense(expense);
+
+        // Assert
+        cut.Expenses
+            .Should()
+            .HaveCount(1);
+
+        var firstExpense = cut.Expenses.First();
+
+        firstExpense
+            .Should()
+            .Match<Expense>(
+                e => e.Money == new Money(150M, Currency.PLN)
+                && e.ExpenseDate == new DateTimeOffset(new DateTime(2020, 3, 4))
+                && e.Descritpion == "Farmer's market"
+            );
     }
 }
