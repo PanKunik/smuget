@@ -4,22 +4,23 @@ using Application.Exceptions;
 using Domain.MonthlyBillings;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.MonthlyBillings.Commands.AddIncome;
+namespace Application.MonthlyBillings.Commands.AddExpense;
 
-public sealed class AddIncomeCommandHandler : ICommandHandler<AddIncomeCommand>
+public sealed class AddExpenseCommandHandler : ICommandHandler<AddExpenseCommand>
 {
     private readonly ISmugetDbContext _dbContext;
 
-    public AddIncomeCommandHandler(ISmugetDbContext dbContext)
+    public AddExpenseCommandHandler(ISmugetDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public async Task HandleAsync(AddIncomeCommand command, CancellationToken cancellationToken = default)
+    public async Task HandleAsync(AddExpenseCommand command, CancellationToken cancellationToken = default)
     {
         var monthlyBilling = await _dbContext.MonthlyBillings
             .Include(i => i.Incomes)
             .Include(i => i.Plans)
+            .ThenInclude(p => p.Expenses)
             .FirstOrDefaultAsync(
                 m => m.Id.Value == command.MonthlyBillingId,
                 cancellationToken
@@ -30,13 +31,15 @@ public sealed class AddIncomeCommandHandler : ICommandHandler<AddIncomeCommand>
             throw new MonthlyBillingNotFoundException();
         }
 
-        var income = new Income(
-            new Name(command.Name),
-            new Money(command.Amount, command.Currency),
-            command.Include
+        var expense = new Expense(
+            new Money(command.Money, command.Currency),
+            command.ExpenseDate,
+            command.Description
         );
 
-        monthlyBilling.AddIncome(income);   // TODO: Pass values here
+        monthlyBilling.AddExpense(
+            new PlanId(command.PlanId),
+            expense);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
     }

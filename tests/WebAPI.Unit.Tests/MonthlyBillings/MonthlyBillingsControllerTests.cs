@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Abstractions.CQRS;
+using Application.MonthlyBillings.Commands.AddExpense;
 using Application.MonthlyBillings.Commands.AddIncome;
 using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
@@ -19,17 +20,20 @@ public sealed class MonthlyBillingsControllerTests
     private readonly Mock<ICommandHandler<OpenMonthlyBillingCommand>> _mockOpenMonthlyBillingCommandHandler;
     private readonly Mock<ICommandHandler<AddIncomeCommand>> _mockAddIncomeCommandHandler;
     private readonly Mock<ICommandHandler<AddPlanCommand>> _mockAddPlanCommandHandler;
+    private readonly Mock<ICommandHandler<AddExpenseCommand>> _mockAddExpenseCommandHandler;
 
     public MonthlyBillingsControllerTests()
     {
         _mockOpenMonthlyBillingCommandHandler = new Mock<ICommandHandler<OpenMonthlyBillingCommand>>();
         _mockAddIncomeCommandHandler = new Mock<ICommandHandler<AddIncomeCommand>>();
         _mockAddPlanCommandHandler = new Mock<ICommandHandler<AddPlanCommand>>();
+        _mockAddExpenseCommandHandler = new Mock<ICommandHandler<AddExpenseCommand>>();
 
         _cut = new MonthlyBillingsController(
             _mockOpenMonthlyBillingCommandHandler.Object,
             _mockAddIncomeCommandHandler.Object,
-            _mockAddPlanCommandHandler.Object
+            _mockAddPlanCommandHandler.Object,
+            _mockAddExpenseCommandHandler.Object
         );
     }
 
@@ -263,5 +267,121 @@ public sealed class MonthlyBillingsControllerTests
                 ),
                 default
             ), Times.Once);
+    }
+
+    [Fact]
+    public async Task AddExpense_OnSuccess_ShouldReturnCreatedResult()
+    {
+        // Arrange
+        var request = new AddExpenseRequest(
+            154.09M,
+            Currency.USD,
+            new DateTimeOffset(new DateTime(2023, 4, 1)),
+            "Description"
+        );
+
+        // Act
+        var result = await _cut.AddExpense(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            request
+        );
+
+        // Assert
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .BeOfType<CreatedResult>();
+    }
+
+    [Fact]
+    public async Task AddExpense_OnSuccess_ShouldReturn201Created()
+    {
+        // Arrange
+        var request = new AddExpenseRequest(
+            154.09M,
+            Currency.USD,
+            new DateTimeOffset(new DateTime(2023, 4, 1)),
+            "Description"
+        );
+
+        // Act
+        var result = (CreatedResult)await _cut.AddExpense(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            request
+        );
+
+        // Assert
+        result.StatusCode
+            .Should()
+            .Be(201);
+    }
+
+    [Fact]
+    public async Task AddExpense_WhenInvoked_ShouldCallAddExpenseCommandHandler()
+    {
+        // Arrange
+        var request = new AddExpenseRequest(
+            154.09M,
+            Currency.USD,
+            new DateTimeOffset(new DateTime(2023, 4, 1)),
+            "Description"
+        );
+
+        // Act
+        await _cut.AddExpense(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            request
+        );
+
+        // Assert
+        _mockAddExpenseCommandHandler.Verify(
+            m => m.HandleAsync(
+                It.IsAny<AddExpenseCommand>(),
+                It.IsAny<CancellationToken>()
+            ),
+            Times.Once());
+    }
+
+    [Fact]
+    public async Task AddExpense_WhenInvoked_ShouldPassParametersToCommandHandler()
+    {
+        // Arrange
+        var request = new AddExpenseRequest(
+            125.04M,
+            Currency.PLN,
+            new DateTimeOffset(new DateTime(2023, 5, 1)),
+            "TEST"
+        );
+
+        var monthlyBillingId = Guid.NewGuid();
+        var planId = Guid.NewGuid();
+
+        // Act
+        await _cut.AddExpense(
+            monthlyBillingId,
+            planId,
+            request
+        );
+
+        // Assert
+        _mockAddExpenseCommandHandler.Verify(
+            m => m.HandleAsync(
+                It.Is<AddExpenseCommand>(
+                    c => c.MonthlyBillingId == monthlyBillingId
+                    && c.PlanId == planId
+                    && c.Money == 125.04M
+                    && c.Currency == Currency.PLN
+                    && c.ExpenseDate == new DateTimeOffset(new DateTime(2023, 5, 1))
+                    && c.Description == "TEST"
+                ),
+                It.IsAny<CancellationToken>()
+            ),
+            Times.Once());
     }
 }

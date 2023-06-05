@@ -19,6 +19,7 @@ public sealed class AddPlanCommandHandler : ICommandHandler<AddPlanCommand>
     public async Task HandleAsync(AddPlanCommand command, CancellationToken cancellationToken = default)
     {
         var monthlyBilling = await _dbContext.MonthlyBillings
+            .Include(m => m.Incomes)
             .Include(m => m.Plans)
             .FirstOrDefaultAsync(m => m.Id.Value == command.MonthlyBillingId);
 

@@ -61,6 +61,28 @@ public sealed class MonthlyBilling
         _plans.Add(plan);
     }
 
+    public void AddExpense(PlanId planId, Expense expense)
+    {
+        if (planId is null)
+        {
+            throw new PlanIdIsNullException();
+        }
+
+        if (expense is null)
+        {
+            throw new ExpenseIsNullException();
+        }
+
+        var plan = _plans.Find(p => p.Id == planId);
+
+        if (plan is null)
+        {
+            throw new PlanNotFoundException(planId);
+        }
+
+        plan.AddExpense(expense);
+    }
+
     public void Close()
     {
         if (State == State.Closed)
