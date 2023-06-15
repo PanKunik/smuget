@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Domain.Exceptions;
 using Domain.MonthlyBillings;
+using Domain.Unit.Tests.MonthlyBillings.TestUtilities;
 
 namespace Domain.Unit.Tests.MonthlyBillings;
 
@@ -13,10 +15,7 @@ public sealed class MonthlyBillingTests
         // Arrange
         Guid guid = Guid.NewGuid();
         var createMonthlyBilling = ()
-            => new MonthlyBilling(
-                    new Year(2000),
-                    new Month(2)
-                );
+            => MonthlyBillingUtilities.CreateMonthlyBilling();
 
         // Act
         var result = createMonthlyBilling();
@@ -24,7 +23,7 @@ public sealed class MonthlyBillingTests
         // Assert
         result.Should().NotBeNull();
         result.Should().Match<MonthlyBilling>(
-              m => m.Year == new Year(2000)
+              m => m.Year == new Year(2023)
               && m.Month == new Month(2)
               && m.State == State.Open
         );
@@ -37,7 +36,10 @@ public sealed class MonthlyBillingTests
         var createMonthlyBilling = ()
             => new MonthlyBilling(
                 null,
-                new Month(3)
+                new Month(3),
+                State.Open,
+                null,
+                null
             );
 
         // Act & Assert
@@ -51,6 +53,9 @@ public sealed class MonthlyBillingTests
         var createMonthlyBilling = ()
             => new MonthlyBilling(
                 new Year(2007),
+                null,
+                State.Open,
+                null,
                 null
             );
 
@@ -62,10 +67,7 @@ public sealed class MonthlyBillingTests
     public void AddIncome_WhenPassedProperData_ShouldAddIncomeToMonthlyBilling()
     {
         // Arrange
-        var cut = new MonthlyBilling(
-            new Year(2007),
-            new Month(9)
-        );
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
 
         // Act
         cut.AddIncome(new Income(
@@ -92,10 +94,7 @@ public sealed class MonthlyBillingTests
     public void AddIncome_WhenPassedNull_ShouldThrowIncomeIsNullException()
     {
         // Arrange
-        var cut = new MonthlyBilling(
-            new Year(2007),
-            new Month(9)
-        );
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
 
         var addIncome = () => cut.AddIncome(null);
 
@@ -104,33 +103,18 @@ public sealed class MonthlyBillingTests
     }
 
     [Fact]
-    public void AddIncome_WHenTryingToAddIncomeWithNotUniqueName_ShouldThrowIncomeNameNotUniqueException()
+    public void AddIncome_WhenTryingToAddIncomeWithNotUniqueName_ShouldThrowIncomeNameNotUniqueException()
     {
         // Arrange
-        var cut = new MonthlyBilling(
-            new Year(2007),
-            new Month(5)
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            incomes: MonthlyBillingUtilities.CreateIncomes()
         );
 
-        cut.AddIncome(
-            new Income(
-                new Name("Wpłata"),
-                new Money(
-                    3500.75m,
-                    Currency.USD
-                ),
-                true
-        ));
-
         var addIncomeWithNotUniqueName = () => cut.AddIncome(
-            new Income(
-                new Name("Wpłata"),
-                new Money(
-                    1456.91M,
-                    Currency.EUR
-                ),
-                true
-        ));
+            MonthlyBillingUtilities
+                .CreateIncomes()
+                .First()
+            );
 
         // Act & Assert
         Assert.Throws<IncomeNameNotUniqueException>(addIncomeWithNotUniqueName);
@@ -141,8 +125,12 @@ public sealed class MonthlyBillingTests
     {
         // Arrange
         var cut = new MonthlyBilling(
-            new Year(2023),
-            new Month(4));
+            Constants.MonthlyBilling.Year,
+            Constants.MonthlyBilling.Month,
+            Constants.MonthlyBilling.State,
+            null,
+            null
+        );
 
         var plan = new Plan(
             new Category("Fuel"),
@@ -171,10 +159,7 @@ public sealed class MonthlyBillingTests
     public void AddPlan_WhenPlanIsNull_ShouldThrowPlanIsNullException()
     {
         // Arrange
-        var cut = new MonthlyBilling(
-            new Year(2023),
-            new Month(2)
-        );
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
 
         Plan plan = null;
 
@@ -188,10 +173,7 @@ public sealed class MonthlyBillingTests
     public void AddExpense_WhenPassedNullPlanId_ShouldThrowPlanIdIsNullException()
     {
         // Arrange
-        var cut = new MonthlyBilling(
-            new Year(2023),
-            new Month(3)
-        );
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
 
         PlanId planId = null;
 
@@ -205,10 +187,7 @@ public sealed class MonthlyBillingTests
     public void AddExpense_WhenPassedNullExpense_ShouldThrowExpenseIsNullException()
     {
         // Arrange
-        var cut = new MonthlyBilling(
-            new Year(2023),
-            new Month(3)
-        );
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
 
         Expense expense = null;
 
@@ -222,14 +201,11 @@ public sealed class MonthlyBillingTests
     public void AddExpense_WhenPlanNotFound_ShouldThrowPlanNotFoundException()
     {
         // Arrange
-        var cut = new MonthlyBilling(
-            new Year(2023),
-            new Month(3)
-        );
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
 
         Expense expense = new Expense(
             new Money(125.0M, Currency.PLN),
-            new DateTimeOffset(new DateTime(2020, 5, 6)),
+            new DateTimeOffset(new DateTime(2023, 3, 6)),
             "eBay"
         );
 
@@ -243,10 +219,7 @@ public sealed class MonthlyBillingTests
     public void Close_WhenCalled_ShouldChangeState()
     {
         // Arrange
-        var cut = new MonthlyBilling(
-            new Year(2007),
-            new Month(3)
-        );
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
 
         // Act
         cut.Close();
@@ -259,10 +232,7 @@ public sealed class MonthlyBillingTests
     public void Close_WhenCalledForClosedMonthlyBilling_ShouldThrowMonthlyBillingAlreadyClosed()
     {
         // Arrange
-        var cut = new MonthlyBilling(
-            new Year(2007),
-            new Month(3)
-        );
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
 
         cut.Close();
 

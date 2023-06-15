@@ -9,6 +9,9 @@ internal static class CQRSExtensions
         services.Scan(a => a.FromAssemblies(typeof(ICommandHandler<>).Assembly)
                             .AddClasses(c => c.AssignableTo(typeof(ICommandHandler<>)))
                             .AsImplementedInterfaces()
+                            .WithScopedLifetime()
+                            .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<,>)))
+                            .AsImplementedInterfaces()
                             .WithScopedLifetime());
 
         return services;

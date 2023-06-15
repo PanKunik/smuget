@@ -6,6 +6,8 @@ using Application.MonthlyBillings.Commands.AddExpense;
 using Application.MonthlyBillings.Commands.AddIncome;
 using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
+using Application.MonthlyBillings.DTO;
+using Application.MonthlyBillings.Queries.GetByYearAndMonth;
 using Domain.MonthlyBillings;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -21,6 +23,7 @@ public sealed class MonthlyBillingsControllerTests
     private readonly Mock<ICommandHandler<AddIncomeCommand>> _mockAddIncomeCommandHandler;
     private readonly Mock<ICommandHandler<AddPlanCommand>> _mockAddPlanCommandHandler;
     private readonly Mock<ICommandHandler<AddExpenseCommand>> _mockAddExpenseCommandHandler;
+    private readonly Mock<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>> _mockGetMonthlyBillingQueryHandler;
 
     public MonthlyBillingsControllerTests()
     {
@@ -28,12 +31,24 @@ public sealed class MonthlyBillingsControllerTests
         _mockAddIncomeCommandHandler = new Mock<ICommandHandler<AddIncomeCommand>>();
         _mockAddPlanCommandHandler = new Mock<ICommandHandler<AddPlanCommand>>();
         _mockAddExpenseCommandHandler = new Mock<ICommandHandler<AddExpenseCommand>>();
+        _mockGetMonthlyBillingQueryHandler = new Mock<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>>();
+
+        _mockGetMonthlyBillingQueryHandler
+            .Setup(m => m.HandleAsync(
+                It.Is<GetMonthlyBillingByYearAndMonthQuery>(
+                    g => g.Year == 2023
+                    && g.Month == 1
+                ),
+                It.IsAny<CancellationToken>()
+            ))
+            .ReturnsAsync(new MonthlyBillingDTO());
 
         _cut = new MonthlyBillingsController(
             _mockOpenMonthlyBillingCommandHandler.Object,
             _mockAddIncomeCommandHandler.Object,
             _mockAddPlanCommandHandler.Object,
-            _mockAddExpenseCommandHandler.Object
+            _mockAddExpenseCommandHandler.Object,
+            _mockGetMonthlyBillingQueryHandler.Object
         );
     }
 
@@ -383,5 +398,89 @@ public sealed class MonthlyBillingsControllerTests
                 It.IsAny<CancellationToken>()
             ),
             Times.Once());
+    }
+
+    [Fact]
+    public async Task Get_OnSuccess_ShouldReturnOkObjectResult()
+    {
+        // Arrange
+        var request = new GetMonthlyBillingRequest(2023, 6);
+
+        // Act
+        var result = await _cut.Get(request);
+
+        // Assert
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    public async Task Get_OnSuccess_ShouldReturnStatusCode200Ok()
+    {
+        // Arrange
+        var request = new GetMonthlyBillingRequest(2023, 6);
+
+        // Act
+        var result = (OkObjectResult)await _cut.Get(request);
+
+        // Assert
+        result.StatusCode
+            .Should()
+            .Be(200);
+    }
+
+    [Theory]
+    [InlineData(2023, 5)]
+    [InlineData(2022, 1)]
+    [InlineData(2021, 12)]
+    public async Task Get_WhenInvokedWithParameters_ShouldPassThemToQueryHandler(ushort year, byte month)
+    {
+        // Arrange
+        var request = new GetMonthlyBillingRequest(
+            year,
+            month
+        );
+
+        // Act
+        await _cut.Get(request);
+
+        // Assert
+        _mockGetMonthlyBillingQueryHandler.Verify(
+            m => m.HandleAsync(
+                It.Is<GetMonthlyBillingByYearAndMonthQuery>(
+                    g => g.Year == year
+                    && g.Month == month
+                ),
+                It.IsAny<CancellationToken>()
+            ),
+            Times.Once()
+        );
+    }
+
+    [Fact]
+    public async Task Get_OnSuccess_ShouldReturnExpectedObjectType()
+    {
+        // Arrange
+        var request = new GetMonthlyBillingRequest(
+            2023,
+            1
+        );
+
+        // Act
+        var result = (OkObjectResult)await _cut.Get(request);
+
+        // Assert
+        result.Value
+            .Should()
+            .NotBeNull();
+
+        result.Value
+            .Should()
+            .BeOfType<MonthlyBillingDTO>();
     }
 }

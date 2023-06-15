@@ -34,7 +34,11 @@ public sealed class OpenMonthlyBillingCommandHandler : ICommandHandler<OpenMonth
 
         var monthlyBilling = new MonthlyBilling(
             year,
-            month);
+            month,
+            State.Open,
+            null,
+            null
+        );
 
         await _dbContext.MonthlyBillings.AddAsync(
             monthlyBilling,

@@ -3,6 +3,8 @@ using Application.MonthlyBillings.Commands.AddExpense;
 using Application.MonthlyBillings.Commands.AddIncome;
 using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
+using Application.MonthlyBillings.DTO;
+using Application.MonthlyBillings.Queries.GetByYearAndMonth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.MonthlyBillings;
@@ -15,18 +17,21 @@ public sealed class MonthlyBillingsController : ControllerBase
     private readonly ICommandHandler<AddIncomeCommand> _addIncome;
     private readonly ICommandHandler<AddPlanCommand> _addPlan;
     private readonly ICommandHandler<AddExpenseCommand> _addExpense;
+    private readonly IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO> _getMonthlyBilling;
 
     public MonthlyBillingsController(
         ICommandHandler<OpenMonthlyBillingCommand> openMonthlyBilling,
         ICommandHandler<AddIncomeCommand> addIncome,
         ICommandHandler<AddPlanCommand> addPlan,
-        ICommandHandler<AddExpenseCommand> addExpense
+        ICommandHandler<AddExpenseCommand> addExpense,
+        IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO> getMonthlyBilling
     )
     {
         _openMonthlyBilling = openMonthlyBilling;
         _addIncome = addIncome;
         _addPlan = addPlan;
         _addExpense = addExpense;
+        _getMonthlyBilling = getMonthlyBilling;
     }
 
     [HttpPost]
@@ -108,5 +113,24 @@ public sealed class MonthlyBillingsController : ControllerBase
         );
 
         return Created("", null);
+    }
+
+    [HttpGet("{year:int}/{month:int}")]
+    public async Task<IActionResult> Get(
+        [FromRoute] GetMonthlyBillingRequest request,
+        CancellationToken token = default
+    )
+    {
+        var (year, month) = request;
+
+        var result = await _getMonthlyBilling.HandleAsync(
+            new GetMonthlyBillingByYearAndMonthQuery(
+                year,
+                month
+            ),
+            token
+        );
+
+        return Ok(result);
     }
 }
