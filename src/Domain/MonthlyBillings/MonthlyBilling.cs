@@ -18,7 +18,10 @@ public sealed class MonthlyBilling
 
     public MonthlyBilling(
         Year year,
-        Month month
+        Month month,
+        State state,
+        List<Plan> plans = null,
+        List<Income> incomes = null
     )
     {
         if (year is null)
@@ -34,6 +37,10 @@ public sealed class MonthlyBilling
         }
 
         Month = month;
+        State = state;
+
+        _plans = plans ?? new();
+        _incomes = incomes ?? new();
     }
 
     public void AddIncome(Income income)
