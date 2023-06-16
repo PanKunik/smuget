@@ -79,6 +79,11 @@ public sealed class MonthlyBilling
             throw new PlanIsNullException();
         }
 
+        if (_plans.Any(p => p.Category.Equals(plan.Category)))
+        {
+            throw new PlanCategoryNotUniqueException(plan.Category.Value);
+        }
+
         if (plan.Money.Currency != Currency)
         {
             throw new MonthlyBillingCurrencyMismatchException(plan.Money.Currency);

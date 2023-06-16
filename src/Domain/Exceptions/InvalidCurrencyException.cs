@@ -7,7 +7,7 @@ public sealed class InvalidCurrencyException : SmugetException
     public InvalidCurrencyException(
         string currency
     )
-        : base($"There is no currency like '{currency}' supported in application.")
+        : base($"There is no currency like `{currency}` supported in application.")
     {
         Currency = currency;
     }
