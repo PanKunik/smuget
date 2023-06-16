@@ -13,6 +13,7 @@ public static class MonthlyBillingUtilities
         => new(
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
+            Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
             plans ?? CreatePlans(),
             incomes ?? CreateIncomes()

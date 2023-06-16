@@ -8,7 +8,6 @@ using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
 using Application.MonthlyBillings.DTO;
 using Application.MonthlyBillings.Queries.GetByYearAndMonth;
-using Domain.MonthlyBillings;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using WebAPI.MonthlyBillings;
@@ -56,7 +55,7 @@ public sealed class MonthlyBillingsControllerTests
     public async Task Open_OnSuccess_ShouldReturnCreatedObjectResult()
     {
         // Act
-        var result = await _cut.Open(new(2020, 1));
+        var result = await _cut.Open(new(2020, 1, "USD"));
 
         // Assert
         result.Should().NotBeNull();
@@ -67,7 +66,7 @@ public sealed class MonthlyBillingsControllerTests
     public async Task Open_OnSuccess_ShouldReturnStatusCode201()
     {
         // Act
-        var result = (CreatedResult)await _cut.Open(new(2020, 1));
+        var result = (CreatedResult)await _cut.Open(new(2020, 1, "PLN"));
 
         // Assert
         result.StatusCode.Should().Be(201);
@@ -77,7 +76,7 @@ public sealed class MonthlyBillingsControllerTests
     public async Task Open_WhenInvoked_ShouldCallOpenMonthlyBillingCommandHandler()
     {
         // Act
-        await _cut.Open(new(2020, 1));
+        await _cut.Open(new(2020, 1, "PLN"));
 
         // Assert
         _mockOpenMonthlyBillingCommandHandler.Verify(
@@ -88,16 +87,20 @@ public sealed class MonthlyBillingsControllerTests
     }
 
     [Theory]
-    [InlineData(2020, 1)]
-    [InlineData(2021, 6)]
-    [InlineData(2022, 12)]
-    public async Task Open_WhenInvoked_ShouldPassParametersToCommand(ushort year, byte month)
+    [InlineData(2020, 1, "PLN")]
+    [InlineData(2021, 6, "EUR")]
+    [InlineData(2022, 12, "USD")]
+    public async Task Open_WhenInvoked_ShouldPassParametersToCommand(
+        ushort year,
+        byte month,
+        string currency
+    )
     {
         // Arrange
         var token = new CancellationToken();
 
         // Act
-        await _cut.Open(new(year, month));
+        await _cut.Open(new(year, month, currency));
 
         // Assert
         _mockOpenMonthlyBillingCommandHandler.Verify(
@@ -116,7 +119,8 @@ public sealed class MonthlyBillingsControllerTests
         var request = new AddIncomeRequest(
             "TEST",
             5284M,
-            "PLN");
+            "PLN"
+        );
 
         // Act
         var result = await _cut.AddIncome(Guid.NewGuid(), request);
@@ -133,7 +137,8 @@ public sealed class MonthlyBillingsControllerTests
         var request = new AddIncomeRequest(
             "TEST",
             8761.97M,
-            "PLN");
+            "PLN"
+        );
 
         // Act
         var result = (CreatedResult)await _cut.AddIncome(Guid.NewGuid(), request);

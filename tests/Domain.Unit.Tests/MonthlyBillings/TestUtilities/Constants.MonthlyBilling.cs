@@ -8,6 +8,7 @@ public static partial class Constants
     {
         public static readonly Year Year = new(2023);
         public static readonly Month Month = new(2);
+        public static readonly Currency Currency = new("PLN");
         public static readonly State State = State.Open;
     }
 }

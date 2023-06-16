@@ -1,6 +1,6 @@
 @host = https://localhost:7188
 
-@id = 1a1ad0cf-84ca-4c4b-b487-0c04922d820a
+@id = 141f01bb-f33d-4ce6-9a0e-11a7e92333b1
 
 POST {{host}}/api/monthlyBillings/{{id}}/plans
 Content-Type: application/json

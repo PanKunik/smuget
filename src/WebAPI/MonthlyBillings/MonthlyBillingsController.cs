@@ -39,11 +39,16 @@ public sealed class MonthlyBillingsController : ControllerBase
         OpenMonthlyBillingRequest request,
         CancellationToken token = default)
     {
-        var (year, month) = request;
+        var (year, month, currency) = request;
 
         await _openMonthlyBilling.HandleAsync(
-            new OpenMonthlyBillingCommand(year, month),
-            token);
+            new OpenMonthlyBillingCommand(
+                year,
+                month,
+                currency
+            ),
+            token
+        );
 
         return Created("", null);
     }
