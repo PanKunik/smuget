@@ -10,8 +10,8 @@ Smuget is smart home bugdet manager application for your home finances and piggy
 - [Found a bug](#found-a-bug)
 
 ## General info
-This repository is part of set of applications that works together. This module is responsible for the backend part of the `smuget` application.
-`smuget` is the application that will help you with your home buget planning, saving and spending money. It allows you to create moneyboxes to differentiant other finances from your main buget (for example savings for a car or for the future).
+This repository is part of set of applications that works together. This module is responsible for the backend part of the 'smuget` application.
+'smuget` is the application that will help you with your home buget planning, saving and spending money. It allows you to create moneyboxes to differentiant other finances from your main buget (for example savings for a car or for the future).
 
 ## Technologies
 PRoject is built with:

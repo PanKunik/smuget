@@ -9,7 +9,7 @@ public sealed class MonthlyBillingCurrencyMismatchException : SmugetException
     public MonthlyBillingCurrencyMismatchException(
         Currency currency
     )
-        : base($"The currency '{currency.Value}' doesn't match monthly billing's currency.")
+        : base($"The currency `{currency.Value}` doesn't match monthly billing's currency.")
     {
         Currency = currency;
     }
