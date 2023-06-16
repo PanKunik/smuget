@@ -42,7 +42,9 @@ public sealed class OpenMonthlyBillingCommandHandler : ICommandHandler<OpenMonth
 
         await _dbContext.MonthlyBillings.AddAsync(
             monthlyBilling,
-            cancellationToken);
+            cancellationToken
+        );
+
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

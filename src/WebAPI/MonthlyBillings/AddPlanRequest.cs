@@ -5,6 +5,6 @@ namespace WebAPI.MonthlyBillings;
 public sealed record AddPlanRequest(
     string Category,
     decimal Money,
-    Currency Currency,
+    string Currency,
     uint SortOrder
 );

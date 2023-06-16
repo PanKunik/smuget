@@ -1,14 +1,14 @@
 @host = https://localhost:7188
 
-@monthlyBillingId = 4bcfbe2e-0a4b-4c3a-ba27-cfba56c0a319
-@planId = 13abd720-e833-4692-aee0-1c4e44b76e29
+@monthlyBillingId = 1a1ad0cf-84ca-4c4b-b487-0c04922d820a
+@planId = 47ea3a25-4349-4dd8-98c5-b9b2aa91ea96
 
 POST {{host}}/api/monthlyBillings/{{monthlyBillingId}}/plans/{{planId}}/expenses
 Content-Type: application/json
 
 {
-    "money": 292.82,
-    "currency": 1,
+    "money": 125.78,
+    "currency": "EUR",
     "expenseDate": "2019-07-26T00:00:00+02:00",
-    "description": "Electricity"
+    "description": "Table"
 }

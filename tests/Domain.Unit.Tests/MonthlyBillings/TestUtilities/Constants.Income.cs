@@ -7,7 +7,7 @@ public static partial class Constants
     public static class Income
     {
         public static readonly Name Name = new("Name");
-        public static readonly Money Money = new(11.75M, Currency.PLN);
+        public static readonly Money Money = new(11.75M, new Currency("PLN"));
 
         public static Name NameFromIndex(int index)
             => new($"{Name} {index}");

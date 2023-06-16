@@ -7,7 +7,7 @@ public static partial class Constants
     public static class Plan
     {
         public static readonly Category Category = new("Category");
-        public static readonly Money Money = new(12.5M, Currency.PLN);
+        public static readonly Money Money = new(12.5M, new Currency("PLN"));
 
         public static Category CategoryFromIndex(int index)
             => new($"{Category.Value} {index}");

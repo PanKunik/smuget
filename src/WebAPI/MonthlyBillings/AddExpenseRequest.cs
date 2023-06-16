@@ -4,7 +4,7 @@ namespace WebAPI.MonthlyBillings;
 
 public sealed record AddExpenseRequest(
     decimal Money,
-    Currency Currency,
+    string Currency,
     DateTimeOffset ExpenseDate,
     string Description
 );

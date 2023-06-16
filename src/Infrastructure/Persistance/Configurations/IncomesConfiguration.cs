@@ -27,7 +27,18 @@ internal sealed class IncomesConfiguration : IEntityTypeConfiguration<Income>
                 value => new(value));
 
         builder
-            .OwnsOne(i => i.Money);
+            .OwnsOne(i => i.Money)
+            .Property(m => m.Amount)
+            .IsRequired();
+
+        builder
+            .OwnsOne(i => i.Money)
+            .Property(m => m.Currency)
+            .HasConversion(
+                currency => currency.Value,
+                value => new(value)
+            )
+            .IsRequired();
 
         builder
             .Property(i => i.Include)

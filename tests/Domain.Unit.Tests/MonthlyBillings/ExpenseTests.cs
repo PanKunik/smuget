@@ -11,7 +11,7 @@ public sealed class ExpenseTests
     {
         // Arrange
         var createExpense = () => new Expense(
-            new Money(172.04M, Currency.EUR),
+            new Money(172.04M, new Currency("EUR")),
             new DateTimeOffset(new DateTime(2020, 9, 21)),
             "Breaks"
         );
@@ -29,7 +29,7 @@ public sealed class ExpenseTests
             .Match<Expense>(
                 e => e.Descritpion == "Breaks"
                 && e.ExpenseDate == new DateTimeOffset(new DateTime(2020, 9, 21))
-                && e.Money == new Money(172.04M, Currency.EUR)
+                && e.Money == new Money(172.04M, new Currency("EUR"))
             );
     }
 

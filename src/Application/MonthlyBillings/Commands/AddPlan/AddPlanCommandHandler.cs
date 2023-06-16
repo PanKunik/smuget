@@ -33,11 +33,14 @@ public sealed class AddPlanCommandHandler : ICommandHandler<AddPlanCommand>
             throw new MonthlyBillingAlreadyClosedException(
                 monthlyBilling.Month,
                 monthlyBilling.Year);
-        }
+        }   // TODO: Move to domain layer
 
         var plan = new Plan(
             new Category(command.Category),
-            new Money(command.MoneyAmount, command.Currency),
+            new Money(
+                command.MoneyAmount,
+                new Currency(command.Currency)
+            ),
             command.SortOrder
         );
 

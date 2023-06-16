@@ -67,12 +67,16 @@ public sealed class MonthlyBillingTests
     public void AddIncome_WhenPassedProperData_ShouldAddIncomeToMonthlyBilling()
     {
         // Arrange
-        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+        var cut = new MonthlyBilling(
+            Constants.MonthlyBilling.Year,
+            Constants.MonthlyBilling.Month,
+            Constants.MonthlyBilling.State
+        );
 
         // Act
         cut.AddIncome(new Income(
             new Name("TEST"),
-            new Money(10m, Currency.PLN),
+            new Money(10m, new Currency("PLN")),
             true
         ));
 
@@ -83,7 +87,7 @@ public sealed class MonthlyBillingTests
             {
                 new Income(
                     new Name("TEST"),
-                    new Money(10m, Currency.PLN),
+                    new Money(10m, new Currency("PLN")),
                     true
                 )
             }.AsReadOnly(),
@@ -134,7 +138,7 @@ public sealed class MonthlyBillingTests
 
         var plan = new Plan(
             new Category("Fuel"),
-            new Money(156.84M, Currency.PLN),
+            new Money(156.84M, new Currency("PLN")),
             1
         );
 
@@ -148,7 +152,7 @@ public sealed class MonthlyBillingTests
             {
                 new Plan(
                     new Category("Fuel"),
-                    new Money(156.84M, Currency.PLN),
+                    new Money(156.84M, new Currency("PLN")),
                     1u
                 )
             }.AsReadOnly(),
@@ -204,7 +208,7 @@ public sealed class MonthlyBillingTests
         var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
 
         Expense expense = new Expense(
-            new Money(125.0M, Currency.PLN),
+            new Money(125.0M, new Currency("PLN")),
             new DateTimeOffset(new DateTime(2023, 3, 6)),
             "eBay"
         );

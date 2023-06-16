@@ -11,7 +11,7 @@ public sealed class MoneyTests
         // Arrange
         var createMoney = () => new Money(
             15.06m,
-            Currency.PLN
+            new Currency("PLN")
         );
 
         // Act
@@ -21,7 +21,7 @@ public sealed class MoneyTests
         result.Should().NotBeNull();
         result.Should().Match<Money>(
             m => m.Amount == 15.06m
-            && m.Currency == Currency.PLN
+            && m.Currency == new Currency("PLN")
         );
     }
 
@@ -32,8 +32,8 @@ public sealed class MoneyTests
     public void AddOperator_WhenPassedTwoValues_ShouldAddThem(decimal a, decimal b, decimal expected)
     {
         // Arrange
-        var left = new Money(a, Currency.PLN);
-        var right = new Money(b, Currency.PLN);
+        var left = new Money(a, new Currency("PLN"));
+        var right = new Money(b, new Currency("PLN"));
 
         // Act
         var result = left + right;
@@ -50,8 +50,8 @@ public sealed class MoneyTests
     public void AddOperator_WhenPassedTwoValuesWithDifferentCurrencies_ShoudlThrowMoneyCurrencyMismatchException()
     {
         // Arrange
-        var left = new Money(15.06m, Currency.PLN);
-        var right = new Money(4.95m, Currency.EUR);
+        var left = new Money(15.06m, new Currency("PLN"));
+        var right = new Money(4.95m, new Currency("EUR"));
 
         var addMoney = () => left + right;
 
@@ -66,8 +66,8 @@ public sealed class MoneyTests
     public void MinusOperator_WhenPassedTwoValues_ShouldSubstractThem(decimal a, decimal b, decimal expected)
     {
         // Arrange
-        var left = new Money(a, Currency.EUR);
-        var right = new Money(b, Currency.EUR);
+        var left = new Money(a, new Currency("EUR"));
+        var right = new Money(b, new Currency("EUR"));
 
         // Act
         var result = left - right;
@@ -84,8 +84,8 @@ public sealed class MoneyTests
     public void MinusOperator_WhenPassedTwoValuesWithDifferentCurrencies_ShouldThrowMoneyCurrencyMismatchException()
     {
         // Arrange
-        var left = new Money(-21.07m, Currency.USD);
-        var right = new Money(13.85m, Currency.EUR);
+        var left = new Money(-21.07m, new Currency("USD"));
+        var right = new Money(13.85m, new Currency("EUR"));
 
         var substractMoney = () => left - right;
 
@@ -97,8 +97,8 @@ public sealed class MoneyTests
     public void Equals_WhenPassedObjectWithSameValue_ShouldReturnTrue()
     {
         // Arrange
-        var money = new Money(15.06m, Currency.PLN);
-        var equalTo = new Money(15.06m, Currency.PLN);
+        var money = new Money(15.06m, new Currency("PLN"));
+        var equalTo = new Money(15.06m, new Currency("PLN"));
 
         // Act
         var result = money.Equals(equalTo);
@@ -108,18 +108,43 @@ public sealed class MoneyTests
     }
 
     [Theory]
-    [InlineData(15.06, Currency.USD)]
-    [InlineData(-21.04, Currency.PLN)]
-    public void Equals_WhenPassedObjectWithOtherValue_ShouldReturnFalse(decimal amount, Currency currency)
+    [InlineData(15.06, "USD")]
+    [InlineData(-21.04, "PLN")]
+    public void Equals_WhenPassedObjectWithOtherValue_ShouldReturnFalse(decimal amount, string currency)
     {
         // Arrange
-        var money = new Money(15.06m, Currency.PLN);
-        var equalTo = new Money(amount, currency);
+        var money = new Money(15.06m, new Currency("PLN"));
+        var equalTo = new Money(amount, new Currency(currency));
 
         // Act
         var result = money.Equals(equalTo);
 
         // Assert
         result.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(71.251, "PLN", "71,25 PLN")]
+    [InlineData(98.3104, "USD", "98,31 USD")]
+    [InlineData(184.96, "EUR", "184,96 EUR")]
+    public void ToString_WhenCalled_ShouldReturnExpectedString(
+        decimal amount,
+        string currency,
+        string expectedString
+    )
+    {
+        // Arrange
+        var cut = new Money(
+            amount,
+            new Currency(currency)
+        );
+
+        // Act
+        var result = cut.ToString();
+
+        // Assert
+        result
+            .Should()
+            .BeEquivalentTo(expectedString);
     }
 }

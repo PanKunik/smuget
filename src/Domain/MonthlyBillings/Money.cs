@@ -5,7 +5,6 @@ namespace Domain.MonthlyBillings;
 public sealed record Money
 {
     public decimal Amount { get; }
-    // TODO: Make currency own type - enum record
     public Currency Currency { get; }
 
     public Money(
@@ -45,5 +44,10 @@ public sealed record Money
 
         var difference = left.Amount - right.Amount;
         return new Money(difference, left.Currency);
+    }
+
+    public override string ToString()
+    {
+        return $"{Amount :#.00} {Currency}";
     }
 }

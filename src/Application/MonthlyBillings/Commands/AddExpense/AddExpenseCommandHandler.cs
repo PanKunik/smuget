@@ -32,14 +32,18 @@ public sealed class AddExpenseCommandHandler : ICommandHandler<AddExpenseCommand
         }
 
         var expense = new Expense(
-            new Money(command.Money, command.Currency),
+            new Money(
+                command.Money,
+                new Currency(command.Currency)
+            ),
             command.ExpenseDate,
             command.Description
         );
 
         monthlyBilling.AddExpense(
             new PlanId(command.PlanId),
-            expense);
+            expense
+        );
 
         await _dbContext.SaveChangesAsync(cancellationToken);
     }

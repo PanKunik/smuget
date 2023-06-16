@@ -27,7 +27,18 @@ internal sealed class PlansConfiguration : IEntityTypeConfiguration<Plan>
                 value => new Category(value));
 
         builder
-            .OwnsOne(p => p.MoneyAmount);
+            .OwnsOne(p => p.Money)
+            .Property(m => m.Amount)
+            .IsRequired();
+
+        builder
+            .OwnsOne(p => p.Money)
+            .Property(m => m.Currency)
+            .HasConversion(
+                currency => currency.Value,
+                value => new(value)
+            )
+            .IsRequired();
 
         builder
             .Property(p => p.SortOrder)
