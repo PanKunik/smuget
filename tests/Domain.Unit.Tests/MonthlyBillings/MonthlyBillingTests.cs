@@ -223,6 +223,27 @@ public sealed class MonthlyBillingTests
     }
 
     [Fact]
+    public void AddPlan_WhenTryingToAddPlanWithSameCategory_ShouldThrowPlanCategoryNotUniqueExceptionn()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+
+        Plan plan = new Plan(
+            new Category("Category 0"),
+            new Money(
+                123.45M,
+                new Currency("PLN")
+            ),
+            1
+        );
+
+        var addPlan = () => cut.AddPlan(plan);
+
+        // Act & Assert
+        Assert.Throws<PlanCategoryNotUniqueException>(addPlan);
+    }
+
+    [Fact]
     public void AddPlan_WhenTryingToAddPlanWithOtherCurrency_ShouldThrowMonthlyBillingCurrencyMismatchException()
     {
         // Arrange

@@ -2,9 +2,10 @@ using Domain.Exceptions;
 
 namespace Domain.MonthlyBillings;
 
-public sealed class Category
+public sealed record Category
 {
     private const byte MaxLengthForCategoryName = 20;
+
     public string Value { get; }
 
     public Category(string value)
