@@ -1,9 +1,7 @@
-using Domain.MonthlyBillings;
-
 namespace WebAPI.MonthlyBillings;
 
 public sealed record AddIncomeRequest(
     string Name,
     decimal MoneyAmount,
-    Currency Currency,
+    string Currency,
     bool IncludeInBilling = true);

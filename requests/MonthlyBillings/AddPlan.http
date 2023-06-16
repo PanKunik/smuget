@@ -1,13 +1,13 @@
 @host = https://localhost:7188
 
-@id = 4bcfbe2e-0a4b-4c3a-ba27-cfba56c0a319
+@id = 141f01bb-f33d-4ce6-9a0e-11a7e92333b1
 
 POST {{host}}/api/monthlyBillings/{{id}}/plans
 Content-Type: application/json
 
 {
-    "category": "House",
-    "moneyAmount": 2000,
-    "currency": 1,
-    "sortOrder": 1
+    "category": "Medicines",
+    "money": 127,
+    "currency": "EUR",
+    "sortOrder": 2
 }

@@ -10,7 +10,7 @@ public sealed class IncomeTests
     {
         // Arrange
         Name name = new("Test name");
-        Money money = new Money(525.88m, Currency.PLN);
+        Money money = new Money(525.88m, new Currency("PLN"));
         var include = true;
 
         var createIncome = () => new Income(
@@ -37,7 +37,7 @@ public sealed class IncomeTests
         // Arrange
         var createIncome = () => new Income(
             null,
-            new Money(21m, Currency.USD),
+            new Money(21m, new Currency("USD")),
             true
         );
 

@@ -19,6 +19,7 @@ public sealed class OpenMonthlyBillingCommandHandler : ICommandHandler<OpenMonth
     {
         var year = new Year(command.Year);
         var month = new Month(command.Month);
+        var currency = new Currency(command.Currency);
 
         var existingMonthlyBilling = await _dbContext.MonthlyBillings.FirstOrDefaultAsync(
             m => m.Year == year
@@ -35,6 +36,7 @@ public sealed class OpenMonthlyBillingCommandHandler : ICommandHandler<OpenMonth
         var monthlyBilling = new MonthlyBilling(
             year,
             month,
+            currency,
             State.Open,
             null,
             null
@@ -42,7 +44,9 @@ public sealed class OpenMonthlyBillingCommandHandler : ICommandHandler<OpenMonth
 
         await _dbContext.MonthlyBillings.AddAsync(
             monthlyBilling,
-            cancellationToken);
+            cancellationToken
+        );
+
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

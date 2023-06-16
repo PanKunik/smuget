@@ -4,4 +4,6 @@ namespace Application.MonthlyBillings.Commands.OpenMonthlyBilling;
 
 public sealed record OpenMonthlyBillingCommand(
     ushort Year,
-    byte Month) : ICommand;
+    byte Month,
+    string Currency
+) : ICommand;

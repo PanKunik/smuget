@@ -7,6 +7,6 @@ public sealed record AddIncomeCommand(
     Guid MonthlyBillingId,
     string Name,
     decimal Amount,
-    Currency Currency,
+    string Currency,
     bool Include
 ) : ICommand;

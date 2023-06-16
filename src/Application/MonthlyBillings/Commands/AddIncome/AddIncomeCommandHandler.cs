@@ -32,11 +32,14 @@ public sealed class AddIncomeCommandHandler : ICommandHandler<AddIncomeCommand>
 
         var income = new Income(
             new Name(command.Name),
-            new Money(command.Amount, command.Currency),
+            new Money(
+                command.Amount,
+                new Currency(command.Currency)
+            ),
             command.Include
         );
 
-        monthlyBilling.AddIncome(income);   // TODO: Pass values here
+        monthlyBilling.AddIncome(income);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
     }

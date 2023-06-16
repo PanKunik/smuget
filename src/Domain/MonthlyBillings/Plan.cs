@@ -6,17 +6,17 @@ namespace Domain.MonthlyBillings;
 
 public sealed class Plan
 {
-    public PlanId Id { get; private set; } = new PlanId(Guid.NewGuid());
-    public Category Category { get; private set; }
-    public Money MoneyAmount { get; private set; }
-    public uint SortOrder { get; private set; }
+    public PlanId Id { get; } = new PlanId(Guid.NewGuid());
+    public Category Category { get; }
+    public Money Money { get; }
+    public uint SortOrder { get; }
     public IReadOnlyCollection<Expense> Expenses => _expenses.AsReadOnly();
 
-    private readonly List<Expense> _expenses = new List<Expense>();
+    private readonly List<Expense> _expenses = new();
 
     public Plan(
         Category category,
-        Money amount,
+        Money money,
         uint sortOrder
     )
     {
@@ -27,12 +27,12 @@ public sealed class Plan
 
         Category = category;
 
-        if (amount is null)
+        if (money is null)
         {
             throw new MoneyIsNullException();
         }
 
-        MoneyAmount = amount;
+        Money = money;
         SortOrder = sortOrder;
     }
 

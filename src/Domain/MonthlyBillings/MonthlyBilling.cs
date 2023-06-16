@@ -12,6 +12,7 @@ public sealed class MonthlyBilling
     public MonthlyBillingId Id { get; } = new MonthlyBillingId(Guid.NewGuid());
     public Year Year { get; }
     public Month Month { get; }
+    public Currency Currency { get; }
     public State State { get; private set; } = State.Open;
     public IReadOnlyCollection<Income> Incomes => _incomes.AsReadOnly();
     public IReadOnlyCollection<Plan> Plans => _plans.AsReadOnly();
@@ -19,6 +20,7 @@ public sealed class MonthlyBilling
     public MonthlyBilling(
         Year year,
         Month month,
+        Currency currency,
         State state,
         List<Plan> plans = null,
         List<Income> incomes = null
@@ -37,6 +39,13 @@ public sealed class MonthlyBilling
         }
 
         Month = month;
+
+        if (currency is null)
+        {
+            throw new CurrencyIsNullException();
+        }
+
+        Currency = currency;
         State = state;
 
         _plans = plans ?? new();
@@ -55,6 +64,11 @@ public sealed class MonthlyBilling
             throw new IncomeNameNotUniqueException(income.Name.Value);
         }
 
+        if (income.Money.Currency != Currency)
+        {
+            throw new MonthlyBillingCurrencyMismatchException(income.Money.Currency);
+        }
+
         _incomes.Add(income);
     }
 
@@ -63,6 +77,11 @@ public sealed class MonthlyBilling
         if (plan is null)
         {
             throw new PlanIsNullException();
+        }
+
+        if (plan.Money.Currency != Currency)
+        {
+            throw new MonthlyBillingCurrencyMismatchException(plan.Money.Currency);
         }
 
         _plans.Add(plan);
@@ -85,6 +104,11 @@ public sealed class MonthlyBilling
         if (plan is null)
         {
             throw new PlanNotFoundException(planId);
+        }
+
+        if (expense.Money.Currency != Currency)
+        {
+            throw new MonthlyBillingCurrencyMismatchException(expense.Money.Currency);
         }
 
         plan.AddExpense(expense);

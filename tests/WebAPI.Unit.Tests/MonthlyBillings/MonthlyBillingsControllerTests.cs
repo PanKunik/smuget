@@ -8,7 +8,6 @@ using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
 using Application.MonthlyBillings.DTO;
 using Application.MonthlyBillings.Queries.GetByYearAndMonth;
-using Domain.MonthlyBillings;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using WebAPI.MonthlyBillings;
@@ -56,7 +55,7 @@ public sealed class MonthlyBillingsControllerTests
     public async Task Open_OnSuccess_ShouldReturnCreatedObjectResult()
     {
         // Act
-        var result = await _cut.Open(new(2020, 1));
+        var result = await _cut.Open(new(2020, 1, "USD"));
 
         // Assert
         result.Should().NotBeNull();
@@ -67,7 +66,7 @@ public sealed class MonthlyBillingsControllerTests
     public async Task Open_OnSuccess_ShouldReturnStatusCode201()
     {
         // Act
-        var result = (CreatedResult)await _cut.Open(new(2020, 1));
+        var result = (CreatedResult)await _cut.Open(new(2020, 1, "PLN"));
 
         // Assert
         result.StatusCode.Should().Be(201);
@@ -77,7 +76,7 @@ public sealed class MonthlyBillingsControllerTests
     public async Task Open_WhenInvoked_ShouldCallOpenMonthlyBillingCommandHandler()
     {
         // Act
-        await _cut.Open(new(2020, 1));
+        await _cut.Open(new(2020, 1, "PLN"));
 
         // Assert
         _mockOpenMonthlyBillingCommandHandler.Verify(
@@ -88,16 +87,20 @@ public sealed class MonthlyBillingsControllerTests
     }
 
     [Theory]
-    [InlineData(2020, 1)]
-    [InlineData(2021, 6)]
-    [InlineData(2022, 12)]
-    public async Task Open_WhenInvoked_ShouldPassParametersToCommand(ushort year, byte month)
+    [InlineData(2020, 1, "PLN")]
+    [InlineData(2021, 6, "EUR")]
+    [InlineData(2022, 12, "USD")]
+    public async Task Open_WhenInvoked_ShouldPassParametersToCommand(
+        ushort year,
+        byte month,
+        string currency
+    )
     {
         // Arrange
         var token = new CancellationToken();
 
         // Act
-        await _cut.Open(new(year, month));
+        await _cut.Open(new(year, month, currency));
 
         // Assert
         _mockOpenMonthlyBillingCommandHandler.Verify(
@@ -116,7 +119,8 @@ public sealed class MonthlyBillingsControllerTests
         var request = new AddIncomeRequest(
             "TEST",
             5284M,
-            Currency.PLN);
+            "PLN"
+        );
 
         // Act
         var result = await _cut.AddIncome(Guid.NewGuid(), request);
@@ -133,7 +137,8 @@ public sealed class MonthlyBillingsControllerTests
         var request = new AddIncomeRequest(
             "TEST",
             8761.97M,
-            Currency.PLN);
+            "PLN"
+        );
 
         // Act
         var result = (CreatedResult)await _cut.AddIncome(Guid.NewGuid(), request);
@@ -149,7 +154,7 @@ public sealed class MonthlyBillingsControllerTests
         var request = new AddIncomeRequest(
             "TEST",
             3456.20M,
-            Currency.EUR);
+            "EUR");
 
         // Act
         await _cut.AddIncome(Guid.NewGuid(), request);
@@ -163,8 +168,8 @@ public sealed class MonthlyBillingsControllerTests
     }
 
     [Theory]
-    [InlineData("2b715a6c-b187-4885-9344-c35f7f639f97", "TEST", 3680.70, Currency.PLN, true)]
-    public async Task AddIncome_WhenInvoked_ShouldPassParametersToCommand(Guid monthlyBillingId, string name, decimal amount, Currency currency, bool include)
+    [InlineData("2b715a6c-b187-4885-9344-c35f7f639f97", "TEST", 3680.70, "PLN", true)]
+    public async Task AddIncome_WhenInvoked_ShouldPassParametersToCommand(Guid monthlyBillingId, string name, decimal amount, string currency, bool include)
     {
         // Arrange
         var request = new AddIncomeRequest(
@@ -204,7 +209,7 @@ public sealed class MonthlyBillingsControllerTests
             new AddPlanRequest(
                 "Shopping",
                 100.0M,
-                Currency.PLN,
+                "PLN",
                 1
             )
         );
@@ -223,7 +228,7 @@ public sealed class MonthlyBillingsControllerTests
             new AddPlanRequest(
                 "Shopping",
                 100.0M,
-                Currency.PLN,
+                "PLN",
                 1
             ));
 
@@ -238,7 +243,7 @@ public sealed class MonthlyBillingsControllerTests
         var addPlanRequest = new AddPlanRequest(
             "Food",
             10.0M,
-            Currency.PLN,
+            "PLN",
             1
         );
 
@@ -261,7 +266,7 @@ public sealed class MonthlyBillingsControllerTests
         var addPlanRequest = new AddPlanRequest(
             "Fuel",
             87.96M,
-            Currency.PLN,
+            "PLN",
             5
         );
 
@@ -277,7 +282,7 @@ public sealed class MonthlyBillingsControllerTests
                 It.Is<AddPlanCommand>(
                     c => c.Category == "Fuel"
                     && c.MoneyAmount == 87.96M
-                    && c.Currency == Currency.PLN
+                    && c.Currency == "PLN"
                     && c.SortOrder == 5
                 ),
                 default
@@ -290,7 +295,7 @@ public sealed class MonthlyBillingsControllerTests
         // Arrange
         var request = new AddExpenseRequest(
             154.09M,
-            Currency.USD,
+            "USD",
             new DateTimeOffset(new DateTime(2023, 4, 1)),
             "Description"
         );
@@ -318,7 +323,7 @@ public sealed class MonthlyBillingsControllerTests
         // Arrange
         var request = new AddExpenseRequest(
             154.09M,
-            Currency.USD,
+            "USD",
             new DateTimeOffset(new DateTime(2023, 4, 1)),
             "Description"
         );
@@ -342,7 +347,7 @@ public sealed class MonthlyBillingsControllerTests
         // Arrange
         var request = new AddExpenseRequest(
             154.09M,
-            Currency.USD,
+            "USD",
             new DateTimeOffset(new DateTime(2023, 4, 1)),
             "Description"
         );
@@ -369,7 +374,7 @@ public sealed class MonthlyBillingsControllerTests
         // Arrange
         var request = new AddExpenseRequest(
             125.04M,
-            Currency.PLN,
+            "PLN",
             new DateTimeOffset(new DateTime(2023, 5, 1)),
             "TEST"
         );
@@ -391,7 +396,7 @@ public sealed class MonthlyBillingsControllerTests
                     c => c.MonthlyBillingId == monthlyBillingId
                     && c.PlanId == planId
                     && c.Money == 125.04M
-                    && c.Currency == Currency.PLN
+                    && c.Currency == "PLN"
                     && c.ExpenseDate == new DateTimeOffset(new DateTime(2023, 5, 1))
                     && c.Description == "TEST"
                 ),

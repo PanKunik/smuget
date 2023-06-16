@@ -31,5 +31,12 @@ internal sealed class MonthlyBillingsConfiguration : IEntityTypeConfiguration<Mo
             .HasConversion(
                 v => v.Value,
                 v => new(v));
+
+        builder
+            .Property(b => b.Currency)
+            .IsRequired()
+            .HasConversion(
+                v => v.Value,
+                v => new(v));
     }
 }

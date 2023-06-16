@@ -12,7 +12,7 @@ public sealed class PlanTest
     {
         // Arrange
         Category category = new("Fuel");
-        Money money = new Money(525.88m, Currency.PLN);
+        Money money = new Money(525.88m, new Currency("PLN"));
         uint sortOrder = 1u;
 
         var createPlan = () => new Plan(
@@ -28,7 +28,7 @@ public sealed class PlanTest
         result.Should().NotBeNull();
         result.Should().Match<Plan>(
             p => p.Category == category
-            && p.MoneyAmount.Equals(money)
+            && p.Money.Equals(money)
             && p.SortOrder == sortOrder
         );
     }
@@ -39,7 +39,7 @@ public sealed class PlanTest
         // Arrange
         var createPlan = () => new Plan(
             null,
-            new Money(21m, Currency.USD),
+            new Money(21m, new Currency("USD")),
             1u
         );
 
@@ -67,12 +67,12 @@ public sealed class PlanTest
         // Arrange
         var cut = new Plan(
             new Category("Groceries"),
-            new Money(400M, Currency.USD),
+            new Money(400M, new Currency("USD")),
             1
         );
 
         var expense = new Expense(
-            new Money(150M, Currency.PLN),
+            new Money(150M, new Currency("PLN")),
             new DateTimeOffset(new DateTime(2020, 3, 4)),
             "Farmer's market"
         );
@@ -90,7 +90,7 @@ public sealed class PlanTest
         firstExpense
             .Should()
             .Match<Expense>(
-                e => e.Money == new Money(150M, Currency.PLN)
+                e => e.Money == new Money(150M, new Currency("PLN"))
                 && e.ExpenseDate == new DateTimeOffset(new DateTime(2020, 3, 4))
                 && e.Descritpion == "Farmer's market"
             );

@@ -25,6 +25,7 @@ public sealed class MonthlyBillingTests
         result.Should().Match<MonthlyBilling>(
               m => m.Year == new Year(2023)
               && m.Month == new Month(2)
+              && m.Currency == new Currency("PLN")
               && m.State == State.Open
         );
     }
@@ -37,6 +38,7 @@ public sealed class MonthlyBillingTests
             => new MonthlyBilling(
                 null,
                 new Month(3),
+                new Currency("PLN"),
                 State.Open,
                 null,
                 null
@@ -54,6 +56,7 @@ public sealed class MonthlyBillingTests
             => new MonthlyBilling(
                 new Year(2007),
                 null,
+                new Currency("PLN"),
                 State.Open,
                 null,
                 null
@@ -64,15 +67,38 @@ public sealed class MonthlyBillingTests
     }
 
     [Fact]
+    public void MonthlyBilling_WhenPassedNullCurrency_ShouldThrowCurrencyIsNullException()
+    {
+        // Arrange
+        var createMonthlyBilling = ()
+            => new MonthlyBilling(
+                new Year(2007),
+                new Month(3),
+                null,
+                State.Open,
+                null,
+                null
+            );
+
+        // Act & Assert
+        Assert.Throws<CurrencyIsNullException>(createMonthlyBilling);
+    }
+
+    [Fact]
     public void AddIncome_WhenPassedProperData_ShouldAddIncomeToMonthlyBilling()
     {
         // Arrange
-        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+        var cut = new MonthlyBilling(
+            Constants.MonthlyBilling.Year,
+            Constants.MonthlyBilling.Month,
+            Constants.MonthlyBilling.Currency,
+            Constants.MonthlyBilling.State
+        );
 
         // Act
         cut.AddIncome(new Income(
             new Name("TEST"),
-            new Money(10m, Currency.PLN),
+            new Money(10m, new Currency("PLN")),
             true
         ));
 
@@ -83,7 +109,7 @@ public sealed class MonthlyBillingTests
             {
                 new Income(
                     new Name("TEST"),
-                    new Money(10m, Currency.PLN),
+                    new Money(10m, new Currency("PLN")),
                     true
                 )
             }.AsReadOnly(),
@@ -121,12 +147,39 @@ public sealed class MonthlyBillingTests
     }
 
     [Fact]
+    public void AddIncome_WhenTryingToAddIncomeWithOtherCurrency_ShouldThrowMonthlyBillingCurrencyMismatchException()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            Constants.MonthlyBilling.Year,
+            Constants.MonthlyBilling.Month,
+            Constants.MonthlyBilling.Currency,
+            Constants.MonthlyBilling.State
+        );
+
+        var addIncomeWithOtherCurrency = () => cut.AddIncome(
+            new Income(
+                Constants.Income.Name,
+                new Money(
+                    123.923M,
+                    new Currency("EUR")
+                ),
+                true
+            )
+        );
+
+        // Act & Assert
+        Assert.Throws<MonthlyBillingCurrencyMismatchException>(addIncomeWithOtherCurrency);
+    }
+
+    [Fact]
     public void AddPlan_WhenPassedProperData_ShouldAddPlanToMonthlyBilling()
     {
         // Arrange
         var cut = new MonthlyBilling(
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
+            Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
             null,
             null
@@ -134,7 +187,7 @@ public sealed class MonthlyBillingTests
 
         var plan = new Plan(
             new Category("Fuel"),
-            new Money(156.84M, Currency.PLN),
+            new Money(156.84M, new Currency("PLN")),
             1
         );
 
@@ -148,7 +201,7 @@ public sealed class MonthlyBillingTests
             {
                 new Plan(
                     new Category("Fuel"),
-                    new Money(156.84M, Currency.PLN),
+                    new Money(156.84M, new Currency("PLN")),
                     1u
                 )
             }.AsReadOnly(),
@@ -167,6 +220,32 @@ public sealed class MonthlyBillingTests
 
         // Act & Assert
         Assert.Throws<PlanIsNullException>(addPlan);
+    }
+
+    [Fact]
+    public void AddPlan_WhenTryingToAddPlanWithOtherCurrency_ShouldThrowMonthlyBillingCurrencyMismatchException()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            Constants.MonthlyBilling.Year,
+            Constants.MonthlyBilling.Month,
+            Constants.MonthlyBilling.Currency,
+            Constants.MonthlyBilling.State
+        );
+
+        var addPlanWithOtherCurrency = () => cut.AddPlan(
+            new Plan(
+                Constants.Plan.Category,
+                new Money(
+                    842.10M,
+                    new Currency("USD")
+                ),
+                1
+            )
+        );
+
+        // Act & Assert
+        Assert.Throws<MonthlyBillingCurrencyMismatchException>(addPlanWithOtherCurrency);
     }
 
     [Fact]
@@ -204,7 +283,7 @@ public sealed class MonthlyBillingTests
         var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
 
         Expense expense = new Expense(
-            new Money(125.0M, Currency.PLN),
+            new Money(125.0M, new Currency("PLN")),
             new DateTimeOffset(new DateTime(2023, 3, 6)),
             "eBay"
         );
@@ -213,6 +292,34 @@ public sealed class MonthlyBillingTests
 
         // Act & Assert
         Assert.Throws<PlanNotFoundException>(addExpense);
+    }
+
+    [Fact(Skip = "Requires domain constructors refactor (id).")]
+    public void AddExpense_WhenTryingToAddExpenseWithOtherCurrency_ShouldThrowMonthlyBillingCurrencyMismatchException()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            Constants.MonthlyBilling.Year,
+            Constants.MonthlyBilling.Month,
+            Constants.MonthlyBilling.Currency,
+            Constants.MonthlyBilling.State,
+            plans: MonthlyBillingUtilities.CreatePlans()
+        );
+
+        var addExpenseWithOtherCurrency = () => cut.AddExpense(
+            new PlanId(Guid.NewGuid()),
+            new Expense(
+                new Money(
+                    65.99M,
+                    new Currency("USD")
+                ),
+                Constants.Expense.ExpenseDate,
+                Constants.Expense.Descripiton
+            )
+        );
+
+        // Act & Assert
+        Assert.Throws<MonthlyBillingCurrencyMismatchException>(addExpenseWithOtherCurrency);
     }
 
     [Fact]

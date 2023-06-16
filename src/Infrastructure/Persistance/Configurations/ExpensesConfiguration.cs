@@ -19,7 +19,18 @@ internal sealed class ExpensesConfiguration : IEntityTypeConfiguration<Expense>
                 value => new ExpenseId(value));
 
         builder
-            .OwnsOne(e => e.Money);
+            .OwnsOne(e => e.Money)
+            .Property(m => m.Amount)
+            .IsRequired();
+
+        builder
+            .OwnsOne(e => e.Money)
+            .Property(m => m.Currency)
+            .HasConversion(
+                currency => currency.Value,
+                value => new(value)
+            )
+            .IsRequired();
 
         builder
             .Property(e => e.Descritpion)

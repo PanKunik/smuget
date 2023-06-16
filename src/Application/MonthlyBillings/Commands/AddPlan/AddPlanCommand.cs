@@ -7,6 +7,6 @@ public sealed record AddPlanCommand(
     Guid MonthlyBillingId,
     string Category,
     decimal MoneyAmount,
-    Currency Currency,
+    string Currency,
     uint SortOrder
 ) : ICommand;

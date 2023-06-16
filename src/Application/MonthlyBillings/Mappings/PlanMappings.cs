@@ -16,7 +16,7 @@ public static class PlanMappings
         {
             Id = domain.Id.Value.ToString(),
             Category = domain.Category.Value,
-            Money = domain.MoneyAmount.ToString(),
+            Money = domain.Money.ToString(),
             SortOrder = domain.SortOrder,
             Expenses = domain.Expenses
                 .Select(e => e.ToDTO())
