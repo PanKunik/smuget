@@ -1,0 +1,14 @@
+@host = https://localhost:7188
+
+@monthlyBillingId = 141f01bb-f33d-4ce6-9a0e-11a7e92333b1
+@planId = 742400f4-ff34-4030-b6ec-1d0fb49e7c2f
+
+POST {{host}}/api/monthlyBillings/{{monthlyBillingId}}/plans/{{planId}}/expenses
+Content-Type: application/json
+
+{
+    "money": 125.78,
+    "currency": "PLN",
+    "expenseDate": "2019-07-26T00:00:00+02:00",
+    "description": "Table"
+}

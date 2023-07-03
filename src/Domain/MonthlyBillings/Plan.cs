@@ -1,0 +1,45 @@
+using System.Runtime.CompilerServices;
+using Domain.Exceptions;
+
+[assembly: InternalsVisibleTo("Domain.Unit.Tests")]
+namespace Domain.MonthlyBillings;
+
+public sealed class Plan
+{
+    public PlanId Id { get; } = new PlanId(Guid.NewGuid());
+    public Category Category { get; }
+    public Money Money { get; }
+    public uint SortOrder { get; }
+    public IReadOnlyCollection<Expense> Expenses => _expenses.AsReadOnly();
+
+    private readonly List<Expense> _expenses = new();
+
+    public Plan(
+        Category category,
+        Money money,
+        uint sortOrder
+    )
+    {
+        if (category is null)
+        {
+            throw new CategoryIsNullException();
+        }
+
+        Category = category;
+
+        if (money is null)
+        {
+            throw new MoneyIsNullException();
+        }
+
+        Money = money;
+        SortOrder = sortOrder;
+    }
+
+    internal void AddExpense(Expense expense)
+    {
+        _expenses.Add(expense);
+    }
+
+    private Plan() { }
+}
