@@ -1,7 +1,13 @@
 @host = https://localhost:7188
 
 @year = 2023
-@month = 4
+@month = 5
 
 GET {{host}}/api/monthlyBillings/{{year}}/{{month}}
 Accept: application/json
+
+{
+  "reason": "There is no monthly billing for 5/2023",
+  "code": "MonthlyBillingNotFound",
+  "instance": "/api/monthlyBillings/2023/5"
+}
