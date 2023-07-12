@@ -1,13 +1,13 @@
 @host = https://localhost:7188
 
-@id = 141f01bb-f33d-4ce6-9a0e-11a7e92333b1
+@id = eb8409a9-af87-4fa5-bc4d-aa7b1701c8be
 
 POST {{host}}/api/monthlyBillings/{{id}}/incomes
 Content-Type: application/json
 
 {
-    "name": "Earn",
-    "moneyAmount": 2341.97,
+    "name": "Zwrot",
+    "moneyAmount": 108.25,
     "currency": "PLN",
     "includeInBilling": true
 }

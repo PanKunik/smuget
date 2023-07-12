@@ -10,11 +10,19 @@ public sealed class Income // TODO: Make internal?
     public bool Include { get; }
 
     public Income(
+        IncomeId incomeId,
         Name name,
         Money money,
         bool include
     )
     {
+        if (incomeId is null)
+        {
+            throw new IncomeIdIsNullException();
+        }
+
+        Id = incomeId;
+
         if (name is null)
         {
             throw new NameIsNullException();

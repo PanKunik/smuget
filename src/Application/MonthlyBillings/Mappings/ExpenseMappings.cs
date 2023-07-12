@@ -17,7 +17,7 @@ public static class ExpenseMappings
             Id = domain.Id.Value.ToString(),
             Money = domain.Money.ToString(),
             ExpenseDate = domain.ExpenseDate,
-            Description = domain.Descritpion
+            Description = domain.Description
         };
     }
 }

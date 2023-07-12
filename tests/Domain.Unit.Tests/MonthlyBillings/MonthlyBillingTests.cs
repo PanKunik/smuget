@@ -36,6 +36,7 @@ public sealed class MonthlyBillingTests
         // Arrange
         var createMonthlyBilling = ()
             => new MonthlyBilling(
+                new MonthlyBillingId(Guid.NewGuid()),
                 null,
                 new Month(3),
                 new Currency("PLN"),
@@ -54,6 +55,7 @@ public sealed class MonthlyBillingTests
         // Arrange
         var createMonthlyBilling = ()
             => new MonthlyBilling(
+                new MonthlyBillingId(Guid.NewGuid()),
                 new Year(2007),
                 null,
                 new Currency("PLN"),
@@ -72,6 +74,7 @@ public sealed class MonthlyBillingTests
         // Arrange
         var createMonthlyBilling = ()
             => new MonthlyBilling(
+                new MonthlyBillingId(Guid.NewGuid()),
                 new Year(2007),
                 new Month(3),
                 null,
@@ -89,6 +92,7 @@ public sealed class MonthlyBillingTests
     {
         // Arrange
         var cut = new MonthlyBilling(
+            Constants.MonthlyBilling.Id,
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
@@ -97,6 +101,7 @@ public sealed class MonthlyBillingTests
 
         // Act
         cut.AddIncome(new Income(
+            new IncomeId(Guid.NewGuid()),
             new Name("TEST"),
             new Money(10m, new Currency("PLN")),
             true
@@ -108,6 +113,7 @@ public sealed class MonthlyBillingTests
             new List<Income>()
             {
                 new Income(
+                    new IncomeId(Guid.NewGuid()),
                     new Name("TEST"),
                     new Money(10m, new Currency("PLN")),
                     true
@@ -151,6 +157,7 @@ public sealed class MonthlyBillingTests
     {
         // Arrange
         var cut = new MonthlyBilling(
+            Constants.MonthlyBilling.Id,
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
@@ -159,6 +166,7 @@ public sealed class MonthlyBillingTests
 
         var addIncomeWithOtherCurrency = () => cut.AddIncome(
             new Income(
+                new IncomeId(Guid.NewGuid()),
                 Constants.Income.Name,
                 new Money(
                     123.923M,
@@ -177,6 +185,7 @@ public sealed class MonthlyBillingTests
     {
         // Arrange
         var cut = new MonthlyBilling(
+            Constants.MonthlyBilling.Id,
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
@@ -186,6 +195,7 @@ public sealed class MonthlyBillingTests
         );
 
         var plan = new Plan(
+            new PlanId(Guid.NewGuid()),
             new Category("Fuel"),
             new Money(156.84M, new Currency("PLN")),
             1
@@ -200,6 +210,7 @@ public sealed class MonthlyBillingTests
             new List<Plan>()
             {
                 new Plan(
+                    new PlanId(Guid.NewGuid()),
                     new Category("Fuel"),
                     new Money(156.84M, new Currency("PLN")),
                     1u
@@ -229,6 +240,7 @@ public sealed class MonthlyBillingTests
         var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
 
         Plan plan = new Plan(
+            new PlanId(Guid.NewGuid()),
             new Category("Category 0"),
             new Money(
                 123.45M,
@@ -248,6 +260,7 @@ public sealed class MonthlyBillingTests
     {
         // Arrange
         var cut = new MonthlyBilling(
+            Constants.MonthlyBilling.Id,
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
@@ -256,6 +269,7 @@ public sealed class MonthlyBillingTests
 
         var addPlanWithOtherCurrency = () => cut.AddPlan(
             new Plan(
+                new PlanId(Guid.NewGuid()),
                 Constants.Plan.Category,
                 new Money(
                     842.10M,
@@ -304,6 +318,7 @@ public sealed class MonthlyBillingTests
         var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
 
         Expense expense = new Expense(
+            new ExpenseId(Guid.NewGuid()),
             new Money(125.0M, new Currency("PLN")),
             new DateTimeOffset(new DateTime(2023, 3, 6)),
             "eBay"
@@ -320,6 +335,7 @@ public sealed class MonthlyBillingTests
     {
         // Arrange
         var cut = new MonthlyBilling(
+            Constants.MonthlyBilling.Id,
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
@@ -330,6 +346,7 @@ public sealed class MonthlyBillingTests
         var addExpenseWithOtherCurrency = () => cut.AddExpense(
             new PlanId(Guid.NewGuid()),
             new Expense(
+                new ExpenseId(Guid.NewGuid()),
                 new Money(
                     65.99M,
                     new Currency("USD")

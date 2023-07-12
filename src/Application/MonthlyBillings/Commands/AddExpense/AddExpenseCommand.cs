@@ -1,5 +1,4 @@
 using Application.Abstractions.CQRS;
-using Domain.MonthlyBillings;
 
 namespace Application.MonthlyBillings.Commands.AddExpense;
 
