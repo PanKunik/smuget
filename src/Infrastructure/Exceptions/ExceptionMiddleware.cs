@@ -41,7 +41,7 @@ internal sealed class ExceptionMiddleware : IMiddleware
             ),
             _ => (StatusCodes.Status500InternalServerError,
                 new Error(
-                    "Wystąpił błąd serwera. Proszę się skontaktować z Administratorem.",
+                    "Internal server error has occured. Please contact with administrator.",
                     "Exception",
                     context.Request.Path
                 )

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Domain.MonthlyBillings;
@@ -11,6 +12,7 @@ public static class MonthlyBillingUtilities
         List<Income> incomes = null
     )
         => new(
+            Constants.MonthlyBilling.Id,
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
@@ -23,6 +25,7 @@ public static class MonthlyBillingUtilities
         => Enumerable
             .Range(0, plansCount)
             .Select(r => new Plan(
+                new PlanId(Guid.NewGuid()),
                 Constants.Plan.CategoryFromIndex(r),
                 Constants.Plan.MoneyFromIndex(r),
                 (uint)(r + 1)
@@ -33,6 +36,7 @@ public static class MonthlyBillingUtilities
         => Enumerable
             .Range(0, incomesCount)
             .Select(r => new Income(
+                new IncomeId(Guid.NewGuid()),
                 Constants.Income.NameFromIndex(r),
                 Constants.Income.MoneyFromIndex(r),
                 true

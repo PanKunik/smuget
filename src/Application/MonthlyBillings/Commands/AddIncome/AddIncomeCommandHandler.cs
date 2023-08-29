@@ -1,29 +1,24 @@
 using Application.Abstractions.CQRS;
-using Application.Abstractions.Persistance;
 using Application.Exceptions;
 using Domain.MonthlyBillings;
-using Microsoft.EntityFrameworkCore;
+using Domain.Repositories;
 
 namespace Application.MonthlyBillings.Commands.AddIncome;
 
 public sealed class AddIncomeCommandHandler : ICommandHandler<AddIncomeCommand>
 {
-    private readonly ISmugetDbContext _dbContext;
+    private readonly IMonthlyBillingRepository _repository;
 
-    public AddIncomeCommandHandler(ISmugetDbContext dbContext)
+    public AddIncomeCommandHandler(IMonthlyBillingRepository repository)
     {
-        _dbContext = dbContext;
+        _repository = repository;
     }
 
     public async Task HandleAsync(AddIncomeCommand command, CancellationToken cancellationToken = default)
     {
-        var monthlyBilling = await _dbContext.MonthlyBillings
-            .Include(i => i.Incomes)
-            .Include(i => i.Plans)
-            .FirstOrDefaultAsync(
-                m => m.Id.Value == command.MonthlyBillingId,
-                cancellationToken
-            );
+        var monthlyBilling = await _repository.GetById(
+            new MonthlyBillingId(command.MonthlyBillingId)
+        );
 
         if (monthlyBilling is null)
         {
@@ -31,6 +26,7 @@ public sealed class AddIncomeCommandHandler : ICommandHandler<AddIncomeCommand>
         }
 
         var income = new Income(
+            new IncomeId(Guid.NewGuid()),
             new Name(command.Name),
             new Money(
                 command.Amount,
@@ -41,6 +37,6 @@ public sealed class AddIncomeCommandHandler : ICommandHandler<AddIncomeCommand>
 
         monthlyBilling.AddIncome(income);
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _repository.Save(monthlyBilling);
     }
 }

@@ -11,11 +11,13 @@ public sealed class PlanTest
     public void Plan_WhenPassedProperData_ShouldReturnExpectedObject()
     {
         // Arrange
+        PlanId id = new PlanId(Guid.NewGuid());
         Category category = new("Fuel");
         Money money = new Money(525.88m, new Currency("PLN"));
         uint sortOrder = 1u;
 
         var createPlan = () => new Plan(
+            id,
             category,
             money,
             sortOrder
@@ -34,10 +36,29 @@ public sealed class PlanTest
     }
 
     [Fact]
+    public void Plan_WhenPassedNullPlanId_ShouldThrowPlanIdIsNullException()
+    {
+        // Arrange
+        var createPlan = () => new Plan(
+            null,
+            new Category("Category"),
+            new Money(
+                567.23M,
+                new Currency("EUR")
+            ),
+            12
+        );
+
+        // Act & Assert
+        Assert.Throws<PlanIdIsNullException>(createPlan);
+    }
+
+    [Fact]
     public void Plan_WhenPassedNullCategory_ShouldThrowCategoryIsNullException()
     {
         // Arrange
         var createPlan = () => new Plan(
+            new PlanId(Guid.NewGuid()),
             null,
             new Money(21m, new Currency("USD")),
             1u
@@ -52,6 +73,7 @@ public sealed class PlanTest
     {
         // Arrange
         var createPlan = () => new Plan(
+            new PlanId(Guid.NewGuid()),
             new Category("Shopping"),
             null,
             1u
@@ -66,12 +88,14 @@ public sealed class PlanTest
     {
         // Arrange
         var cut = new Plan(
+            new PlanId(Guid.NewGuid()),
             new Category("Groceries"),
             new Money(400M, new Currency("USD")),
             1
         );
 
         var expense = new Expense(
+            new ExpenseId(Guid.NewGuid()),
             new Money(150M, new Currency("PLN")),
             new DateTimeOffset(new DateTime(2020, 3, 4)),
             "Farmer's market"
@@ -92,7 +116,7 @@ public sealed class PlanTest
             .Match<Expense>(
                 e => e.Money == new Money(150M, new Currency("PLN"))
                 && e.ExpenseDate == new DateTimeOffset(new DateTime(2020, 3, 4))
-                && e.Descritpion == "Farmer's market"
+                && e.Description == "Farmer's market"
             );
     }
 }

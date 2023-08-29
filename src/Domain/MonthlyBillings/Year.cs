@@ -4,9 +4,9 @@ namespace Domain.MonthlyBillings;
 
 public sealed record Year
 {
-    public ushort Value { get; }
+    public int Value { get; }
 
-    public Year(ushort value)
+    public Year(int value)
     {
         if (value <= 1900)
         {

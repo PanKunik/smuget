@@ -4,9 +4,9 @@ namespace Domain.MonthlyBillings;
 
 public sealed record Month
 {
-    public byte Value { get; }
+    public int Value { get; }
 
-    public Month(byte value)
+    public Month(int value)
     {
         if (value is < 1 or > 12)
         {

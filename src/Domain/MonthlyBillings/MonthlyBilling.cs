@@ -18,6 +18,7 @@ public sealed class MonthlyBilling
     public IReadOnlyCollection<Plan> Plans => _plans.AsReadOnly();
 
     public MonthlyBilling(
+        MonthlyBillingId monthlyBillingId,
         Year year,
         Month month,
         Currency currency,
@@ -26,6 +27,8 @@ public sealed class MonthlyBilling
         List<Income> incomes = null
     )
     {
+        Id = monthlyBillingId;    // TODO: Check for null
+
         if (year is null)
         {
             throw new YearIsNullException();
@@ -46,7 +49,7 @@ public sealed class MonthlyBilling
         }
 
         Currency = currency;
-        State = state;
+        State = state;    // TODO: Check for null
 
         _plans = plans ?? new();
         _incomes = incomes ?? new();

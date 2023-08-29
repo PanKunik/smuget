@@ -15,11 +15,20 @@ public sealed class Plan
     private readonly List<Expense> _expenses = new();
 
     public Plan(
+        PlanId planId,
         Category category,
         Money money,
-        uint sortOrder
+        uint sortOrder,
+        List<Expense> expenses = null
     )
     {
+        if (planId is null)
+        {
+            throw new PlanIdIsNullException();
+        }
+
+        Id = planId;
+
         if (category is null)
         {
             throw new CategoryIsNullException();
@@ -34,12 +43,12 @@ public sealed class Plan
 
         Money = money;
         SortOrder = sortOrder;
+
+        _expenses = expenses ?? new();
     }
 
     internal void AddExpense(Expense expense)
     {
         _expenses.Add(expense);
     }
-
-    private Plan() { }
 }

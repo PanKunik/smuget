@@ -1,27 +1,25 @@
 using Application.Abstractions.CQRS;
-using Application.Abstractions.Persistance;
 using Application.Exceptions;
 using Domain.Exceptions;
 using Domain.MonthlyBillings;
-using Microsoft.EntityFrameworkCore;
+using Domain.Repositories;
 
 namespace Application.MonthlyBillings.Commands.AddPlan;
 
 public sealed class AddPlanCommandHandler : ICommandHandler<AddPlanCommand>
 {
-    private readonly ISmugetDbContext _dbContext;
+    private readonly IMonthlyBillingRepository _repository;
 
-    public AddPlanCommandHandler(ISmugetDbContext dbContext)
+    public AddPlanCommandHandler(IMonthlyBillingRepository repository)
     {
-        _dbContext = dbContext;
+        _repository = repository;
     }
 
     public async Task HandleAsync(AddPlanCommand command, CancellationToken cancellationToken = default)
     {
-        var monthlyBilling = await _dbContext.MonthlyBillings
-            .Include(m => m.Incomes)
-            .Include(m => m.Plans)
-            .FirstOrDefaultAsync(m => m.Id.Value == command.MonthlyBillingId);
+        var monthlyBilling = await _repository.GetById(
+            new MonthlyBillingId(command.MonthlyBillingId)
+        );
 
         if (monthlyBilling is null)
         {
@@ -36,6 +34,7 @@ public sealed class AddPlanCommandHandler : ICommandHandler<AddPlanCommand>
         }   // TODO: Move to domain layer
 
         var plan = new Plan(
+            new PlanId(Guid.NewGuid()),
             new Category(command.Category),
             new Money(
                 command.MoneyAmount,
@@ -46,6 +45,6 @@ public sealed class AddPlanCommandHandler : ICommandHandler<AddPlanCommand>
 
         monthlyBilling.AddPlan(plan);
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _repository.Save(monthlyBilling);
     }
 }

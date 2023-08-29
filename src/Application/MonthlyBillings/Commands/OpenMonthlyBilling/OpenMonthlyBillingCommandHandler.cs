@@ -1,18 +1,17 @@
 using Application.Abstractions.CQRS;
-using Application.Abstractions.Persistance;
 using Application.Exceptions;
 using Domain.MonthlyBillings;
-using Microsoft.EntityFrameworkCore;
+using Domain.Repositories;
 
 namespace Application.MonthlyBillings.Commands.OpenMonthlyBilling;
 
 public sealed class OpenMonthlyBillingCommandHandler : ICommandHandler<OpenMonthlyBillingCommand>
 {
-    private readonly ISmugetDbContext _dbContext;
+    private readonly IMonthlyBillingRepository _repository;
 
-    public OpenMonthlyBillingCommandHandler(ISmugetDbContext dbContext)
+    public OpenMonthlyBillingCommandHandler(IMonthlyBillingRepository repository)
     {
-        _dbContext = dbContext;
+        _repository = repository;
     }
 
     public async Task HandleAsync(OpenMonthlyBillingCommand command, CancellationToken cancellationToken = default)
@@ -21,19 +20,21 @@ public sealed class OpenMonthlyBillingCommandHandler : ICommandHandler<OpenMonth
         var month = new Month(command.Month);
         var currency = new Currency(command.Currency);
 
-        var existingMonthlyBilling = await _dbContext.MonthlyBillings.FirstOrDefaultAsync(
-            m => m.Year == year
-            && m.Month == month,
-            cancellationToken);
+        var existingMonthlyBilling = await _repository.Get(
+            year,
+            month
+        );
 
         if (existingMonthlyBilling is not null)
         {
             throw new MonthlyBillingAlreadyOpenedException(
                 month.Value,
-                year.Value);
+                year.Value
+            );
         }
 
         var monthlyBilling = new MonthlyBilling(
+            new MonthlyBillingId(Guid.NewGuid()),
             year,
             month,
             currency,
@@ -42,11 +43,6 @@ public sealed class OpenMonthlyBillingCommandHandler : ICommandHandler<OpenMonth
             null
         );
 
-        await _dbContext.MonthlyBillings.AddAsync(
-            monthlyBilling,
-            cancellationToken
-        );
-
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _repository.Save(monthlyBilling);
     }
 }

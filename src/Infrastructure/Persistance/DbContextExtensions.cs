@@ -1,4 +1,3 @@
-using Application.Abstractions.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,10 +7,11 @@ internal static class DbContextExtensions
 {
     internal static IServiceCollection AddDbContext(this IServiceCollection services)
     {
-        services.AddScoped<ISmugetDbContext, SmugetDbContext>();
         services.AddDbContext<SmugetDbContext>(
-            c => c.UseInMemoryDatabase("Smuget")
+            c => c.UseNpgsql("Host=db;Database=postgres;Username=postgres;Password=example")
         );
+
+        services.AddHostedService<DatabaseInitializer>();
 
         return services;
     }

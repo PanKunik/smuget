@@ -1,30 +1,24 @@
 using Application.Abstractions.CQRS;
-using Application.Abstractions.Persistance;
 using Application.Exceptions;
 using Domain.MonthlyBillings;
-using Microsoft.EntityFrameworkCore;
+using Domain.Repositories;
 
 namespace Application.MonthlyBillings.Commands.AddExpense;
 
 public sealed class AddExpenseCommandHandler : ICommandHandler<AddExpenseCommand>
 {
-    private readonly ISmugetDbContext _dbContext;
+    private readonly IMonthlyBillingRepository _repository;
 
-    public AddExpenseCommandHandler(ISmugetDbContext dbContext)
+    public AddExpenseCommandHandler(IMonthlyBillingRepository repository)
     {
-        _dbContext = dbContext;
+        _repository = repository;
     }
 
     public async Task HandleAsync(AddExpenseCommand command, CancellationToken cancellationToken = default)
     {
-        var monthlyBilling = await _dbContext.MonthlyBillings
-            .Include(i => i.Incomes)
-            .Include(i => i.Plans)
-            .ThenInclude(p => p.Expenses)
-            .FirstOrDefaultAsync(
-                m => m.Id.Value == command.MonthlyBillingId,
-                cancellationToken
-            );
+        var monthlyBilling = await _repository.GetById(
+            new MonthlyBillingId(command.MonthlyBillingId)
+        );
 
         if (monthlyBilling is null)
         {
@@ -32,6 +26,7 @@ public sealed class AddExpenseCommandHandler : ICommandHandler<AddExpenseCommand
         }
 
         var expense = new Expense(
+            new ExpenseId(Guid.NewGuid()),
             new Money(
                 command.Money,
                 new Currency(command.Currency)
@@ -45,6 +40,6 @@ public sealed class AddExpenseCommandHandler : ICommandHandler<AddExpenseCommand
             expense
         );
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _repository.Save(monthlyBilling);
     }
 }
