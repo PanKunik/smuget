@@ -370,7 +370,9 @@ public sealed class MonthlyBillingTests
         cut.Close();
 
         // Assert
-        cut.State.Should().Be(State.Closed);
+        cut.State
+            .Should()
+            .Be(State.Closed);
     }
 
     [Fact]

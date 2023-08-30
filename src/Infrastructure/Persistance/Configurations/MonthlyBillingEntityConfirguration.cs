@@ -31,6 +31,10 @@ internal sealed class MonthlyBillingEntityConfiguration : IEntityTypeConfigurati
             .IsRequired();
 
         builder
+            .Property(b => b.State)
+            .IsRequired();
+
+        builder
             .HasMany(b => b.Incomes)
             .WithOne()
             .HasForeignKey(i => i.MonthlyBillingId)
