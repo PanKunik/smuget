@@ -16,7 +16,7 @@ internal static class MonthlyBillingMappingExtensions
             new Year(entity.Year),
             new Month(entity.Month),
             new Currency(entity.Currency),
-            entity.State == 0 ? State.Open : State.Closed,  // TODO: Make VO
+            State.GetByName(entity.State),
             entity.Plans.ConvertAll(
                 p => p.ToDomain()
             ),
@@ -33,7 +33,7 @@ internal static class MonthlyBillingMappingExtensions
             Id = domain.Id.Value,
             Year = domain.Year.Value,
             Month = domain.Month.Value,
-            State = (int)domain.State,
+            State = domain.State.ToString(),
             Currency = domain.Currency.Value,
             Plans = domain.Plans.Select(
                 p => p.ToEntity(domain.Id.Value)

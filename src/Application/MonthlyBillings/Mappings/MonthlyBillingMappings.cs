@@ -17,7 +17,7 @@ public static class MonthlyBillingMappingsExtension
             Id = domain.Id.Value.ToString(),
             Year = domain.Year.Value,
             Month = domain.Month.Value,
-            State = (int)domain.State,
+            State = domain.State.ToString(),
             Incomes = domain.Incomes
                 .Select(i => i.ToDTO())
                 .ToList(),
