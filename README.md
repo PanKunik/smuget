@@ -5,9 +5,9 @@ Smuget is smart home bugdet manager application for your home finances and piggy
 - [General info](#general-info)
 - [Technologies](#technologies)
 - [Setup](#setup)
-- [Usage](#usage)
-- [How to contribute](#how-to-contribute)
 - [Found a bug](#found-a-bug)
+<!-- - [Usage](#usage)
+- [How to contribute](#how-to-contribute) -->
 
 ## General info
 This repository is part of set of applications that works together. This module is responsible for the backend part of the `smuget` application.
@@ -15,19 +15,20 @@ This repository is part of set of applications that works together. This module 
 
 ## Technologies
 Project is built with:
-- [.NET](https://docs.microsoft.com/pl-pl/dotnet) - .NET is a free, cross-platform, open source developer platform for building many different types of applications. With .NET, you can use multiple languages, editors, and libraries to build for web, mobile, desktop, games, IoT, and more.
-- [MSSQL Server](https://www.microsoft.com/pl-pl/sql-server/) -  is a relational database management system developed by Microsoft. As a database server, it is a software product with the primary function of storing and retrieving data as requested by other software applications—which may run either on the same computer or on another computer across a network (including the Internet).
+- [.NET](https://docs.microsoft.com/pl-pl/dotnet) - is a free, cross-platform, open source developer platform for building many different types of applications. With .NET, you can use multiple languages, editors, and libraries to build for web, mobile, desktop, games, IoT, and more.
+- [PostgreSQL](https://www.postgresql.org/) - is a powerful, open source object-relational database system with over 35 years of active development that has earned it a strong reputation for reliability, feature robustness, and performance.
 
 ## Setup
-To run this project, you need to have .NET SDK installed. If you don't have, go under [this link](https://dotnet.microsoft.com/en-us/download) and download appropriate SKD for your operating system.
-Next, open terminal and go to the root folder of this repository and type command in your console:
+To run this project using Docker, you need to have installed and configured Docker on your computer.
+Next clone this repository to your local computer and proceed to terminal. In the terminal go to the root folder of this repository and type command in your console:
 
-```powershell
-dotnet run
+```text
+docker-compose up -d --build
 ```
 
-## Usage
+<!-- ## Usage  -->
 
-## How to contribute
+<!-- ## How to contribute -->
 
 ## Found a bug
+Do not hesitate and create issue with descriptive informations what you have found. I will do my best to resolve it. 
