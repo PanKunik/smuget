@@ -3,14 +3,15 @@ using Infrastructure.Persistance;
 using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Builder;
 using Infrastructure.Persistance.Repositories;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure;
 
 public static class InfrastructureExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext();
+        services.AddDbContext(configuration);
         services.AddRepositories();
 
         services.AddSingleton<ExceptionMiddleware>();
