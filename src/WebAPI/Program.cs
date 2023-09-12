@@ -17,9 +17,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 {
-    app.UseInfrastructure();
-
     app.UseHTTPLogging();
+
+    app.UseInfrastructure();
 
     app.UseSwagger();
     app.UseSwaggerUI();

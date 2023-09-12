@@ -18,30 +18,32 @@ public sealed class HTTPLoggingMiddleware : IMiddleware
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        await LogRequest(context);
+        var httpRequestId = Guid.NewGuid();
+        context.Request.EnableBuffering();
+        await LogRequest(context, httpRequestId);
 
         var originalBodyStream = context.Response.Body;
-        await using var responseStream = _streamManager.GetStream();
+        await using var responseStream = _streamManager.GetStream("response");
         context.Response.Body = responseStream;
 
         await next.Invoke(context);
 
-        await LogResponse(context);
+        await LogResponse(context, httpRequestId);
         await responseStream.CopyToAsync(originalBodyStream);
+        context.Response.Body = originalBodyStream;
     }
 
-    private async Task LogRequest(HttpContext context)
+    private async Task LogRequest(HttpContext context, Guid httpRequestId)
     {
         var requestLogContent = new StringBuilder("Request:\r\n");
-        context.Request.EnableBuffering();
 
+        requestLogContent.AppendLine($"\tGuid: {httpRequestId}");
         requestLogContent.AppendLine($"\tDatetime: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fffzzz")}");
         requestLogContent.AppendLine($"\tMethod: {context.Request.Method}");
         requestLogContent.AppendLine($"\tHost: {context.Request.Host}");
         requestLogContent.AppendLine($"\tPath: {context.Request.Path}");
         requestLogContent.AppendLine($"\tHeaders: {ConcatHeaders(context.Request.Headers)}");
-        using var bodyReader = new StreamReader(context.Request.Body);
-        requestLogContent.AppendLine($"\tBody: {await ParseBody(bodyReader)}");
+        requestLogContent.AppendLine($"\tBody: {await ParseBody(new StreamReader(context.Request.Body))}");
 
         _logger.LogInformation(requestLogContent.ToString());
 
@@ -79,18 +81,19 @@ public sealed class HTTPLoggingMiddleware : IMiddleware
                 .Replace("\t", "");
     }
 
-    private async Task LogResponse(HttpContext context)
+    private async Task LogResponse(HttpContext context, Guid httpRequestId)
     {
         var responseLogContent = new StringBuilder("Response:\r\n");
 
+        responseLogContent.AppendLine($"\tGuid: {httpRequestId}");
         responseLogContent.AppendLine($"\tDatetime: {DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fffzzz")}");
         responseLogContent.AppendLine($"\tStatus code: {context.Response.StatusCode}");
         responseLogContent.AppendLine($"\tHeaders: {ConcatHeaders(context.Response.Headers)}");
 
         context.Response.Body.Seek(0, SeekOrigin.Begin);
-        responseLogContent.AppendLine($"\tBody: {await ParseBody(new StreamReader(context.Response.Body))}");
+        responseLogContent.AppendLine($"\tBody: {await ParseBody(new StreamReader(context.Response.Body, leaveOpen: true))}");
         context.Response.Body.Seek(0, SeekOrigin.Begin);
-        
+
         _logger.LogInformation(responseLogContent.ToString());
     }
 }
