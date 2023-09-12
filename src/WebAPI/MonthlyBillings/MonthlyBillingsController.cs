@@ -5,12 +5,17 @@ using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
 using Application.MonthlyBillings.DTO;
 using Application.MonthlyBillings.Queries.GetByYearAndMonth;
+using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
+using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebAPI.MonthlyBillings;
 
 [ApiController]
 [Route("api/monthlyBillings")]
+[Consumes("application/json")]
+[Produces("application/json")]
 public sealed class MonthlyBillingsController : ControllerBase
 {
     private readonly ICommandHandler<OpenMonthlyBillingCommand> _openMonthlyBilling;
@@ -34,7 +39,13 @@ public sealed class MonthlyBillingsController : ControllerBase
         _getMonthlyBilling = getMonthlyBilling;
     }
 
+    /// <summary>
+    /// Creates (opens) new monthly billing for specified month in a year.
+    /// </summary>
     [HttpPost]
+    [ProducesResponseType(typeof(NoContentResult), Status201Created)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
     public async Task<IActionResult> Open(
         OpenMonthlyBillingRequest request,
         CancellationToken token = default)
@@ -53,7 +64,14 @@ public sealed class MonthlyBillingsController : ControllerBase
         return Created("", null);
     }
 
+    /// <summary>
+    /// Adds income to a monthly billing specified by id.
+    /// </summary>
+    /// <param name="monthlyBillingId">Id of a monthly billing.</param>
     [HttpPost("{id}/incomes")]
+    [ProducesResponseType(typeof(NoContentResult), Status201Created)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
     public async Task<IActionResult> AddIncome(
         [FromRoute(Name = "id")] Guid monthlyBillingId,
         [FromBody] AddIncomeRequest request,
@@ -74,7 +92,14 @@ public sealed class MonthlyBillingsController : ControllerBase
         return Created("", null);
     }
 
+    /// <summary>
+    /// Adds plan to a monthly billing specified by id.
+    /// </summary>
+    /// <param name="monthlyBillingId">Id of a monthly billing.</param>
     [HttpPost("{id}/plans")]
+    [ProducesResponseType(typeof(NoContentResult), Status201Created)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
     public async Task<IActionResult> AddPlan(
         [FromRoute(Name = "id")] Guid monthlyBillingId,
         [FromBody] AddPlanRequest request,
@@ -95,11 +120,19 @@ public sealed class MonthlyBillingsController : ControllerBase
         return Created("", null);
     }
 
+    /// <summary>
+    /// Adds expense to a plan specified by id and monthly billing id.
+    /// </summary>
+    /// <param name="monthlyBillingId">Id of a monthly billing.</param>
+    /// <param name="planId">Id of a plan.</param>
     [HttpPost("{id}/plans/{planId}/expenses")]
+    [ProducesResponseType(typeof(NoContentResult), Status201Created)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
     public async Task<IActionResult> AddExpense(
         [FromRoute(Name = "id")] Guid monthlyBillingId,
         [FromRoute(Name = "planId")] Guid planId,
-        [FromBody] AddExpenseRequest request,
+        [FromBody, SwaggerRequestBody("Data about expense.")] AddExpenseRequest request,
         CancellationToken token = default
     )
     {
@@ -120,7 +153,13 @@ public sealed class MonthlyBillingsController : ControllerBase
         return Created("", null);
     }
 
+    /// <summary>
+    /// Gets monthly billing with all child object (plans, incomes and expenses) specified by year and month.
+    /// </summary>
     [HttpGet("{year:int}/{month:int}")]
+    [ProducesResponseType(typeof(MonthlyBillingDTO), Status200OK)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
     public async Task<IActionResult> Get(
         [FromRoute] GetMonthlyBillingRequest request,
         CancellationToken token = default

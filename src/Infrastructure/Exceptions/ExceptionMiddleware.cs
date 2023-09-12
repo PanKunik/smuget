@@ -51,10 +51,4 @@ internal sealed class ExceptionMiddleware : IMiddleware
         context.Response.StatusCode = statusCode;
         await context.Response.WriteAsJsonAsync(error);
     }
-
-    private record Error(
-        string Reason,
-        string Code,
-        string Instance
-    );
 }
