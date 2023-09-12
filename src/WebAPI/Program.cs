@@ -1,11 +1,14 @@
 using Application;
 using Infrastructure;
+using WebAPI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services
         .AddApplication()
         .AddInfrastructure();
+
+    builder.Services.AddHTTPLogging();
 
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
@@ -15,6 +18,8 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 {
     app.UseInfrastructure();
+
+    app.UseHTTPLogging();
 
     app.UseSwagger();
     app.UseSwaggerUI();
