@@ -1,34 +1,47 @@
 using System.Text;
+using Microsoft.IO;
 
 namespace WebAPI.Middlewares;
 
 public sealed class HTTPLoggingMiddleware : IMiddleware
 {
     private readonly ILogger<HTTPLoggingMiddleware> _logger;
+    private readonly RecyclableMemoryStreamManager _streamManager;
 
     public HTTPLoggingMiddleware(
         ILogger<HTTPLoggingMiddleware> logger
     )
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _streamManager = new RecyclableMemoryStreamManager();
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         await LogRequest(context);
+
+        var originalBodyStream = context.Response.Body;
+        await using var responseStream = _streamManager.GetStream();
+        context.Response.Body = responseStream;
+
         await next.Invoke(context);
 
+        await LogResponse(context);
+        await responseStream.CopyToAsync(originalBodyStream);
     }
 
     private async Task LogRequest(HttpContext context)
     {
         var requestLogContent = new StringBuilder("Request:\r\n");
+        context.Request.EnableBuffering();
 
+        requestLogContent.AppendLine($"\tDatetime: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fffzzz")}");
         requestLogContent.AppendLine($"\tMethod: {context.Request.Method}");
         requestLogContent.AppendLine($"\tHost: {context.Request.Host}");
         requestLogContent.AppendLine($"\tPath: {context.Request.Path}");
         requestLogContent.AppendLine($"\tHeaders: {ConcatHeaders(context.Request.Headers)}");
-        requestLogContent.AppendLine($"\tBody: {await ParseBody(context.Request)}");
+        using var bodyReader = new StreamReader(context.Request.Body);
+        requestLogContent.AppendLine($"\tBody: {await ParseBody(bodyReader)}");
 
         _logger.LogInformation(requestLogContent.ToString());
 
@@ -54,11 +67,9 @@ public sealed class HTTPLoggingMiddleware : IMiddleware
         }
     }
 
-    private async Task<string> ParseBody(HttpRequest request)
+    private async Task<string> ParseBody(StreamReader bodyReader)
     {
-        request.EnableBuffering();
-        var requestReader = new StreamReader(request.Body);
-        var bodyContent = await requestReader.ReadToEndAsync();
+        var bodyContent = await bodyReader.ReadToEndAsync();
         return string.IsNullOrWhiteSpace(bodyContent)
             ? "<empty>"
             : bodyContent
@@ -66,5 +77,20 @@ public sealed class HTTPLoggingMiddleware : IMiddleware
                 .Replace("\r", "")
                 .Replace("\n", "")
                 .Replace("\t", "");
+    }
+
+    private async Task LogResponse(HttpContext context)
+    {
+        var responseLogContent = new StringBuilder("Response:\r\n");
+
+        responseLogContent.AppendLine($"\tDatetime: {DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fffzzz")}");
+        responseLogContent.AppendLine($"\tStatus code: {context.Response.StatusCode}");
+        responseLogContent.AppendLine($"\tHeaders: {ConcatHeaders(context.Response.Headers)}");
+
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+        responseLogContent.AppendLine($"\tBody: {await ParseBody(new StreamReader(context.Response.Body))}");
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+        
+        _logger.LogInformation(responseLogContent.ToString());
     }
 }
