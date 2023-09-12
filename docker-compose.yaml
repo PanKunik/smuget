@@ -4,6 +4,7 @@ services:
       context: ./src
     ports:
       - "8089:80"
+    restart: unless-stopped
     depends_on:
       - db
   db:
