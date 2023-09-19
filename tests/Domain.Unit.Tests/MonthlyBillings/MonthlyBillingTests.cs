@@ -27,6 +27,7 @@ public sealed class MonthlyBillingTests
               && m.Month == new Month(2)
               && m.Currency == new Currency("PLN")
               && m.State == State.Open
+              && m.SumOfIncomeAvailableForPlanning == 0m
         );
     }
 
@@ -108,18 +109,132 @@ public sealed class MonthlyBillingTests
         ));
 
         // Assert
-        cut.Incomes.Should().HaveCount(1);
-        cut.Incomes.Should().BeEquivalentTo(
-            new List<Income>()
-            {
+        cut.Incomes
+            .Should()
+            .HaveCount(1);
+
+        cut.Incomes
+            .First()
+            .Should()
+            .BeEquivalentTo(
                 new Income(
                     new IncomeId(Guid.NewGuid()),
                     new Name("TEST"),
                     new Money(10m, new Currency("PLN")),
                     true
-                )
-            }.AsReadOnly(),
-        c => c.Excluding(e => e.Id));
+                ),
+                i => i.Excluding(i => i.Id)
+            );
+    }
+
+    [Theory]
+    [InlineData(10, 25, 35)]
+    [InlineData(12.03, 673.23, 685.26)]
+    public void SumOfIncome_WhenCalled_ShouldReturnExpectedSum(decimal notIncludeIncome, decimal includeIncome, decimal expectedSumOfIncome)
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            Constants.MonthlyBilling.Id,
+            Constants.MonthlyBilling.Year,
+            Constants.MonthlyBilling.Month,
+            Constants.MonthlyBilling.Currency,
+            Constants.MonthlyBilling.State
+        );
+
+        // Act
+        cut.AddIncome(new Income(
+            new IncomeId(Guid.NewGuid()),
+            new Name("TEST"),
+            new Money(notIncludeIncome, new Currency("PLN")),
+            false
+        ));
+
+        cut.AddIncome(new Income(
+            new IncomeId(Guid.NewGuid()),
+            new Name("TEST2"),
+            new Money(includeIncome, new Currency("PLN")),
+            true
+        ));
+
+        // Assert
+        cut.SumOfIncome
+            .Should()
+            .Be(expectedSumOfIncome);
+    }
+
+    [Theory]
+    [InlineData(10, 25, 35)]
+    [InlineData(1, 19.23, 20.23)]
+    public void SumOfIncomeAvailableForPlanning_WhenCalled_ShouldReturnExpectedSum(decimal firstIncomeAmount, decimal secondIncomeAmount, decimal expectedSumOfIncomeAvailableForPlanning)
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            Constants.MonthlyBilling.Id,
+            Constants.MonthlyBilling.Year,
+            Constants.MonthlyBilling.Month,
+            Constants.MonthlyBilling.Currency,
+            Constants.MonthlyBilling.State
+        );
+
+        // Act
+        cut.AddIncome(new Income(
+            new IncomeId(Guid.NewGuid()),
+            new Name("TEST"),
+            new Money(firstIncomeAmount, new Currency("PLN")),
+            true
+        ));
+
+        cut.AddIncome(new Income(
+            new IncomeId(Guid.NewGuid()),
+            new Name("TEST2"),
+            new Money(secondIncomeAmount, new Currency("PLN")),
+            true
+        ));
+
+        // Assert
+        cut.SumOfIncomeAvailableForPlanning
+            .Should()
+            .Be(expectedSumOfIncomeAvailableForPlanning);
+    }
+
+    [Fact]
+    public void SumOfIncomeAvailableForPlanning_WhenACalled_ShouldReturnExpectedSumOfIncludedIncomes()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            Constants.MonthlyBilling.Id,
+            Constants.MonthlyBilling.Year,
+            Constants.MonthlyBilling.Month,
+            Constants.MonthlyBilling.Currency,
+            Constants.MonthlyBilling.State
+        );
+
+        // Act
+        cut.AddIncome(new Income(
+            new IncomeId(Guid.NewGuid()),
+            new Name("TEST"),
+            new Money(24.24m, new Currency("PLN")),
+            true
+        ));
+
+        cut.AddIncome(new Income(
+            new IncomeId(Guid.NewGuid()),
+            new Name("TEST2"),
+            new Money(58.12m, new Currency("PLN")),
+            true
+        ));
+
+        cut.AddIncome(new Income(
+            new IncomeId(Guid.NewGuid()),
+            new Name("TEST3"),
+            new Money(19.74m, new Currency("PLN")),
+            false
+        ));
+
+        // Assert
+        cut.SumOfIncomeAvailableForPlanning
+            .Should()
+            .Be(82.36m);
     }
 
     [Fact]
@@ -330,7 +445,7 @@ public sealed class MonthlyBillingTests
         Assert.Throws<PlanNotFoundException>(addExpense);
     }
 
-    [Fact(Skip = "Requires domain constructors refactor (id).")]
+    [Fact]
     public void AddExpense_WhenTryingToAddExpenseWithOtherCurrency_ShouldThrowMonthlyBillingCurrencyMismatchException()
     {
         // Arrange
@@ -344,7 +459,7 @@ public sealed class MonthlyBillingTests
         );
 
         var addExpenseWithOtherCurrency = () => cut.AddExpense(
-            new PlanId(Guid.NewGuid()),
+            new PlanId(cut.Plans.First().Id.Value),
             new Expense(
                 new ExpenseId(Guid.NewGuid()),
                 new Money(

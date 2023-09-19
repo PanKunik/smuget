@@ -8,4 +8,6 @@ public sealed class MonthlyBillingDTO
     public string State { get; set; }
     public IEnumerable<IncomeDTO> Incomes { get; set; }
     public IEnumerable<PlanDTO> Plans { get; set; }
+    public decimal SumOfIncome { get; set; }
+    public decimal SumOfIncomeAvailableForPlanning { get; set; }
 }

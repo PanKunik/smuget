@@ -23,7 +23,9 @@ public static class MonthlyBillingMappingsExtension
                 .ToList(),
             Plans = domain.Plans
                 .Select(p => p.ToDTO())
-                .ToList()
+                .ToList(),
+            SumOfIncome = domain.SumOfIncome,
+            SumOfIncomeAvailableForPlanning = domain.SumOfIncomeAvailableForPlanning,
         };
     }
 }

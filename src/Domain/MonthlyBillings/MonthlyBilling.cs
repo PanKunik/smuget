@@ -16,6 +16,12 @@ public sealed class MonthlyBilling
     public State State { get; private set; } = State.Open;
     public IReadOnlyCollection<Income> Incomes => _incomes.AsReadOnly();
     public IReadOnlyCollection<Plan> Plans => _plans.AsReadOnly();
+    public decimal SumOfIncome
+        => _incomes?.Sum(i => i.Money.Amount) ?? 0m;
+    public decimal SumOfIncomeAvailableForPlanning
+        => _incomes?
+            .Where(i => i.Include)
+            .Sum(i => i.Money.Amount) ?? 0m;
 
     public MonthlyBilling(
         MonthlyBillingId monthlyBillingId,
