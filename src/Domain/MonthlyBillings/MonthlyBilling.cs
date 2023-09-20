@@ -23,6 +23,9 @@ public sealed class MonthlyBilling
             .Where(i => i.Include)
             .Sum(i => i.Money.Amount) ?? 0m;
 
+    public decimal SumOfPlan
+        => _plans?.Sum(p => p.Money.Amount) ?? 0m;
+
     public MonthlyBilling(
         MonthlyBillingId monthlyBillingId,
         Year year,

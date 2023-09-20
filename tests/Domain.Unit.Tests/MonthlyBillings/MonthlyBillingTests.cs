@@ -198,7 +198,7 @@ public sealed class MonthlyBillingTests
     }
 
     [Fact]
-    public void SumOfIncomeAvailableForPlanning_WhenACalled_ShouldReturnExpectedSumOfIncludedIncomes()
+    public void SumOfIncomeAvailableForPlanning_WhenCalled_ShouldReturnExpectedSumOfIncludedIncomes()
     {
         // Arrange
         var cut = new MonthlyBilling(
@@ -396,6 +396,49 @@ public sealed class MonthlyBillingTests
 
         // Act & Assert
         Assert.Throws<MonthlyBillingCurrencyMismatchException>(addPlanWithOtherCurrency);
+    }
+
+    [Theory]
+    [InlineData(158, 237.94, 395.94)]
+    [InlineData(123.45, 678.90, 802.35)]
+    public void SumOfPlans_WhenCalled_ShouldReturnSumOfPlans(decimal firstPlanMoneyAmount, decimal secondPlanMoneyAmount, decimal expectedSumOfPlans)
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+
+        cut.AddPlan(
+            new Plan(
+                new(Guid.NewGuid()),
+                Constants.Plan.CategoryFromIndex(1),
+                new(
+                    firstPlanMoneyAmount,
+                    new("PLN")
+                ),
+                1,
+                null
+            )
+        );
+
+        cut.AddPlan(
+            new Plan(
+                new(Guid.NewGuid()),
+                Constants.Plan.CategoryFromIndex(2),
+                new(
+                    secondPlanMoneyAmount,
+                    new("PLN")
+                ),
+                2,
+                null
+            )
+        );
+
+        // Act
+        var result = cut.SumOfPlan;
+
+        // Assert
+        result
+            .Should()
+            .Be(expectedSumOfPlans);
     }
 
     [Fact]
