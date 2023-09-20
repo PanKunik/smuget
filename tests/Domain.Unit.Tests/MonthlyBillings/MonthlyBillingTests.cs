@@ -127,6 +127,7 @@ public sealed class MonthlyBillingTests
             );
     }
 
+    // TODO: Refactor
     [Theory]
     [InlineData(10, 25, 35)]
     [InlineData(12.03, 673.23, 685.26)]
@@ -162,6 +163,7 @@ public sealed class MonthlyBillingTests
             .Be(expectedSumOfIncome);
     }
 
+    // TODO: Refactor
     [Theory]
     [InlineData(10, 25, 35)]
     [InlineData(1, 19.23, 20.23)]
@@ -197,6 +199,7 @@ public sealed class MonthlyBillingTests
             .Be(expectedSumOfIncomeAvailableForPlanning);
     }
 
+    // TODO: Refactor
     [Fact]
     public void SumOfIncomeAvailableForPlanning_WhenCalled_ShouldReturnExpectedSumOfIncludedIncomes()
     {
