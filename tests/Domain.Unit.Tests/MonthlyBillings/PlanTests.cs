@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Domain.Exceptions;
 using Domain.MonthlyBillings;
+using Domain.Unit.Tests.MonthlyBillings.TestUtilities;
 
 namespace Domain.Unit.Tests.MonthlyBillings;
 
@@ -118,5 +120,39 @@ public sealed class PlanTest
                 && e.ExpenseDate == new DateTimeOffset(new DateTime(2020, 3, 4))
                 && e.Description == "Farmer's market"
             );
+    }
+
+    [Fact]
+    public void SumOfExpense_WhenCalled_ShouldReturnExpectedValue()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities
+            .CreatePlans()
+            .FirstOrDefault();
+
+        // Act
+        var result = cut.SumOfExpenses;
+
+        // Assert
+        result
+            .Should()
+            .Be(137.01m);
+    }
+
+    [Fact]
+    public void SumOfExpense_WhenCalledForEmptyExpenses_ShouldReturnZero()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities
+            .CreatePlans(expenses: new List<Expense>() { })
+            .FirstOrDefault();
+
+        // Act
+        var result = cut.SumOfExpenses;
+
+        // Assert
+        result
+            .Should()
+            .Be(0m);
     }
 }

@@ -1,7 +1,7 @@
 @host = https://localhost:7188
 
 @year = 2023
-@month = 7
+@month = 9
 
 GET {{host}}/api/monthlyBillings/{{year}}/{{month}}
 Accept: application/json

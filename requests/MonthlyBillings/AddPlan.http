@@ -1,13 +1,13 @@
 @host = https://localhost:7188
 
-@id = eb8409a9-af87-4fa5-bc4d-aa7b1701c8be
+@id = f26ff0b4-a1ad-4517-b78e-2ed1c34c808f
 
 POST {{host}}/api/monthlyBillings/{{id}}/plans
 Content-Type: application/json
 
 {
-    "category": "Leki",
-    "money": 200,
+    "category": "Rozrywka",
+    "money": 350,
     "currency": "PLN",
-    "sortOrder": 1
+    "sortOrder": 5
 }

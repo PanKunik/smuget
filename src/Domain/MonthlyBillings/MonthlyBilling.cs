@@ -26,6 +26,12 @@ public sealed class MonthlyBilling
     public decimal SumOfPlan
         => _plans?.Sum(p => p.Money.Amount) ?? 0m;
 
+    public decimal SumOfExpenses
+        => _plans?.Sum(p => p.SumOfExpenses) ?? 0m;
+
+    public decimal AccountBalance
+        => SumOfIncome - SumOfExpenses;
+
     public MonthlyBilling(
         MonthlyBillingId monthlyBillingId,
         Year year,

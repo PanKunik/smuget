@@ -1,14 +1,14 @@
 @host = https://localhost:7188
 
-@monthlyBillingId = eb8409a9-af87-4fa5-bc4d-aa7b1701c8be
-@planId = 06dd5170-6339-421f-b7da-9919650b4689
+@monthlyBillingId = f26ff0b4-a1ad-4517-b78e-2ed1c34c808f
+@planId = 5554e291-f1a3-436c-84f2-91cf9f848b8a
 
 POST {{host}}/api/monthlyBillings/{{monthlyBillingId}}/plans/{{planId}}/expenses
 Content-Type: application/json
 
 {
-    "money": 73.14,
+    "money": 32.78,
     "currency": "PLN",
     "expenseDate": "2023-08-15T17:33:17+00:00",
-    "description": "Allegra"
+    "description": "Auchan"
 }

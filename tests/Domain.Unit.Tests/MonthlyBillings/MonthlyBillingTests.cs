@@ -436,43 +436,56 @@ public sealed class MonthlyBillingTests
     }
 
     [Fact]
-    public void SumOfExpenses_WhenCalledForPlan_ShouldReturnSumOfExpenses()
-    {
-        // Arrange
-        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
-
-        // Act
-        var result = cut.Plans?.FirstOrDefault()?.SumOfExpenses;
-
-        // Assert
-        result
-            .Should()
-            .NotBeNull();
-
-        result
-            .Should()
-            .Be(137.01m);
-    }
-
-    [Fact]
-    public void SumOfExpenses_WhenExpensesAreEmpty_ShouldReturn0()
+    public void SumOfExpenses_WhenCalled_ShouldReturnSumOfExpenses()
     {
         // Arrange
         var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
-            expenses: new List<Expense>() { }
+            plans: MonthlyBillingUtilities.CreatePlans(plansCount: 3)
         );
 
         // Act
-        var result = cut.Plans?.FirstOrDefault()?.SumOfExpenses;
+        var result = cut.SumOfExpenses;
 
         // Assert
         result
             .Should()
-            .NotBeNull();
+            .Be(411.03m);
+    }
 
+    [Fact]
+    public void SumOfExpenses_WhenPlansAreEmpty_ShouldReturn0()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: new List<Plan>() { }
+        );
+
+        // Act
+        var result = cut.SumOfExpenses;
+
+        // Assert
         result
             .Should()
             .Be(0m);
+    }
+
+    [Fact]
+    public void AccountBalance_WhenCalled_ShouldReturnExpectedValue()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            MonthlyBillingUtilities.CreatePlans(),
+            MonthlyBillingUtilities.CreateExpenses(),
+            MonthlyBillingUtilities.CreateIncomes(5)
+        );
+
+        // Act
+        var result = cut.AccountBalance;
+
+        // Assert
+        result
+            .Should()
+            .Be(39.24m);
     }
 
     [Fact]
