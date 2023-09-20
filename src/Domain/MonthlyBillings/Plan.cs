@@ -10,7 +10,10 @@ public sealed class Plan
     public Category Category { get; }
     public Money Money { get; }
     public uint SortOrder { get; }
-    public IReadOnlyCollection<Expense> Expenses => _expenses.AsReadOnly();
+    public IReadOnlyCollection<Expense> Expenses => _expenses.AsReadOnly();    
+
+    public decimal SumOfExpenses
+        => _expenses?.Sum(e => e.Money.Amount) ?? 0m;
 
     private readonly List<Expense> _expenses = new();
 

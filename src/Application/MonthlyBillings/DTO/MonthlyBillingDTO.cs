@@ -10,4 +10,5 @@ public sealed class MonthlyBillingDTO
     public IEnumerable<PlanDTO> Plans { get; set; }
     public decimal SumOfIncome { get; set; }
     public decimal SumOfIncomeAvailableForPlanning { get; set; }
+    public decimal SumOfPlan { get; set; }
 }

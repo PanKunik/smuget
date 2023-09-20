@@ -26,6 +26,7 @@ public static class MonthlyBillingMappingsExtension
                 .ToList(),
             SumOfIncome = domain.SumOfIncome,
             SumOfIncomeAvailableForPlanning = domain.SumOfIncomeAvailableForPlanning,
+            SumOfPlan = domain.SumOfPlan
         };
     }
 }

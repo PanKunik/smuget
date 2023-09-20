@@ -398,38 +398,12 @@ public sealed class MonthlyBillingTests
         Assert.Throws<MonthlyBillingCurrencyMismatchException>(addPlanWithOtherCurrency);
     }
 
-    [Theory]
-    [InlineData(158, 237.94, 395.94)]
-    [InlineData(123.45, 678.90, 802.35)]
-    public void SumOfPlans_WhenCalled_ShouldReturnSumOfPlans(decimal firstPlanMoneyAmount, decimal secondPlanMoneyAmount, decimal expectedSumOfPlans)
+    [Fact]
+    public void SumOfPlans_WhenCalled_ShouldReturnExpectedValue()
     {
         // Arrange
-        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
-
-        cut.AddPlan(
-            new Plan(
-                new(Guid.NewGuid()),
-                Constants.Plan.CategoryFromIndex(1),
-                new(
-                    firstPlanMoneyAmount,
-                    new("PLN")
-                ),
-                1,
-                null
-            )
-        );
-
-        cut.AddPlan(
-            new Plan(
-                new(Guid.NewGuid()),
-                Constants.Plan.CategoryFromIndex(2),
-                new(
-                    secondPlanMoneyAmount,
-                    new("PLN")
-                ),
-                2,
-                null
-            )
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: MonthlyBillingUtilities.CreatePlans(plansCount: 3)
         );
 
         // Act
@@ -438,7 +412,64 @@ public sealed class MonthlyBillingTests
         // Assert
         result
             .Should()
-            .Be(expectedSumOfPlans);
+            .Be(75m);
+    }
+
+    [Fact]
+    public void SumOfPlans_WhenPlansAreEmpty_ShouldReturnZero()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: MonthlyBillingUtilities.CreatePlans(plansCount: 0)
+        );
+
+        // Act
+        var result = cut.SumOfPlan;
+
+        // Assert
+        result
+            .Should()
+            .Be(0m);
+    }
+
+    [Fact]
+    public void SumOfExpenses_WhenCalledForPlan_ShouldReturnSumOfExpenses()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+
+        // Act
+        var result = cut.Plans?.FirstOrDefault()?.SumOfExpenses;
+
+        // Assert
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .Be(137.01m);
+    }
+
+    [Fact]
+    public void SumOfExpenses_WhenExpensesAreEmpty_ShouldReturn0()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            expenses: new List<Expense>() { }
+        );
+
+        // Act
+        var result = cut.Plans?.FirstOrDefault()?.SumOfExpenses;
+
+        // Assert
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .Be(0m);
     }
 
     [Fact]

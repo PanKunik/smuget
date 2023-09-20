@@ -9,6 +9,7 @@ public static class MonthlyBillingUtilities
 {
     public static MonthlyBilling CreateMonthlyBilling(
         List<Plan> plans = null,
+        List<Expense> expenses = null,
         List<Income> incomes = null
     )
         => new(
@@ -17,18 +18,22 @@ public static class MonthlyBillingUtilities
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
-            plans ?? CreatePlans(),
+            plans ?? CreatePlans(expenses),
             incomes ?? CreateIncomes()
         );
 
-    public static List<Plan> CreatePlans(int plansCount = 1)
+    public static List<Plan> CreatePlans(
+        List<Expense> expenses = null,
+        int plansCount = 1
+    )
         => Enumerable
             .Range(0, plansCount)
             .Select(r => new Plan(
                 new PlanId(Guid.NewGuid()),
                 Constants.Plan.CategoryFromIndex(r),
                 Constants.Plan.MoneyFromIndex(r),
-                (uint)(r + 1)
+                (uint)(r + 1),
+                expenses ?? CreateExpenses()
             ))
             .ToList();
 
@@ -40,6 +45,17 @@ public static class MonthlyBillingUtilities
                 Constants.Income.NameFromIndex(r),
                 Constants.Income.MoneyFromIndex(r),
                 true
+            ))
+            .ToList();
+
+    public static List<Expense> CreateExpenses(int expensesCount = 2)
+        => Enumerable
+            .Range(0, expensesCount)
+            .Select(r => new Expense(
+                new ExpenseId(Guid.NewGuid()),
+                Constants.Expense.MoneyFromIndex(r),
+                Constants.Expense.ExpenseDateFromIndex(r),
+                Constants.Expense.DescripitonFromIndex(r)
             ))
             .ToList();
 }
