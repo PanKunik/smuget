@@ -2,8 +2,8 @@ using Application.MonthlyBillings.Commands.AddIncome;
 using Application.Unit.Tests.MonthlyBillings.Commands.TestUtils;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
-using Application.Unit.Tests.TestUtils.Constants;
-using Application.Unit.Tests.TestUtils;
+using Application.Unit.Tests.TestUtilities.Constants;
+using Application.Unit.Tests.TestUtilities;
 using Application.Exceptions;
 
 namespace Application.Unit.Tests.MonthlyBillings.Commands.AddIncome;
@@ -29,7 +29,7 @@ public sealed class AddIncomeCommandHandlerTests
 
         _repository
             .GetById(new(Constants.MonthlyBilling.Id))
-            .Returns(MonthlyBillingUtils.CreateMonthlyBilling());
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
         // Act
         await _handler.HandleAsync(

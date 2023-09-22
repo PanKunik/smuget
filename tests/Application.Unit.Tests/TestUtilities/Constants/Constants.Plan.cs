@@ -1,4 +1,6 @@
-namespace Application.Unit.Tests.TestUtils.Constants;
+using Domain.MonthlyBillings;
+
+namespace Application.Unit.Tests.TestUtilities.Constants;
 
 public static partial class Constants
 {
@@ -9,5 +11,14 @@ public static partial class Constants
         public const decimal MoneyAmount = 2984.12m;
         public const string Currency = "PLN";
         public const uint SortOrder = 1;
+
+        public static Category CategoryFromIndex(int index)
+            => new($"{Category} {index}");
+
+        public static Money MoneyFromIndex(int index)
+            => new(
+                MoneyAmount * (index + 1),
+                new (Currency)
+            );
     }
 }

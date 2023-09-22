@@ -27,7 +27,9 @@ public sealed class MonthlyBillingTests
               && m.Month == new Month(2)
               && m.Currency == new Currency("PLN")
               && m.State == State.Open
-              && m.SumOfIncomeAvailableForPlanning == 0m
+              && m.SumOfIncome == 11.75m
+              && m.SumOfPlan == 12.5m
+              && m.SumOfExpenses == 137.01m
         );
     }
 
@@ -486,6 +488,25 @@ public sealed class MonthlyBillingTests
         result
             .Should()
             .Be(39.24m);
+    }
+
+    [Fact]
+    public void SavingsForecast_WhenCalled_ShouldReturnExpectedValue()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            MonthlyBillingUtilities.CreatePlans(plansCount: 3),
+            MonthlyBillingUtilities.CreateExpenses(),
+            MonthlyBillingUtilities.CreateIncomes(5)
+        );
+
+        // Act
+        var result = cut.SavingsForecast;
+
+        // Assert
+        result
+            .Should()
+            .Be(101.25m);
     }
 
     [Fact]

@@ -1,7 +1,7 @@
 using Application.Exceptions;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
 using Application.Unit.Tests.MonthlyBillings.Commands.TestUtils;
-using Application.Unit.Tests.TestUtils;
+using Application.Unit.Tests.TestUtilities;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
 
@@ -53,7 +53,7 @@ public sealed class OpenMonthlyBilingCommandHandlerTests
                 Arg.Is<Month>(m => m.Value == 7)
             )
             .Returns(
-                MonthlyBillingUtils.CreateMonthlyBilling()
+                MonthlyBillingUtilities.CreateMonthlyBilling()
             );
 
         var openMonthlyBilling = async () => await _handler.HandleAsync(openMonthlyBillingCommand);

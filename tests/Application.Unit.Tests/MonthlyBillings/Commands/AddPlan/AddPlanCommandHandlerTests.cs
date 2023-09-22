@@ -1,8 +1,8 @@
 using Application.Exceptions;
 using Application.MonthlyBillings.Commands.AddPlan;
 using Application.Unit.Tests.MonthlyBillings.Commands.TestUtils;
-using Application.Unit.Tests.TestUtils;
-using Application.Unit.Tests.TestUtils.Constants;
+using Application.Unit.Tests.TestUtilities;
+using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
 
@@ -28,7 +28,7 @@ public sealed class AddPlanCommandHandlerTests
 
         _repository
             .GetById(new(Constants.MonthlyBilling.Id))
-            .Returns(MonthlyBillingUtils.CreateMonthlyBilling());
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
         // Act
         await _handler.HandleAsync(

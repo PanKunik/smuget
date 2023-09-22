@@ -1,5 +1,5 @@
 using Application.MonthlyBillings.Commands.AddIncome;
-using Application.Unit.Tests.TestUtils.Constants;
+using Application.Unit.Tests.TestUtilities.Constants;
 
 namespace Application.Unit.Tests.MonthlyBillings.Commands.TestUtils;
 

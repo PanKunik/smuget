@@ -1,7 +1,7 @@
 using Application.MonthlyBillings.Queries.GetByYearAndMonth;
-using Application.Unit.Tests.TestUtils.Constants;
+using Application.Unit.Tests.TestUtilities.Constants;
 
-namespace Application.Unit.Tests.MonthlyBillings.Queries.TestUtils;
+namespace Application.Unit.Tests.MonthlyBillings.Queries.TestUtilities;
 
 public static class GetMonthlyBillingByYearAndMonthQueryUtils
 {

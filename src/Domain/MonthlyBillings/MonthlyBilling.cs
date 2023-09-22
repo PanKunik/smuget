@@ -32,6 +32,9 @@ public sealed class MonthlyBilling
     public decimal AccountBalance
         => SumOfIncome - SumOfExpenses;
 
+    public decimal SavingsForecast
+        => SumOfIncome - SumOfPlan;
+
     public MonthlyBilling(
         MonthlyBillingId monthlyBillingId,
         Year year,
