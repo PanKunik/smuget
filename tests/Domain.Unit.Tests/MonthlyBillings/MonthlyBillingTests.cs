@@ -28,8 +28,11 @@ public sealed class MonthlyBillingTests
               && m.Currency == new Currency("PLN")
               && m.State == State.Open
               && m.SumOfIncome == 11.75m
+              && m.SumOfIncomeAvailableForPlanning == 11.75m
               && m.SumOfPlan == 12.5m
               && m.SumOfExpenses == 137.01m
+              && m.SavingsForecast == -0.75m
+              && m.AccountBalance == -125.26m
         );
     }
 
