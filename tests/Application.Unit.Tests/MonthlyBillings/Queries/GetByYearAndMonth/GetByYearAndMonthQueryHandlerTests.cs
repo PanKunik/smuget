@@ -68,7 +68,7 @@ public sealed class GetByYearAndMonthQueryHandlerTests
     public async Task HandleAsync_WhenMonthlyBillingNotFound_ShouldReturnMonthlyBillingNotFoundException()
     {
         // Arrange
-        var query = GetMonthlyBillingByYearAndMonthQueryUtils.CreateQuery();
+        var query = GetMonthlyBillingByYearAndMonthQueryUtilities.CreateQuery();
         var get = () => _handler.HandleAsync(query, default);
 
         // Act & Assert
@@ -79,7 +79,7 @@ public sealed class GetByYearAndMonthQueryHandlerTests
     public async Task HandleAsync_WhenCalled_ShouldReturnExpectedObject()
     {
         // Arrange
-        var query = GetMonthlyBillingByYearAndMonthQueryUtils.CreateQuery();
+        var query = GetMonthlyBillingByYearAndMonthQueryUtilities.CreateQuery();
 
         _repository
             .Get(

@@ -1,9 +1,9 @@
 using Application.MonthlyBillings.Commands.AddPlan;
 using Application.Unit.Tests.TestUtilities.Constants;
 
-namespace Application.Unit.Tests.MonthlyBillings.Commands.TestUtils;
+namespace Application.Unit.Tests.MonthlyBillings.Commands.TestUtilities;
 
-public static class AddPlanCommandUtils
+public static class AddPlanCommandUtilities
 {
     public static AddPlanCommand CreateCommand()
         => new(

@@ -1,6 +1,6 @@
 using Application.Exceptions;
 using Application.MonthlyBillings.Commands.AddExpense;
-using Application.Unit.Tests.MonthlyBillings.Commands.TestUtils;
+using Application.Unit.Tests.MonthlyBillings.Commands.TestUtilities;
 using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
@@ -37,7 +37,7 @@ public sealed class AddExpenseCommandHandlerTests
             }
         );
 
-        var addExpenseCommand = AddExpenseCommandUtils.CreateCommand();
+        var addExpenseCommand = AddExpenseCommandUtilities.CreateCommand();
 
         _repository
             .GetById(new(Constants.MonthlyBilling.Id))
@@ -72,7 +72,7 @@ public sealed class AddExpenseCommandHandlerTests
     public async Task HandleAsync_WhenMonthlyBillingNotFound_ShouldthrowMonthlyBillingNotFoundException()
     {
         // Arrange
-        var addExpenseCommand = AddExpenseCommandUtils.CreateCommand();
+        var addExpenseCommand = AddExpenseCommandUtilities.CreateCommand();
 
         var addExpense = () => _handler.HandleAsync(
             addExpenseCommand,

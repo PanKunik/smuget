@@ -1,9 +1,9 @@
 using Application.MonthlyBillings.Commands.AddExpense;
 using Application.Unit.Tests.TestUtilities.Constants;
 
-namespace Application.Unit.Tests.MonthlyBillings.Commands.TestUtils;
+namespace Application.Unit.Tests.MonthlyBillings.Commands.TestUtilities;
 
-public static class AddExpenseCommandUtils
+public static class AddExpenseCommandUtilities
 {
     public static AddExpenseCommand CreateCommand()
         => new(

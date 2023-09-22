@@ -1,9 +1,9 @@
 using Application.MonthlyBillings.Commands.AddIncome;
 using Application.Unit.Tests.TestUtilities.Constants;
 
-namespace Application.Unit.Tests.MonthlyBillings.Commands.TestUtils;
+namespace Application.Unit.Tests.MonthlyBillings.Commands.TestUtilities;
 
-public static class AddIncomeCommandUtils
+public static class AddIncomeCommandUtilities
 {
     public static AddIncomeCommand CreateCommand()
         => new AddIncomeCommand(
