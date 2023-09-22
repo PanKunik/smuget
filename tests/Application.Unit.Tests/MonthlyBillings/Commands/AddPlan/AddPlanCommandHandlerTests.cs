@@ -1,8 +1,8 @@
 using Application.Exceptions;
 using Application.MonthlyBillings.Commands.AddPlan;
-using Application.Unit.Tests.MonthlyBillings.Commands.TestUtils;
-using Application.Unit.Tests.TestUtils;
-using Application.Unit.Tests.TestUtils.Constants;
+using Application.Unit.Tests.MonthlyBillings.Commands.TestUtilities;
+using Application.Unit.Tests.TestUtilities;
+using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
 
@@ -24,11 +24,11 @@ public sealed class AddPlanCommandHandlerTests
     public async Task HandleAsync_AddPlanCommandIsValid_ShouldAddPlanToMonthlyBilling()
     {
         // Arrange
-        var addPlanCommand = AddPlanCommandUtils.CreateCommand();
+        var addPlanCommand = AddPlanCommandUtilities.CreateCommand();
 
         _repository
             .GetById(new(Constants.MonthlyBilling.Id))
-            .Returns(MonthlyBillingUtils.CreateMonthlyBilling());
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
         // Act
         await _handler.HandleAsync(
@@ -57,7 +57,7 @@ public sealed class AddPlanCommandHandlerTests
     public async Task HandleAsync_WhenMonthlyBillingDoesntExist_ShouldThrowMonthlyBillingNotFoundException()
     {
         // Arrange
-        var addPlanCommand = AddPlanCommandUtils.CreateCommand();
+        var addPlanCommand = AddPlanCommandUtilities.CreateCommand();
 
         var addPlan = () => _handler.HandleAsync(
             addPlanCommand,

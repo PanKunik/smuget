@@ -7,4 +7,5 @@ public sealed class PlanDTO
     public string Money { get; set; }
     public uint SortOrder { get; set; }
     public IEnumerable<ExpenseDTO> Expenses { get; set; }
+    public decimal SumOfExpenses { get; set; }
 }

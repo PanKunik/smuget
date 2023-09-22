@@ -14,7 +14,7 @@ public static partial class Constants
 
         public static Money MoneyFromIndex(int index)
             => new(
-                Money.Amount * index,
+                Money.Amount * (index + 1),
                 Money.Currency
             );
     }

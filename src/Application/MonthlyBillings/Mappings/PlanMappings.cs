@@ -20,7 +20,8 @@ public static class PlanMappings
             SortOrder = domain.SortOrder,
             Expenses = domain.Expenses
                 .Select(e => e.ToDTO())
-                .ToList()
+                .ToList(),
+            SumOfExpenses = domain.SumOfExpenses
         };
     }
 }

@@ -1,9 +1,8 @@
-using System.Reflection.Metadata;
 using Application.Exceptions;
 using Application.MonthlyBillings.Commands.AddExpense;
-using Application.Unit.Tests.MonthlyBillings.Commands.TestUtils;
-using Application.Unit.Tests.TestUtils;
-using Application.Unit.Tests.TestUtils.Constants;
+using Application.Unit.Tests.MonthlyBillings.Commands.TestUtilities;
+using Application.Unit.Tests.TestUtilities;
+using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
 
@@ -25,15 +24,24 @@ public sealed class AddExpenseCommandHandlerTests
     public async Task HandleAsync_WhenAddExpenseCommandIsValid_ShouldAddExpenseToPlanInMonthlyBilling()
     {
         // Arrange
-        var addExpenseCommand = AddExpenseCommandUtils.CreateCommand();
+        var monthlyBillingFake = MonthlyBillingUtilities.CreateMonthlyBilling(
+            new List<Plan>()
+            {
+                new(
+                    new(Guid.Parse("00000000-0000-0000-0000-000000000001")),
+                    new(Constants.Plan.Category),
+                    new(Constants.Plan.MoneyAmount, new(Constants.Plan.Currency)),
+                    1,
+                    MonthlyBillingUtilities.CreateExpenses(1)
+                )
+            }
+        );
+
+        var addExpenseCommand = AddExpenseCommandUtilities.CreateCommand();
 
         _repository
             .GetById(new(Constants.MonthlyBilling.Id))
-            .Returns(
-                MonthlyBillingUtils.CreateMonthlyBilling(
-                    new List<Plan>() { PlanUtils.CreatePlan() }
-                )
-            );
+            .Returns(monthlyBillingFake);
 
         // Act
         await _handler.HandleAsync(
@@ -64,7 +72,7 @@ public sealed class AddExpenseCommandHandlerTests
     public async Task HandleAsync_WhenMonthlyBillingNotFound_ShouldthrowMonthlyBillingNotFoundException()
     {
         // Arrange
-        var addExpenseCommand = AddExpenseCommandUtils.CreateCommand();
+        var addExpenseCommand = AddExpenseCommandUtilities.CreateCommand();
 
         var addExpense = () => _handler.HandleAsync(
             addExpenseCommand,

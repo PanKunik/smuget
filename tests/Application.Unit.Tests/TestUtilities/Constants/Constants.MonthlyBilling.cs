@@ -1,6 +1,6 @@
 using Domain.MonthlyBillings;
 
-namespace Application.Unit.Tests.TestUtils.Constants;
+namespace Application.Unit.Tests.TestUtilities.Constants;
 
 public static partial class Constants
 {

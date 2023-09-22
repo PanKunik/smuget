@@ -1,9 +1,9 @@
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
-using Application.Unit.Tests.TestUtils.Constants;
+using Application.Unit.Tests.TestUtilities.Constants;
 
-namespace Application.Unit.Tests.MonthlyBillings.Commands.TestUtils;
+namespace Application.Unit.Tests.MonthlyBillings.Commands.TestUtilities;
 
-public static class OpenMonthlyBilingCommandUtils
+public static class OpenMonthlyBilingCommandUtilities
 {
     public static OpenMonthlyBillingCommand CreateCommand()
         => new (

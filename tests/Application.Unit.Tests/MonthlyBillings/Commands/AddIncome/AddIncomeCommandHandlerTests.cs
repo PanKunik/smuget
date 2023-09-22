@@ -1,9 +1,9 @@
 using Application.MonthlyBillings.Commands.AddIncome;
-using Application.Unit.Tests.MonthlyBillings.Commands.TestUtils;
+using Application.Unit.Tests.MonthlyBillings.Commands.TestUtilities;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
-using Application.Unit.Tests.TestUtils.Constants;
-using Application.Unit.Tests.TestUtils;
+using Application.Unit.Tests.TestUtilities.Constants;
+using Application.Unit.Tests.TestUtilities;
 using Application.Exceptions;
 
 namespace Application.Unit.Tests.MonthlyBillings.Commands.AddIncome;
@@ -25,11 +25,11 @@ public sealed class AddIncomeCommandHandlerTests
     public async Task HandleAsync_WhenAddIncomeCommandIsValid_ShouldCallSaveOnRepositoryOnce()
     {
         // Arrange
-        var addIncomeCommand = AddIncomeCommandUtils.CreateCommand();
+        var addIncomeCommand = AddIncomeCommandUtilities.CreateCommand();
 
         _repository
             .GetById(new(Constants.MonthlyBilling.Id))
-            .Returns(MonthlyBillingUtils.CreateMonthlyBilling());
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
         // Act
         await _handler.HandleAsync(
@@ -58,7 +58,7 @@ public sealed class AddIncomeCommandHandlerTests
     public async Task HandleAsync_WhenMonthlyBillingDoesntExist_ShouldThrowMonthlyBillingNotFoundException()
     {
         // Arrange
-        var addIncomeCommand = AddIncomeCommandUtils.CreateCommand();
+        var addIncomeCommand = AddIncomeCommandUtilities.CreateCommand();
 
         var addIncome = async () => await _handler.HandleAsync(addIncomeCommand);
 

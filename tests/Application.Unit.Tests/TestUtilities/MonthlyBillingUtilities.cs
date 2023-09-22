@@ -1,24 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Domain.MonthlyBillings;
 
-namespace Domain.Unit.Tests.MonthlyBillings.TestUtilities;
+namespace Application.Unit.Tests.TestUtilities;
 
 public static class MonthlyBillingUtilities
 {
     public static MonthlyBilling CreateMonthlyBilling(
         List<Plan> plans = null,
-        List<Expense> expenses = null,
         List<Income> incomes = null
     )
         => new(
-            Constants.MonthlyBilling.Id,
-            Constants.MonthlyBilling.Year,
-            Constants.MonthlyBilling.Month,
-            Constants.MonthlyBilling.Currency,
-            Constants.MonthlyBilling.State,
-            plans ?? CreatePlans(expenses),
+            new(Constants.Constants.MonthlyBilling.Id),
+            new(Constants.Constants.MonthlyBilling.Year),
+            new(Constants.Constants.MonthlyBilling.Month),
+            new(Constants.Constants.MonthlyBilling.Currency),
+            Constants.Constants.MonthlyBilling.State,
+            plans ?? CreatePlans(),
             incomes ?? CreateIncomes()
         );
 
@@ -30,8 +26,8 @@ public static class MonthlyBillingUtilities
             .Range(0, plansCount)
             .Select(r => new Plan(
                 new PlanId(Guid.NewGuid()),
-                Constants.Plan.CategoryFromIndex(r),
-                Constants.Plan.MoneyFromIndex(r),
+                Constants.Constants.Plan.CategoryFromIndex(r),
+                Constants.Constants.Plan.MoneyFromIndex(r),
                 (uint)(r + 1),
                 expenses ?? CreateExpenses()
             ))
@@ -42,20 +38,21 @@ public static class MonthlyBillingUtilities
             .Range(0, incomesCount)
             .Select(r => new Income(
                 new IncomeId(Guid.NewGuid()),
-                Constants.Income.NameFromIndex(r),
-                Constants.Income.MoneyFromIndex(r),
-                true
+                Constants.Constants.Income.NameFromIndex(r),
+                Constants.Constants.Income.MoneyFromIndex(r),
+                Constants.Constants.Income.IncludeFromIndex(r)
             ))
             .ToList();
+
 
     public static List<Expense> CreateExpenses(int expensesCount = 2)
         => Enumerable
             .Range(0, expensesCount)
             .Select(r => new Expense(
                 new ExpenseId(Guid.NewGuid()),
-                Constants.Expense.MoneyFromIndex(r),
-                Constants.Expense.ExpenseDateFromIndex(r),
-                Constants.Expense.DescripitonFromIndex(r)
+                Constants.Constants.Expense.MoneyFromIndex(r),
+                Constants.Constants.Expense.ExpenseDateFromIndex(r),
+                Constants.Constants.Expense.DescriptionFromIndex(r)
             ))
             .ToList();
 }

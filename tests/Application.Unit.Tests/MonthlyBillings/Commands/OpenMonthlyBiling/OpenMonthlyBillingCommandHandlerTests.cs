@@ -1,7 +1,7 @@
 using Application.Exceptions;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
-using Application.Unit.Tests.MonthlyBillings.Commands.TestUtils;
-using Application.Unit.Tests.TestUtils;
+using Application.Unit.Tests.MonthlyBillings.Commands.TestUtilities;
+using Application.Unit.Tests.TestUtilities;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
 
@@ -22,7 +22,7 @@ public sealed class OpenMonthlyBilingCommandHandlerTests
     public async Task HandleAsync_WhenOpenMonthlyBillingCommandIsValid_ShouldCallSaveOnRepositoryOnce()
     {
         // Arrange
-        var openMonthlyBillingCommand = OpenMonthlyBilingCommandUtils.CreateCommand();
+        var openMonthlyBillingCommand = OpenMonthlyBilingCommandUtilities.CreateCommand();
 
         // Act
         await _handler.HandleAsync(
@@ -46,14 +46,14 @@ public sealed class OpenMonthlyBilingCommandHandlerTests
     public async Task HandleAsync_WhenOpenMonthlyBillingExists_ShouldThrowMonthlyBillingAlreadyOpenedException()
     {
         // Arrange
-        var openMonthlyBillingCommand = OpenMonthlyBilingCommandUtils.CreateCommand();
+        var openMonthlyBillingCommand = OpenMonthlyBilingCommandUtilities.CreateCommand();
         _repository
             .Get(
                 Arg.Is<Year>(y => y.Value == 2023),
                 Arg.Is<Month>(m => m.Value == 7)
             )
             .Returns(
-                MonthlyBillingUtils.CreateMonthlyBilling()
+                MonthlyBillingUtilities.CreateMonthlyBilling()
             );
 
         var openMonthlyBilling = async () => await _handler.HandleAsync(openMonthlyBillingCommand);

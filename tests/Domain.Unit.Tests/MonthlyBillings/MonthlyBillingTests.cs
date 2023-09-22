@@ -27,7 +27,12 @@ public sealed class MonthlyBillingTests
               && m.Month == new Month(2)
               && m.Currency == new Currency("PLN")
               && m.State == State.Open
-              && m.SumOfIncomeAvailableForPlanning == 0m
+              && m.SumOfIncome == 11.75m
+              && m.SumOfIncomeAvailableForPlanning == 11.75m
+              && m.SumOfPlan == 12.5m
+              && m.SumOfExpenses == 137.01m
+              && m.SavingsForecast == -0.75m
+              && m.AccountBalance == -125.26m
         );
     }
 
@@ -127,6 +132,7 @@ public sealed class MonthlyBillingTests
             );
     }
 
+    // TODO: Refactor
     [Theory]
     [InlineData(10, 25, 35)]
     [InlineData(12.03, 673.23, 685.26)]
@@ -162,6 +168,7 @@ public sealed class MonthlyBillingTests
             .Be(expectedSumOfIncome);
     }
 
+    // TODO: Refactor
     [Theory]
     [InlineData(10, 25, 35)]
     [InlineData(1, 19.23, 20.23)]
@@ -197,8 +204,9 @@ public sealed class MonthlyBillingTests
             .Be(expectedSumOfIncomeAvailableForPlanning);
     }
 
+    // TODO: Refactor
     [Fact]
-    public void SumOfIncomeAvailableForPlanning_WhenACalled_ShouldReturnExpectedSumOfIncludedIncomes()
+    public void SumOfIncomeAvailableForPlanning_WhenCalled_ShouldReturnExpectedSumOfIncludedIncomes()
     {
         // Arrange
         var cut = new MonthlyBilling(
@@ -396,6 +404,112 @@ public sealed class MonthlyBillingTests
 
         // Act & Assert
         Assert.Throws<MonthlyBillingCurrencyMismatchException>(addPlanWithOtherCurrency);
+    }
+
+    [Fact]
+    public void SumOfPlans_WhenCalled_ShouldReturnExpectedValue()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: MonthlyBillingUtilities.CreatePlans(plansCount: 3)
+        );
+
+        // Act
+        var result = cut.SumOfPlan;
+
+        // Assert
+        result
+            .Should()
+            .Be(75m);
+    }
+
+    [Fact]
+    public void SumOfPlans_WhenPlansAreEmpty_ShouldReturnZero()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: MonthlyBillingUtilities.CreatePlans(plansCount: 0)
+        );
+
+        // Act
+        var result = cut.SumOfPlan;
+
+        // Assert
+        result
+            .Should()
+            .Be(0m);
+    }
+
+    [Fact]
+    public void SumOfExpenses_WhenCalled_ShouldReturnSumOfExpenses()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: MonthlyBillingUtilities.CreatePlans(plansCount: 3)
+        );
+
+        // Act
+        var result = cut.SumOfExpenses;
+
+        // Assert
+        result
+            .Should()
+            .Be(411.03m);
+    }
+
+    [Fact]
+    public void SumOfExpenses_WhenPlansAreEmpty_ShouldReturn0()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: new List<Plan>() { }
+        );
+
+        // Act
+        var result = cut.SumOfExpenses;
+
+        // Assert
+        result
+            .Should()
+            .Be(0m);
+    }
+
+    [Fact]
+    public void AccountBalance_WhenCalled_ShouldReturnExpectedValue()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            MonthlyBillingUtilities.CreatePlans(),
+            MonthlyBillingUtilities.CreateExpenses(),
+            MonthlyBillingUtilities.CreateIncomes(5)
+        );
+
+        // Act
+        var result = cut.AccountBalance;
+
+        // Assert
+        result
+            .Should()
+            .Be(39.24m);
+    }
+
+    [Fact]
+    public void SavingsForecast_WhenCalled_ShouldReturnExpectedValue()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            MonthlyBillingUtilities.CreatePlans(plansCount: 3),
+            MonthlyBillingUtilities.CreateExpenses(),
+            MonthlyBillingUtilities.CreateIncomes(5)
+        );
+
+        // Act
+        var result = cut.SavingsForecast;
+
+        // Assert
+        result
+            .Should()
+            .Be(101.25m);
     }
 
     [Fact]

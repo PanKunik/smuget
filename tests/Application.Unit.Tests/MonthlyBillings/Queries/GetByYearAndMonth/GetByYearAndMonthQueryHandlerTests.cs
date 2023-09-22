@@ -1,9 +1,9 @@
 using Application.Exceptions;
 using Application.MonthlyBillings.DTO;
 using Application.MonthlyBillings.Queries.GetByYearAndMonth;
-using Application.Unit.Tests.MonthlyBillings.Queries.TestUtils;
-using Application.Unit.Tests.TestUtils;
-using Application.Unit.Tests.TestUtils.Constants;
+using Application.Unit.Tests.MonthlyBillings.Queries.TestUtilities;
+using Application.Unit.Tests.TestUtilities;
+using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
 
@@ -68,7 +68,7 @@ public sealed class GetByYearAndMonthQueryHandlerTests
     public async Task HandleAsync_WhenMonthlyBillingNotFound_ShouldReturnMonthlyBillingNotFoundException()
     {
         // Arrange
-        var query = GetMonthlyBillingByYearAndMonthQueryUtils.CreateQuery();
+        var query = GetMonthlyBillingByYearAndMonthQueryUtilities.CreateQuery();
         var get = () => _handler.HandleAsync(query, default);
 
         // Act & Assert
@@ -79,7 +79,7 @@ public sealed class GetByYearAndMonthQueryHandlerTests
     public async Task HandleAsync_WhenCalled_ShouldReturnExpectedObject()
     {
         // Arrange
-        var query = GetMonthlyBillingByYearAndMonthQueryUtils.CreateQuery();
+        var query = GetMonthlyBillingByYearAndMonthQueryUtilities.CreateQuery();
 
         _repository
             .Get(
@@ -87,7 +87,12 @@ public sealed class GetByYearAndMonthQueryHandlerTests
                 new(Constants.MonthlyBilling.Month)
             )
             .Returns(
-                MonthlyBillingUtils.CreateMonthlyBilling()
+                MonthlyBillingUtilities.CreateMonthlyBilling(
+                    MonthlyBillingUtilities.CreatePlans(
+                        MonthlyBillingUtilities.CreateExpenses()
+                    ),
+                    MonthlyBillingUtilities.CreateIncomes()
+                )
             );
 
         // Act
@@ -107,8 +112,11 @@ public sealed class GetByYearAndMonthQueryHandlerTests
                 m => m.Year == Constants.MonthlyBilling.Year
                   && m.Month == Constants.MonthlyBilling.Month
                   && m.State == Constants.MonthlyBilling.State.Name
-                  && m.SumOfIncome == 0m
-                  && m.SumOfIncomeAvailableForPlanning == 0m
+                  && m.SumOfIncome == 4321.45m
+                  && m.SumOfPlan == 2984.12m
+                  && m.SumOfExpenses == 2785.62m
+                  && m.SavingsForecast == 1337.33m
+                  && m.AccountBalance == 1535.83m
             );
     }
 }
