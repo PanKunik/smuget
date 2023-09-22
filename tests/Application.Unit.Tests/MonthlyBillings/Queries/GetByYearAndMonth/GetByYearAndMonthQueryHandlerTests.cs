@@ -115,6 +115,8 @@ public sealed class GetByYearAndMonthQueryHandlerTests
                   && m.SumOfIncome == 4321.45m
                   && m.SumOfPlan == 2984.12m
                   && m.SumOfExpenses == 2785.62m
+                  && m.SavingsForecast == 1337.33m
+                  && m.AccountBalance == 1535.83m
             );
     }
 }

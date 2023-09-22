@@ -28,7 +28,8 @@ public static class MonthlyBillingMappingsExtension
             SumOfIncomeAvailableForPlanning = domain.SumOfIncomeAvailableForPlanning,
             SumOfPlan = domain.SumOfPlan,
             SumOfExpenses = domain.SumOfExpenses,
-            AccountBalance = domain.AccountBalance
+            AccountBalance = domain.AccountBalance,
+            SavingsForecast = domain.SavingsForecast
         };
     }
 }

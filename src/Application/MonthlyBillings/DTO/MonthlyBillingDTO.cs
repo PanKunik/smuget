@@ -13,4 +13,5 @@ public sealed class MonthlyBillingDTO
     public decimal SumOfPlan { get; set; }
     public decimal SumOfExpenses { get; set; }
     public decimal AccountBalance { get; set; }
+    public decimal SavingsForecast { get; set; }
 }
