@@ -2,6 +2,7 @@ using Application.Abstractions.CQRS;
 using Application.MonthlyBillings.Commands.AddExpense;
 using Application.MonthlyBillings.Commands.AddIncome;
 using Application.MonthlyBillings.Commands.AddPlan;
+using Application.MonthlyBillings.Commands.CloseMonthlyBilling;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
 using Application.MonthlyBillings.DTO;
 using Application.MonthlyBillings.Queries.GetByYearAndMonth;
@@ -23,13 +24,15 @@ public sealed class MonthlyBillingsController : ControllerBase
     private readonly ICommandHandler<AddPlanCommand> _addPlan;
     private readonly ICommandHandler<AddExpenseCommand> _addExpense;
     private readonly IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO> _getMonthlyBilling;
+    private readonly ICommandHandler<CloseMonthlyBillingCommand> _closeMonthlyBilling;
 
     public MonthlyBillingsController(
         ICommandHandler<OpenMonthlyBillingCommand> openMonthlyBilling,
         ICommandHandler<AddIncomeCommand> addIncome,
         ICommandHandler<AddPlanCommand> addPlan,
         ICommandHandler<AddExpenseCommand> addExpense,
-        IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO> getMonthlyBilling
+        IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO> getMonthlyBilling,
+        ICommandHandler<CloseMonthlyBillingCommand> closeMonthlyBilling
     )
     {
         _openMonthlyBilling = openMonthlyBilling;
@@ -37,6 +40,7 @@ public sealed class MonthlyBillingsController : ControllerBase
         _addPlan = addPlan;
         _addExpense = addExpense;
         _getMonthlyBilling = getMonthlyBilling;
+        _closeMonthlyBilling = closeMonthlyBilling;
     }
 
     /// <summary>
@@ -176,5 +180,30 @@ public sealed class MonthlyBillingsController : ControllerBase
         );
 
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Closes monthly billing for specified month in a year.
+    /// </summary>
+    [HttpPut("{year:int}/{month:int}/close")]
+    [ProducesResponseType(typeof(NoContentResult), Status204NoContent)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
+    public async Task<IActionResult> Close(
+        [FromRoute] CloseMonthlyBillingRequest request,
+        CancellationToken token = default
+    )
+    {
+        var (year, month) = request;
+
+        await _closeMonthlyBilling.HandleAsync(
+            new CloseMonthlyBillingCommand(
+                year,
+                month
+            ),
+            token
+        );
+
+        return NoContent();
     }
 }
