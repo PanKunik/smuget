@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Domain.Exceptions;
 using Domain.MonthlyBillings;
 using Domain.Unit.Tests.MonthlyBillings.TestUtilities;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.EventHandlers;
 
 namespace Domain.Unit.Tests.MonthlyBillings;
 
@@ -132,6 +134,86 @@ public sealed class MonthlyBillingTests
             );
     }
 
+    [Fact]
+    public void AddIncome_WhenMonthlyBillingIsClosed_ShouldThrowMonthyBillingAlreadyClosedException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            incomes: new List<Income>()
+        );
+        cut.Close();
+
+        var addIncome = () => cut.AddIncome(
+            new Income(
+                new IncomeId(Guid.NewGuid()),
+                Constants.Income.Name,
+                Constants.Income.Money,
+                true
+            )
+        );
+
+        // Act & Assert
+        Assert.Throws<MonthlyBillingAlreadyClosedException>(addIncome);
+    }
+
+    [Fact]
+    public void AddIncome_WhenPassedNull_ShouldThrowIncomeIsNullException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+
+        var addIncome = () => cut.AddIncome(null);
+
+        // Act & Assert
+        Assert.Throws<IncomeIsNullException>(addIncome);
+    }
+
+    [Fact]
+    public void AddIncome_WhenTryingToAddIncomeWithNotUniqueName_ShouldThrowIncomeNameNotUniqueException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            incomes: MonthlyBillingUtilities.CreateIncomes()
+        );
+
+        var addIncomeWithNotUniqueName = () => cut.AddIncome(
+            MonthlyBillingUtilities
+                .CreateIncomes()
+                .First()
+            );
+
+        // Act & Assert
+        Assert.Throws<IncomeNameNotUniqueException>(addIncomeWithNotUniqueName);
+    }
+
+    [Fact]
+    public void AddIncome_WhenTryingToAddIncomeWithOtherCurrency_ShouldThrowMonthlyBillingCurrencyMismatchException()
+    {
+        // Arrange
+        var cut = new MonthlyBilling(
+            Constants.MonthlyBilling.Id,
+            Constants.MonthlyBilling.Year,
+            Constants.MonthlyBilling.Month,
+            Constants.MonthlyBilling.Currency,
+            Constants.MonthlyBilling.State
+        );
+
+        var addIncomeWithOtherCurrency = () => cut.AddIncome(
+            new Income(
+                new IncomeId(Guid.NewGuid()),
+                Constants.Income.Name,
+                new Money(
+                    123.923M,
+                    new Currency("EUR")
+                ),
+                true
+            )
+        );
+
+        // Act & Assert
+        Assert.Throws<MonthlyBillingCurrencyMismatchException>(addIncomeWithOtherCurrency);
+    }
+
     // TODO: Refactor
     [Theory]
     [InlineData(10, 25, 35)]
@@ -246,64 +328,6 @@ public sealed class MonthlyBillingTests
     }
 
     [Fact]
-    public void AddIncome_WhenPassedNull_ShouldThrowIncomeIsNullException()
-    {
-        // Arrange
-        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
-
-        var addIncome = () => cut.AddIncome(null);
-
-        // Act & Assert
-        Assert.Throws<IncomeIsNullException>(addIncome);
-    }
-
-    [Fact]
-    public void AddIncome_WhenTryingToAddIncomeWithNotUniqueName_ShouldThrowIncomeNameNotUniqueException()
-    {
-        // Arrange
-        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
-            incomes: MonthlyBillingUtilities.CreateIncomes()
-        );
-
-        var addIncomeWithNotUniqueName = () => cut.AddIncome(
-            MonthlyBillingUtilities
-                .CreateIncomes()
-                .First()
-            );
-
-        // Act & Assert
-        Assert.Throws<IncomeNameNotUniqueException>(addIncomeWithNotUniqueName);
-    }
-
-    [Fact]
-    public void AddIncome_WhenTryingToAddIncomeWithOtherCurrency_ShouldThrowMonthlyBillingCurrencyMismatchException()
-    {
-        // Arrange
-        var cut = new MonthlyBilling(
-            Constants.MonthlyBilling.Id,
-            Constants.MonthlyBilling.Year,
-            Constants.MonthlyBilling.Month,
-            Constants.MonthlyBilling.Currency,
-            Constants.MonthlyBilling.State
-        );
-
-        var addIncomeWithOtherCurrency = () => cut.AddIncome(
-            new Income(
-                new IncomeId(Guid.NewGuid()),
-                Constants.Income.Name,
-                new Money(
-                    123.923M,
-                    new Currency("EUR")
-                ),
-                true
-            )
-        );
-
-        // Act & Assert
-        Assert.Throws<MonthlyBillingCurrencyMismatchException>(addIncomeWithOtherCurrency);
-    }
-
-    [Fact]
     public void AddPlan_WhenPassedProperData_ShouldAddPlanToMonthlyBilling()
     {
         // Arrange
@@ -404,6 +428,28 @@ public sealed class MonthlyBillingTests
 
         // Act & Assert
         Assert.Throws<MonthlyBillingCurrencyMismatchException>(addPlanWithOtherCurrency);
+    }
+
+    [Fact]
+    public void AddPlan_WhenMonthlyBillingIsClosed_ShouldThrowMonthyBillingAlreadyClosedException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: new List<Plan>()
+        );
+        cut.Close();
+
+        var addPlan = () => cut.AddPlan(
+            new Plan(
+                new PlanId(Guid.NewGuid()),
+                Constants.Plan.Category,
+                Constants.Plan.Money,
+                1
+            )
+        );
+
+        // Act & Assert
+        Assert.Throws<MonthlyBillingAlreadyClosedException>(addPlan);
     }
 
     [Fact]
@@ -587,6 +633,28 @@ public sealed class MonthlyBillingTests
 
         // Act & Assert
         Assert.Throws<MonthlyBillingCurrencyMismatchException>(addExpenseWithOtherCurrency);
+    }
+
+    [Fact]
+    public void AddExpense_WhenMonthlyBillingIsClosed_ShouldThrowMonthlyBillingAlreadyClosedException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(expenses: new List<Expense>());
+        cut.Close();
+        var firstPlanId = cut.Plans.First().Id;
+
+        var addExpense = () => cut.AddExpense(
+            firstPlanId,
+            new Expense(
+                new ExpenseId(Guid.NewGuid()),
+                Constants.Expense.Money,
+                Constants.Expense.ExpenseDate,
+                Constants.Expense.Descripiton
+            )
+        );
+
+        // Act & Assert
+        Assert.Throws<MonthlyBillingAlreadyClosedException>(addExpense);
     }
 
     [Fact]

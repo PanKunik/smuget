@@ -75,6 +75,11 @@ public sealed class MonthlyBilling
 
     public void AddIncome(Income income)
     {
+        if (State == State.Closed)
+        {
+            throw new MonthlyBillingAlreadyClosedException(Month, Year);
+        }
+
         if (income is null)
         {
             throw new IncomeIsNullException();
@@ -95,6 +100,11 @@ public sealed class MonthlyBilling
 
     public void AddPlan(Plan plan)
     {
+        if (State == State.Closed)
+        {
+            throw new MonthlyBillingAlreadyClosedException(Month, Year);
+        }
+
         if (plan is null)
         {
             throw new PlanIsNullException();
@@ -115,6 +125,11 @@ public sealed class MonthlyBilling
 
     public void AddExpense(PlanId planId, Expense expense)
     {
+        if (State == State.Closed)
+        {
+            throw new MonthlyBillingAlreadyClosedException(Month, Year);
+        }
+
         if (planId is null)
         {
             throw new PlanIdIsNullException();
