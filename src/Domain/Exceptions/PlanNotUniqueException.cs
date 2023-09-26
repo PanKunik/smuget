@@ -7,7 +7,7 @@ public sealed class PlanCategoryNotUniqueException : SmugetException
     public PlanCategoryNotUniqueException(
         string category
     )
-        : base($"Plan's category `{category}` already exists int monthly billing.")
+        : base($"Plan's category `{category}` already exists in monthly billing.")
     {
         Category = category;
     }
