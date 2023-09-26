@@ -5,6 +5,7 @@ using Application.Abstractions.CQRS;
 using Application.MonthlyBillings.Commands.AddExpense;
 using Application.MonthlyBillings.Commands.AddIncome;
 using Application.MonthlyBillings.Commands.AddPlan;
+using Application.MonthlyBillings.Commands.CloseMonthlyBilling;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
 using Application.MonthlyBillings.DTO;
 using Application.MonthlyBillings.Queries.GetByYearAndMonth;
@@ -23,6 +24,7 @@ public sealed class MonthlyBillingsControllerTests
     private readonly Mock<ICommandHandler<AddPlanCommand>> _mockAddPlanCommandHandler;
     private readonly Mock<ICommandHandler<AddExpenseCommand>> _mockAddExpenseCommandHandler;
     private readonly Mock<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>> _mockGetMonthlyBillingQueryHandler;
+    private readonly Mock<ICommandHandler<CloseMonthlyBillingCommand>> _mockCloseMonthlyBillingCommandHandler;
 
     public MonthlyBillingsControllerTests()
     {
@@ -31,6 +33,7 @@ public sealed class MonthlyBillingsControllerTests
         _mockAddPlanCommandHandler = new Mock<ICommandHandler<AddPlanCommand>>();
         _mockAddExpenseCommandHandler = new Mock<ICommandHandler<AddExpenseCommand>>();
         _mockGetMonthlyBillingQueryHandler = new Mock<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>>();
+        _mockCloseMonthlyBillingCommandHandler = new Mock<ICommandHandler<CloseMonthlyBillingCommand>>();
 
         _mockGetMonthlyBillingQueryHandler
             .Setup(m => m.HandleAsync(
@@ -47,7 +50,8 @@ public sealed class MonthlyBillingsControllerTests
             _mockAddIncomeCommandHandler.Object,
             _mockAddPlanCommandHandler.Object,
             _mockAddExpenseCommandHandler.Object,
-            _mockGetMonthlyBillingQueryHandler.Object
+            _mockGetMonthlyBillingQueryHandler.Object,
+            _mockCloseMonthlyBillingCommandHandler.Object
         );
     }
 
@@ -58,8 +62,13 @@ public sealed class MonthlyBillingsControllerTests
         var result = await _cut.Open(new(2020, 1, "USD"));
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().BeOfType<CreatedResult>();
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .BeOfType<CreatedResult>();
     }
 
     [Fact]
@@ -69,7 +78,9 @@ public sealed class MonthlyBillingsControllerTests
         var result = (CreatedResult)await _cut.Open(new(2020, 1, "PLN"));
 
         // Assert
-        result.StatusCode.Should().Be(201);
+        result.StatusCode
+            .Should()
+            .Be(201);
     }
 
     [Fact]
@@ -487,5 +498,84 @@ public sealed class MonthlyBillingsControllerTests
         result.Value
             .Should()
             .BeOfType<MonthlyBillingDTO>();
+    }
+
+    [Fact]
+    public async Task Close_OnSuccess_ShouldReturnNoContentResult()
+    {
+        // Arrange
+        var request = new CloseMonthlyBillingRequest(
+            2023,
+            1
+        );
+
+        // Act
+        var result = await _cut.Close(request);
+
+        // Assert
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .BeOfType<NoContentResult>();
+    }
+
+    [Fact]
+    public async Task Close_OnSuccess_ShouldReturn204StatusCode()
+    {
+        // Arrange
+        var request = new CloseMonthlyBillingRequest(
+            2023,
+            1
+        );
+
+        // Act
+        var result = (NoContentResult)await _cut.Close(request);
+
+        // Assert
+        result.StatusCode
+            .Should()
+            .Be(204);
+    }
+
+    [Fact]
+    public async Task Close_WhenInvoked_ShouldCallCloseMonthlyBillingCommandHandler()
+    {
+        // Act
+        await _cut.Close(new(2020, 1));
+
+        // Assert
+        _mockCloseMonthlyBillingCommandHandler.Verify(
+            m => m.HandleAsync(
+                It.IsAny<CloseMonthlyBillingCommand>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Theory]
+    [InlineData(2020, 1)]
+    [InlineData(2021, 6)]
+    [InlineData(2022, 12)]
+    public async Task Close_WhenInvoked_ShouldPassParametersToCommand(
+        ushort year,
+        byte month
+    )
+    {
+        // Arrange
+        var token = new CancellationToken();
+
+        // Act
+        await _cut.Close(new(year, month));
+
+        // Assert
+        _mockCloseMonthlyBillingCommandHandler.Verify(
+            m => m.HandleAsync(
+                It.Is<CloseMonthlyBillingCommand>(
+                    c => c.Year == year
+                      && c.Month == month),
+                token),
+            Times.Once);
     }
 }

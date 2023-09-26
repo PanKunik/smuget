@@ -1,13 +1,13 @@
 @host = https://localhost:7188
 
-@id = f26ff0b4-a1ad-4517-b78e-2ed1c34c808f
+@id = 820db3c1-70b7-484a-b4f4-4304bb62d32a
 
 POST {{host}}/api/monthlyBillings/{{id}}/incomes
 Content-Type: application/json
 
 {
-    "name": "Zwrot z zakupów",
-    "moneyAmount": 250,
+    "name": "Wypłata",
+    "moneyAmount": 7778,
     "currency": "PLN",
-    "includeInBilling": false
+    "includeInBilling": true
 }

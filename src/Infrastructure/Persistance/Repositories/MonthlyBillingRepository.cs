@@ -64,22 +64,29 @@ internal sealed class MonthlyBillingRepository : IMonthlyBillingRepository
         }
         else
         {
-            _dbContext.Entry(existingEntity).CurrentValues.SetValues(newEntity);
-            await SaveIncomes(existingEntity, newEntity.Incomes);
-            await SavePlans(existingEntity, newEntity.Plans);
+            _dbContext.Update(newEntity);
         }
+
+        await SaveIncomes(
+            existingEntity?.Incomes ?? new List<IncomeEntity>(),
+            newEntity.Incomes
+        );
+
+        await SavePlans(
+            existingEntity?.Plans ?? new List<PlanEntity>(),
+            newEntity.Plans
+        );
 
         await _dbContext.SaveChangesAsync();
     }
 
-    private async Task SaveIncomes(MonthlyBillingEntity existingEntity, List<IncomeEntity> incomeEntities)
+    private async Task SaveIncomes(List<IncomeEntity> existingIncomes, List<IncomeEntity> incomeEntities)
     {
         foreach (var incomeEntity in incomeEntities)
         {
-            var existingIncomeEntity = existingEntity.Incomes.Find(i => i.Id == incomeEntity.Id);
-            if (existingIncomeEntity is not null)
+            if (existingIncomes.Any(i => i.Id == incomeEntity.Id))
             {
-                _dbContext.Entry(existingIncomeEntity).CurrentValues.SetValues(incomeEntity);
+                _dbContext.Update(incomeEntity);
             }
             else
             {
@@ -88,33 +95,35 @@ internal sealed class MonthlyBillingRepository : IMonthlyBillingRepository
         }
     }
 
-    private async Task SavePlans(MonthlyBillingEntity existingEntity, List<PlanEntity> planEntities)
+    private async Task SavePlans(List<PlanEntity> existingPlans, List<PlanEntity> planEntities)
     {
         foreach (var planEntity in planEntities)
         {
-            var existingPlanEntity = existingEntity.Plans.Find(p => p.Id == planEntity.Id);
-            if (existingPlanEntity is not null)
+            var existingPlan = existingPlans.FirstOrDefault(p => p.Id == planEntity.Id);
+
+            if (existingPlan is null)
             {
-                _dbContext.Entry(existingPlanEntity).CurrentValues.SetValues(planEntity);
+                await _dbContext.AddAsync(planEntity);
             }
             else
             {
-                var result = await _dbContext.AddAsync(planEntity);
-                existingPlanEntity = result.Entity;
+                _dbContext.Update(planEntity);
             }
 
-            await SaveExpenses(existingPlanEntity, planEntity.Expenses);
+            await SaveExpenses(
+                existingPlan?.Expenses ?? new List<ExpenseEntity>(),
+                planEntity.Expenses
+            );
         }
     }
 
-    private async Task SaveExpenses(PlanEntity existingEntity, List<ExpenseEntity> expenseEntities)
+    private async Task SaveExpenses(List<ExpenseEntity> existingExpenses, List<ExpenseEntity> expenseEntities)
     {
         foreach (var expenseEntity in expenseEntities)
         {
-            var existingExpenseEntity = existingEntity.Expenses.Find(e => e.Id == expenseEntity.Id);
-            if (existingExpenseEntity is not null)
+            if (existingExpenses.Any(e => e.Id == expenseEntity.Id))
             {
-                _dbContext.Entry(existingExpenseEntity).CurrentValues.SetValues(expenseEntity);
+                _dbContext.Update(expenseEntity);
             }
             else
             {

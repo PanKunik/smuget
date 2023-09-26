@@ -26,13 +26,6 @@ public sealed class AddPlanCommandHandler : ICommandHandler<AddPlanCommand>
             throw new MonthlyBillingNotFoundException();
         }
 
-        if (monthlyBilling.State == State.Closed)
-        {
-            throw new MonthlyBillingAlreadyClosedException(
-                monthlyBilling.Month,
-                monthlyBilling.Year);
-        }   // TODO: Move to domain layer
-
         var plan = new Plan(
             new PlanId(Guid.NewGuid()),
             new Category(command.Category),
@@ -44,7 +37,6 @@ public sealed class AddPlanCommandHandler : ICommandHandler<AddPlanCommand>
         );
 
         monthlyBilling.AddPlan(plan);
-
         await _repository.Save(monthlyBilling);
     }
 }

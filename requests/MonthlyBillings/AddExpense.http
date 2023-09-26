@@ -1,7 +1,7 @@
 @host = https://localhost:7188
 
-@monthlyBillingId = f26ff0b4-a1ad-4517-b78e-2ed1c34c808f
-@planId = 5554e291-f1a3-436c-84f2-91cf9f848b8a
+@monthlyBillingId = 820db3c1-70b7-484a-b4f4-4304bb62d32a
+@planId = 102c9a20-6dc5-408a-984f-60df68e897df
 
 POST {{host}}/api/monthlyBillings/{{monthlyBillingId}}/plans/{{planId}}/expenses
 Content-Type: application/json
