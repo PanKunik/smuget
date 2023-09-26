@@ -7,6 +7,7 @@ using Application.MonthlyBillings.Commands.AddIncome;
 using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.CloseMonthlyBilling;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
+using Application.MonthlyBillings.Commands.ReopenMonthlyBilling;
 using Application.MonthlyBillings.DTO;
 using Application.MonthlyBillings.Queries.GetByYearAndMonth;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,7 @@ public sealed class MonthlyBillingsControllerTests
     private readonly Mock<ICommandHandler<AddExpenseCommand>> _mockAddExpenseCommandHandler;
     private readonly Mock<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>> _mockGetMonthlyBillingQueryHandler;
     private readonly Mock<ICommandHandler<CloseMonthlyBillingCommand>> _mockCloseMonthlyBillingCommandHandler;
+    private readonly Mock<ICommandHandler<ReopenMonthlyBillingCommand>> _mockReopenMonthlyBillingCommandHandler;
 
     public MonthlyBillingsControllerTests()
     {
@@ -34,6 +36,7 @@ public sealed class MonthlyBillingsControllerTests
         _mockAddExpenseCommandHandler = new Mock<ICommandHandler<AddExpenseCommand>>();
         _mockGetMonthlyBillingQueryHandler = new Mock<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>>();
         _mockCloseMonthlyBillingCommandHandler = new Mock<ICommandHandler<CloseMonthlyBillingCommand>>();
+        _mockReopenMonthlyBillingCommandHandler = new Mock<ICommandHandler<ReopenMonthlyBillingCommand>>();
 
         _mockGetMonthlyBillingQueryHandler
             .Setup(m => m.HandleAsync(
@@ -51,7 +54,8 @@ public sealed class MonthlyBillingsControllerTests
             _mockAddPlanCommandHandler.Object,
             _mockAddExpenseCommandHandler.Object,
             _mockGetMonthlyBillingQueryHandler.Object,
-            _mockCloseMonthlyBillingCommandHandler.Object
+            _mockCloseMonthlyBillingCommandHandler.Object,
+            _mockReopenMonthlyBillingCommandHandler.Object
         );
     }
 
@@ -573,6 +577,85 @@ public sealed class MonthlyBillingsControllerTests
         _mockCloseMonthlyBillingCommandHandler.Verify(
             m => m.HandleAsync(
                 It.Is<CloseMonthlyBillingCommand>(
+                    c => c.Year == year
+                      && c.Month == month),
+                token),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Reopen_OnSuccess_ShouldReturnNoContentResult()
+    {
+        // Arrange
+        var request = new ReopenMonthlyBillingRequest(
+            2023,
+            1
+        );
+
+        // Act
+        var result = await _cut.Reopen(request);
+
+        // Assert
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .BeOfType<NoContentResult>();
+    }
+
+    [Fact]
+    public async Task Reopen_OnSuccess_ShouldReturn204StatusCode()
+    {
+        // Arrange
+        var request = new ReopenMonthlyBillingRequest(
+            2023,
+            1
+        );
+
+        // Act
+        var result = (NoContentResult)await _cut.Reopen(request);
+
+        // Assert
+        result.StatusCode
+            .Should()
+            .Be(204);
+    }
+
+    [Fact]
+    public async Task Reopen_WhenInvoked_ShouldCallReopenMonthlyBillingCommandHandler()
+    {
+        // Act
+        await _cut.Reopen(new(2020, 1));
+
+        // Assert
+        _mockReopenMonthlyBillingCommandHandler.Verify(
+            m => m.HandleAsync(
+                It.IsAny<ReopenMonthlyBillingCommand>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Theory]
+    [InlineData(2020, 1)]
+    [InlineData(2021, 6)]
+    [InlineData(2022, 12)]
+    public async Task Reopen_WhenInvoked_ShouldPassParametersToCommand(
+        ushort year,
+        byte month
+    )
+    {
+        // Arrange
+        var token = new CancellationToken();
+
+        // Act
+        await _cut.Reopen(new(year, month));
+
+        // Assert
+        _mockReopenMonthlyBillingCommandHandler.Verify(
+            m => m.HandleAsync(
+                It.Is<ReopenMonthlyBillingCommand>(
                     c => c.Year == year
                       && c.Month == month),
                 token),

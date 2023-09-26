@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using Domain.Exceptions;
 using Domain.MonthlyBillings;
 using Domain.Unit.Tests.MonthlyBillings.TestUtilities;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.EventHandlers;
 
 namespace Domain.Unit.Tests.MonthlyBillings;
 
@@ -684,5 +682,33 @@ public sealed class MonthlyBillingTests
 
         // Act & Assert
         Assert.Throws<MonthlyBillingAlreadyClosedException>(close);
+    }
+
+    [Fact]
+    public void Reopen_WhenCalled_ShouldChangeState()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+        cut.Close();
+
+        // Act
+        cut.Reopen();
+
+        // Assert
+        cut.State
+            .Should()
+            .Be(State.Open);
+    }
+
+    [Fact]
+    public void Reopen_WhenCalledForOpenedMonthlyBilling_ShouldThrowMonthlyBillingAlreadyOpened()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+
+        var reopen = () => cut.Reopen();
+
+        // Act & Assert
+        Assert.Throws<MonthlyBillingAlreadyOpenedException>(reopen);
     }
 }

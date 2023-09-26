@@ -164,4 +164,14 @@ public sealed class MonthlyBilling
 
         State = State.Closed;
     }
+
+    public void Reopen()
+    {
+        if (State == State.Open)
+        {
+            throw new MonthlyBillingAlreadyOpenedException(Month, Year);
+        }
+
+        State = State.Open;
+    }
 }
