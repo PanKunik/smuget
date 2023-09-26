@@ -4,6 +4,7 @@ using Application.MonthlyBillings.Commands.AddIncome;
 using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.CloseMonthlyBilling;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
+using Application.MonthlyBillings.Commands.ReopenMonthlyBilling;
 using Application.MonthlyBillings.DTO;
 using Application.MonthlyBillings.Queries.GetByYearAndMonth;
 using Infrastructure.Exceptions;
@@ -25,6 +26,7 @@ public sealed class MonthlyBillingsController : ControllerBase
     private readonly ICommandHandler<AddExpenseCommand> _addExpense;
     private readonly IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO> _getMonthlyBilling;
     private readonly ICommandHandler<CloseMonthlyBillingCommand> _closeMonthlyBilling;
+    private readonly ICommandHandler<ReopenMonthlyBillingCommand> _reopenMonthlyBilling;
 
     public MonthlyBillingsController(
         ICommandHandler<OpenMonthlyBillingCommand> openMonthlyBilling,
@@ -32,7 +34,8 @@ public sealed class MonthlyBillingsController : ControllerBase
         ICommandHandler<AddPlanCommand> addPlan,
         ICommandHandler<AddExpenseCommand> addExpense,
         IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO> getMonthlyBilling,
-        ICommandHandler<CloseMonthlyBillingCommand> closeMonthlyBilling
+        ICommandHandler<CloseMonthlyBillingCommand> closeMonthlyBilling,
+        ICommandHandler<ReopenMonthlyBillingCommand> reopenMonthlyBilling
     )
     {
         _openMonthlyBilling = openMonthlyBilling;
@@ -41,6 +44,7 @@ public sealed class MonthlyBillingsController : ControllerBase
         _addExpense = addExpense;
         _getMonthlyBilling = getMonthlyBilling;
         _closeMonthlyBilling = closeMonthlyBilling;
+        _reopenMonthlyBilling = reopenMonthlyBilling;
     }
 
     /// <summary>
@@ -198,6 +202,31 @@ public sealed class MonthlyBillingsController : ControllerBase
 
         await _closeMonthlyBilling.HandleAsync(
             new CloseMonthlyBillingCommand(
+                year,
+                month
+            ),
+            token
+        );
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Reopens monthly billing for specified month in a year.
+    /// </summary>
+    [HttpPut("{year:int}/{month:int}/reopen")]
+    [ProducesResponseType(typeof(NoContentResult), Status204NoContent)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
+    public async Task<IActionResult> Reopen(
+        [FromRoute] ReopenMonthlyBillingRequest request,
+        CancellationToken token = default
+    )
+    {
+        var (year, month) = request;
+
+        await _reopenMonthlyBilling.HandleAsync(
+            new ReopenMonthlyBillingCommand(
                 year,
                 month
             ),
