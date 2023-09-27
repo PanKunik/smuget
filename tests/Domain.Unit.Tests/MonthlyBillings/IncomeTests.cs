@@ -1,6 +1,7 @@
 using System;
 using Domain.Exceptions;
 using Domain.MonthlyBillings;
+using Domain.Unit.Tests.MonthlyBillings.TestUtilities;
 
 namespace Domain.Unit.Tests.MonthlyBillings;
 
@@ -80,5 +81,91 @@ public sealed class IncomeTests
 
         // Act & Assert
         Assert.Throws<MoneyIsNullException>(createIncome);
+    }
+
+    [Fact]
+    public void Update_WhenPassedProperData_ShouldUpdateIncome()
+    {
+        // Arrange
+        var cut = new Income(
+            new(Guid.NewGuid()),
+            new("Income 1"),
+            new(
+                123.45m,
+                new("PLN")
+            ),
+            true
+        );
+
+        // Act
+        cut.Update(
+            new Name("Updated Income Name 1"),
+            new Money(
+                987.65m,
+                new Currency("EUR")
+            ),
+            false
+        );
+
+        // Assert
+        cut
+            .Should()
+            .Match<Income>(
+                i => i.Name.Value == "Updated Income Name 1"
+                  && i.Money.Amount == 987.65m
+                  && i.Money.Currency.Value == "EUR"
+                  && i.Include == false
+            );
+    }
+
+    [Fact]
+    public void Update_WhenPassedNullName_ShouldThrowNameIsNullException()
+    {
+        // Arrange
+        var cut = new Income(
+            new(Guid.NewGuid()),
+            new("Income 1"),
+            new(
+                123.45m,
+                new("PLN")
+            ),
+            true
+        );
+
+        var updateIncome = () => cut.Update(
+            null,
+            new Money(
+                987.65m,
+                new Currency("EUR")
+            ),
+            false
+        );
+
+        // Act & Assert
+        Assert.Throws<NameIsNullException>(updateIncome);
+    }
+
+    [Fact]
+    public void Update_WhenPassedNullMoney_ShouldThrowMoneyIsNullException()
+    {
+        // Arrange
+        var cut = new Income(
+            new(Guid.NewGuid()),
+            new("Income 1"),
+            new(
+                123.45m,
+                new("PLN")
+            ),
+            true
+        );
+
+        var updateIncome = () => cut.Update(
+            new Name("Updated Income Name 1"),
+            null,
+            false
+        );
+
+        // Act & Assert
+        Assert.Throws<MoneyIsNullException>(updateIncome);
     }
 }

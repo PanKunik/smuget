@@ -212,6 +212,74 @@ public sealed class MonthlyBillingTests
         Assert.Throws<MonthlyBillingCurrencyMismatchException>(addIncomeWithOtherCurrency);
     }
 
+    [Fact]
+    public void UpdateIncome_WhenPassedProperData_ShouldUpdateIncome()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+        var firstIncome = cut.Incomes.FirstOrDefault();
+
+        // Act
+        cut.UpdateIncome(
+            firstIncome.Id,
+            new("UpdatedName"),
+            new(
+                1.01m,
+                new("USD")
+            ),
+            false
+        );
+
+        // Assert
+        var result = cut.Incomes.First();
+
+        result
+            .Should()
+            .Match<Income>(
+                i => i.Name.Value == "UpdatedName"
+                  && i.Money.Amount == 1.01m
+                  && i.Money.Currency.Value == "USD"
+                  && i.Include == false
+            );
+    }
+
+    [Fact]
+    public void UpdateIncome_WhenIncomeNotFound_ShouldThrowIncomeNotFoundException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+
+        var updateIncome = () => cut.UpdateIncome(
+            new(Guid.NewGuid()),
+            Constants.Income.Name,
+            Constants.Income.Money,
+            false
+        );
+
+        // Act & Assert
+        Assert.Throws<IncomeNotFoundException>(updateIncome);
+    }
+
+    [Fact]
+    public void UpdateIncome_WhenMonthlyBillingIsClosed_ShouldThrowMonthlyBillingAlreadyClosedException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+        cut.Close();
+
+        var firstIncome = cut.Incomes.FirstOrDefault();
+
+        var updateIncome = () => cut.UpdateIncome(
+            firstIncome.Id,
+            Constants.Income.Name,
+            Constants.Income.Money,
+            false
+        );
+
+        // Act & Assert
+        Assert.Throws<MonthlyBillingAlreadyClosedException>(updateIncome);
+    }
+
     // TODO: Refactor
     [Theory]
     [InlineData(10, 25, 35)]

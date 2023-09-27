@@ -8,8 +8,10 @@ using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.CloseMonthlyBilling;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
 using Application.MonthlyBillings.Commands.ReopenMonthlyBilling;
+using Application.MonthlyBillings.Commands.UpdateIncome;
 using Application.MonthlyBillings.DTO;
 using Application.MonthlyBillings.Queries.GetByYearAndMonth;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using WebAPI.MonthlyBillings;
@@ -27,6 +29,7 @@ public sealed class MonthlyBillingsControllerTests
     private readonly Mock<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>> _mockGetMonthlyBillingQueryHandler;
     private readonly Mock<ICommandHandler<CloseMonthlyBillingCommand>> _mockCloseMonthlyBillingCommandHandler;
     private readonly Mock<ICommandHandler<ReopenMonthlyBillingCommand>> _mockReopenMonthlyBillingCommandHandler;
+    private readonly Mock<ICommandHandler<UpdateIncomeCommand>> _mockUpdateIncomeCommandHandler;
 
     public MonthlyBillingsControllerTests()
     {
@@ -37,6 +40,7 @@ public sealed class MonthlyBillingsControllerTests
         _mockGetMonthlyBillingQueryHandler = new Mock<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>>();
         _mockCloseMonthlyBillingCommandHandler = new Mock<ICommandHandler<CloseMonthlyBillingCommand>>();
         _mockReopenMonthlyBillingCommandHandler = new Mock<ICommandHandler<ReopenMonthlyBillingCommand>>();
+        _mockUpdateIncomeCommandHandler = new Mock<ICommandHandler<UpdateIncomeCommand>>();
 
         _mockGetMonthlyBillingQueryHandler
             .Setup(m => m.HandleAsync(
@@ -55,7 +59,8 @@ public sealed class MonthlyBillingsControllerTests
             _mockAddExpenseCommandHandler.Object,
             _mockGetMonthlyBillingQueryHandler.Object,
             _mockCloseMonthlyBillingCommandHandler.Object,
-            _mockReopenMonthlyBillingCommandHandler.Object
+            _mockReopenMonthlyBillingCommandHandler.Object,
+            _mockUpdateIncomeCommandHandler.Object
         );
     }
 
@@ -659,6 +664,75 @@ public sealed class MonthlyBillingsControllerTests
                     c => c.Year == year
                       && c.Month == month),
                 token),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateIncome_OnSuccess_ShouldReturnCreatedObjectResult()
+    {
+        // Act
+        var result = await _cut.UpdateIncome(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            new(
+                "Updated name",
+                11.24m,
+                "USD",
+                false
+            )
+        );
+
+        // Assert
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .BeOfType<NoContentResult>();
+    }
+
+    [Fact]
+    public async Task Open_OnSuccess_ShouldReturnStatusCode204()
+    {
+        // Act
+        var result = (NoContentResult)await _cut.UpdateIncome(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            new(
+                "Updated name",
+                11.24m,
+                "USD",
+                false
+            )
+        );
+
+        // Assert
+        result.StatusCode
+            .Should()
+            .Be(204);
+    }
+
+    [Fact]
+    public async Task UpdateIncome_WhenInvoked_ShouldCallUpdateIncomeCommandHandler()
+    {
+        // Act
+        await _cut.UpdateIncome(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            new(
+                "Updated name",
+                11.24m,
+                "USD",
+                false
+            )
+        );
+
+        // Assert
+        _mockUpdateIncomeCommandHandler.Verify(
+            m => m.HandleAsync(
+                It.IsAny<UpdateIncomeCommand>(),
+                It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }
