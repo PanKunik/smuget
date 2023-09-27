@@ -98,6 +98,32 @@ public sealed class MonthlyBilling
         _incomes.Add(income);
     }
 
+    public void UpdateIncome(
+        IncomeId incomeId,
+        Name name,
+        Money money,
+        bool include
+    )
+    {
+        if (State == State.Closed)
+        {
+            throw new MonthlyBillingAlreadyClosedException(Month, Year);
+        }
+
+        var incomeToUpdate = _incomes.Find(i => i.Id == incomeId);
+
+        if (incomeToUpdate is null)
+        {
+            throw new IncomeNotFoundException();
+        }
+
+        incomeToUpdate.Update(
+            name,
+            money,
+            include
+        );
+    }
+
     public void AddPlan(Plan plan)
     {
         if (State == State.Closed)

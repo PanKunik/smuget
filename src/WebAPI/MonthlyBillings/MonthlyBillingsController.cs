@@ -5,6 +5,7 @@ using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.CloseMonthlyBilling;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
 using Application.MonthlyBillings.Commands.ReopenMonthlyBilling;
+using Application.MonthlyBillings.Commands.UpdateIncome;
 using Application.MonthlyBillings.DTO;
 using Application.MonthlyBillings.Queries.GetByYearAndMonth;
 using Infrastructure.Exceptions;
@@ -27,6 +28,7 @@ public sealed class MonthlyBillingsController : ControllerBase
     private readonly IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO> _getMonthlyBilling;
     private readonly ICommandHandler<CloseMonthlyBillingCommand> _closeMonthlyBilling;
     private readonly ICommandHandler<ReopenMonthlyBillingCommand> _reopenMonthlyBilling;
+    private readonly ICommandHandler<UpdateIncomeCommand> _updateIncome;
 
     public MonthlyBillingsController(
         ICommandHandler<OpenMonthlyBillingCommand> openMonthlyBilling,
@@ -35,7 +37,8 @@ public sealed class MonthlyBillingsController : ControllerBase
         ICommandHandler<AddExpenseCommand> addExpense,
         IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO> getMonthlyBilling,
         ICommandHandler<CloseMonthlyBillingCommand> closeMonthlyBilling,
-        ICommandHandler<ReopenMonthlyBillingCommand> reopenMonthlyBilling
+        ICommandHandler<ReopenMonthlyBillingCommand> reopenMonthlyBilling,
+        ICommandHandler<UpdateIncomeCommand> updateIncome
     )
     {
         _openMonthlyBilling = openMonthlyBilling;
@@ -45,6 +48,7 @@ public sealed class MonthlyBillingsController : ControllerBase
         _getMonthlyBilling = getMonthlyBilling;
         _closeMonthlyBilling = closeMonthlyBilling;
         _reopenMonthlyBilling = reopenMonthlyBilling;
+        _updateIncome = updateIncome;
     }
 
     /// <summary>
@@ -229,6 +233,37 @@ public sealed class MonthlyBillingsController : ControllerBase
             new ReopenMonthlyBillingCommand(
                 year,
                 month
+            ),
+            token
+        );
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Updates specified income in monthly billing.
+    /// </summary>
+    [HttpPut("{monthlyBillingId}/incomes/{incomeId}")]
+    [ProducesResponseType(typeof(NoContentResult), Status204NoContent)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
+    public async Task<IActionResult> UpdateIncome(
+        [FromRoute(Name = "monthlyBillingId")] Guid monthlyBillingId,
+        [FromRoute(Name = "incomeId")] Guid incomeId,
+        [FromBody] UpdateIncomeRequest request,
+        CancellationToken token = default
+    )
+    {
+        var (name, moneyAmount, currency, include) = request;
+
+        await _updateIncome.HandleAsync(
+            new UpdateIncomeCommand(
+                monthlyBillingId,
+                incomeId,
+                name,
+                moneyAmount,
+                currency,
+                include
             ),
             token
         );

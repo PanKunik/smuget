@@ -1,0 +1,14 @@
+@host = https://localhost:7188
+
+@monthlyBillingId = f26ff0b4-a1ad-4517-b78e-2ed1c34c808f
+@incomeId = 03fcf4a6-cad4-4f18-8b40-19a4760443d1
+
+PUT {{host}}/api/monthlyBillings/{{monthlyBillingId}}/incomes/{{incomeId}}
+Content-Type: application/json
+
+{
+    "name": "Wypłata",
+    "moneyAmount": 2525.12,
+    "currency": "EUR",
+    "include": false
+}
