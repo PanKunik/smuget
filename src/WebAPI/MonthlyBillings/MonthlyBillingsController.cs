@@ -4,6 +4,7 @@ using Application.MonthlyBillings.Commands.AddIncome;
 using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.CloseMonthlyBilling;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
+using Application.MonthlyBillings.Commands.RemoveIncome;
 using Application.MonthlyBillings.Commands.ReopenMonthlyBilling;
 using Application.MonthlyBillings.Commands.UpdateIncome;
 using Application.MonthlyBillings.DTO;
@@ -15,6 +16,7 @@ using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebAPI.MonthlyBillings;
 
+//TODO: Extract separate controllers for incomes/plans/expenses
 [ApiController]
 [Route("api/monthlyBillings")]
 [Consumes("application/json")]
@@ -29,6 +31,7 @@ public sealed class MonthlyBillingsController : ControllerBase
     private readonly ICommandHandler<CloseMonthlyBillingCommand> _closeMonthlyBilling;
     private readonly ICommandHandler<ReopenMonthlyBillingCommand> _reopenMonthlyBilling;
     private readonly ICommandHandler<UpdateIncomeCommand> _updateIncome;
+    private readonly ICommandHandler<RemoveIncomeCommand> _removeIncome;
 
     public MonthlyBillingsController(
         ICommandHandler<OpenMonthlyBillingCommand> openMonthlyBilling,
@@ -38,7 +41,8 @@ public sealed class MonthlyBillingsController : ControllerBase
         IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO> getMonthlyBilling,
         ICommandHandler<CloseMonthlyBillingCommand> closeMonthlyBilling,
         ICommandHandler<ReopenMonthlyBillingCommand> reopenMonthlyBilling,
-        ICommandHandler<UpdateIncomeCommand> updateIncome
+        ICommandHandler<UpdateIncomeCommand> updateIncome,
+        ICommandHandler<RemoveIncomeCommand> removeIncome
     )
     {
         _openMonthlyBilling = openMonthlyBilling;
@@ -49,6 +53,7 @@ public sealed class MonthlyBillingsController : ControllerBase
         _closeMonthlyBilling = closeMonthlyBilling;
         _reopenMonthlyBilling = reopenMonthlyBilling;
         _updateIncome = updateIncome;
+        _removeIncome = removeIncome;
     }
 
     /// <summary>
@@ -264,6 +269,31 @@ public sealed class MonthlyBillingsController : ControllerBase
                 moneyAmount,
                 currency,
                 include
+            ),
+            token
+        );
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Removes specified income from monthly billing by income id.
+    /// </summary>
+    [HttpDelete("{monthlyBillingId}/incomes/{incomeId}")]
+    [ProducesResponseType(typeof(NoContentResult), Status204NoContent)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
+    public async Task<IActionResult> RemoveIncome(
+        [FromRoute] RemoveIncomeRequest request,
+        CancellationToken token = default
+    )
+    {
+        var (monthlyBillingId, incomeId) = request;
+
+        await _removeIncome.HandleAsync(
+            new RemoveIncomeCommand(
+                monthlyBillingId,
+                incomeId
             ),
             token
         );

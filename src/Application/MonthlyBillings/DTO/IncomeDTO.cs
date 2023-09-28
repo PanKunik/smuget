@@ -6,4 +6,5 @@ public sealed class IncomeDTO
     public string Name { get; set; }
     public string Money { get; set; }
     public bool Include { get; set; }
+    public bool Active { get; set; }
 }

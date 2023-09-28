@@ -8,6 +8,7 @@ public sealed class Income // TODO: Make internal?
     public Name Name { get; private set; }
     public Money Money { get; private set; }
     public bool Include { get; private set; }
+    public bool Active { get; private set; } = true;
 
     public Income(
         IncomeId incomeId,
@@ -62,5 +63,10 @@ public sealed class Income // TODO: Make internal?
         Name = name;
         Money = money;
         Include = include;
+    }
+
+    internal void Remove()
+    {
+        Active = false;
     }
 }

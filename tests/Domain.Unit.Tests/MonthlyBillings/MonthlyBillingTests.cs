@@ -280,6 +280,77 @@ public sealed class MonthlyBillingTests
         Assert.Throws<MonthlyBillingAlreadyClosedException>(updateIncome);
     }
 
+    [Fact]
+    public void RemoveIncome_WhenPassedNullIncomeId_ShouldThrowIncomeIdIsNullException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+
+        var removeIncome = () => cut.RemoveIncome(
+            null
+        );
+
+        // Act & Assert
+        Assert.Throws<IncomeIdIsNullException>(removeIncome);
+    }
+
+    [Fact]
+    public void RemoveIncome_WhenMonthlyBillingIsClosed_ShouldThrowMonthlyBillingAlreadyClosedException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+        cut.Close();
+
+        var removeIncome = () => cut.RemoveIncome(
+            new(Guid.NewGuid())
+        );
+
+        // Act & Assert
+        Assert.Throws<MonthlyBillingAlreadyClosedException>(removeIncome);
+    }
+
+    [Fact]
+    public void RemoveIncome_WhenIncomeDoesntExistInMonthlyBilling_ShouldThrowIncomeNotFoundException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+
+        var removeIncome = () => cut.RemoveIncome(
+            new(Guid.NewGuid())
+        );
+
+        // Act & Assert
+        Assert.Throws<IncomeNotFoundException>(removeIncome);
+    }
+
+    [Fact]
+    public void RemoveIncome_WhenPassedProperData_ShouldRemoveIncomeFromMonthlyBilling()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            incomes: new List<Income>()
+            {
+                new Income(
+                    Constants.Income.Id,
+                    Constants.Income.Name,
+                    Constants.Income.Money,
+                    true
+                )
+            }
+        );
+
+        // Act
+        cut.RemoveIncome(
+            Constants.Income.Id
+        );
+
+        // Assert
+        cut.Incomes
+            .First().Active
+                .Should()
+                .BeFalse();
+    }
+
     // TODO: Refactor
     [Theory]
     [InlineData(10, 25, 35)]
