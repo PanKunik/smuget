@@ -1,7 +1,6 @@
 using System;
 using Domain.Exceptions;
 using Domain.MonthlyBillings;
-using Domain.Unit.Tests.MonthlyBillings.TestUtilities;
 
 namespace Domain.Unit.Tests.MonthlyBillings;
 
@@ -167,5 +166,28 @@ public sealed class IncomeTests
 
         // Act & Assert
         Assert.Throws<MoneyIsNullException>(updateIncome);
+    }
+
+    [Fact]
+    public void Remove_WhenCalled_ShouldSetActiveToFalse()
+    {
+        // Arrange
+        var cut = new Income(
+            new(Guid.NewGuid()),
+            new("Income 1"),
+            new(
+                123.45m,
+                new("PLN")
+            ),
+            true
+        );
+
+        // Act
+        cut.Remove();
+
+        // Assert
+        cut.Active
+            .Should()
+            .BeFalse();
     }
 }

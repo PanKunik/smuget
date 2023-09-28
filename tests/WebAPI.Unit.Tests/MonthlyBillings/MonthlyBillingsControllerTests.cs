@@ -7,11 +7,11 @@ using Application.MonthlyBillings.Commands.AddIncome;
 using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.CloseMonthlyBilling;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
+using Application.MonthlyBillings.Commands.RemoveIncome;
 using Application.MonthlyBillings.Commands.ReopenMonthlyBilling;
 using Application.MonthlyBillings.Commands.UpdateIncome;
 using Application.MonthlyBillings.DTO;
 using Application.MonthlyBillings.Queries.GetByYearAndMonth;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using WebAPI.MonthlyBillings;
@@ -30,6 +30,7 @@ public sealed class MonthlyBillingsControllerTests
     private readonly Mock<ICommandHandler<CloseMonthlyBillingCommand>> _mockCloseMonthlyBillingCommandHandler;
     private readonly Mock<ICommandHandler<ReopenMonthlyBillingCommand>> _mockReopenMonthlyBillingCommandHandler;
     private readonly Mock<ICommandHandler<UpdateIncomeCommand>> _mockUpdateIncomeCommandHandler;
+    private readonly Mock<ICommandHandler<RemoveIncomeCommand>> _mockRemoveIncomeCommandHandler;
 
     public MonthlyBillingsControllerTests()
     {
@@ -41,6 +42,7 @@ public sealed class MonthlyBillingsControllerTests
         _mockCloseMonthlyBillingCommandHandler = new Mock<ICommandHandler<CloseMonthlyBillingCommand>>();
         _mockReopenMonthlyBillingCommandHandler = new Mock<ICommandHandler<ReopenMonthlyBillingCommand>>();
         _mockUpdateIncomeCommandHandler = new Mock<ICommandHandler<UpdateIncomeCommand>>();
+        _mockRemoveIncomeCommandHandler = new Mock<ICommandHandler<RemoveIncomeCommand>>();
 
         _mockGetMonthlyBillingQueryHandler
             .Setup(m => m.HandleAsync(
@@ -60,7 +62,8 @@ public sealed class MonthlyBillingsControllerTests
             _mockGetMonthlyBillingQueryHandler.Object,
             _mockCloseMonthlyBillingCommandHandler.Object,
             _mockReopenMonthlyBillingCommandHandler.Object,
-            _mockUpdateIncomeCommandHandler.Object
+            _mockUpdateIncomeCommandHandler.Object,
+            _mockRemoveIncomeCommandHandler.Object
         );
     }
 
@@ -668,7 +671,7 @@ public sealed class MonthlyBillingsControllerTests
     }
 
     [Fact]
-    public async Task UpdateIncome_OnSuccess_ShouldReturnCreatedObjectResult()
+    public async Task UpdateIncome_OnSuccess_ShouldReturnNoContentResult()
     {
         // Act
         var result = await _cut.UpdateIncome(
@@ -732,6 +735,65 @@ public sealed class MonthlyBillingsControllerTests
         _mockUpdateIncomeCommandHandler.Verify(
             m => m.HandleAsync(
                 It.IsAny<UpdateIncomeCommand>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task RemoveIncome_OnSuccess_ShouldReturnNoContentResult()
+    {
+        // Arrange
+        var request = new RemoveIncomeRequest(
+                Guid.NewGuid(),
+                Guid.NewGuid()
+        );
+
+        // Act
+        var result = await _cut.RemoveIncome(request);
+
+        // Assert
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .BeOfType<NoContentResult>();
+    }
+
+    [Fact]
+    public async Task RemoveIncome_OnSuccess_ShouldReturn204StatusCode()
+    {
+        // Arrange
+        var request = new RemoveIncomeRequest(
+                Guid.NewGuid(),
+                Guid.NewGuid()
+        );
+
+        // Act
+        var result = (NoContentResult)await _cut.RemoveIncome(request);
+
+        // Assert
+        result.StatusCode
+            .Should()
+            .Be(204);
+    }
+
+    [Fact]
+    public async Task RemoveIncome_WhenInvoked_ShouldCallRemoveIncomeCommandHandler()
+    {
+        // Act
+        await _cut.RemoveIncome(
+            new(
+                Guid.NewGuid(),
+                Guid.NewGuid()
+            )
+        );
+
+        // Assert
+        _mockRemoveIncomeCommandHandler.Verify(
+            m => m.HandleAsync(
+                It.IsAny<RemoveIncomeCommand>(),
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }

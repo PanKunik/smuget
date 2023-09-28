@@ -36,6 +36,10 @@ internal sealed class IncomeEntityConfiguration : IEntityTypeConfiguration<Incom
             .IsRequired();
 
         builder
+            .Property(i => i.Active)
+            .IsRequired();
+
+        builder
             .Property(i => i.MonthlyBillingId)
             .IsRequired();
     }

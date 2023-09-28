@@ -20,9 +20,12 @@ internal static class MonthlyBillingMappingExtensions
             entity.Plans.ConvertAll(
                 p => p.ToDomain()
             ),
-            entity.Incomes.ConvertAll(
-                i => i.ToDomain()
-            )
+            entity.Incomes
+                .Where(i => i.Active)
+                .ToList()
+                .ConvertAll(
+                    i => i.ToDomain()
+                )
         );
     }
 

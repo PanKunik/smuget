@@ -47,6 +47,7 @@ public sealed class MonthlyBilling
     {
         Id = monthlyBillingId;    // TODO: Check for null
 
+        // TODO: Refactor - extract method
         if (year is null)
         {
             throw new YearIsNullException();
@@ -54,6 +55,7 @@ public sealed class MonthlyBilling
 
         Year = year;
 
+        // TODO: Refactor - extract method
         if (month is null)
         {
             throw new MonthIsNullException();
@@ -61,6 +63,7 @@ public sealed class MonthlyBilling
 
         Month = month;
 
+        // TODO: Refactor - extract method
         if (currency is null)
         {
             throw new CurrencyIsNullException();
@@ -75,21 +78,25 @@ public sealed class MonthlyBilling
 
     public void AddIncome(Income income)
     {
+        // TODO: Refactor - extract method
         if (State == State.Closed)
         {
             throw new MonthlyBillingAlreadyClosedException(Month, Year);
         }
 
+        // TODO: Refactor - extract method
         if (income is null)
         {
             throw new IncomeIsNullException();
         }
 
+        // TODO: Refactor - extract method
         if (_incomes.Any(i => i.Name.Equals(income.Name)))
         {
             throw new IncomeNameNotUniqueException(income.Name.Value);
         }
 
+        // TODO: Refactor - extract method
         if (income.Money.Currency != Currency)
         {
             throw new MonthlyBillingCurrencyMismatchException(income.Money.Currency);
@@ -105,17 +112,15 @@ public sealed class MonthlyBilling
         bool include
     )
     {
+        // TODO: Validation - check for IncomeId nullability
+        // TODO: Refactor - extract method
         if (State == State.Closed)
         {
             throw new MonthlyBillingAlreadyClosedException(Month, Year);
         }
 
-        var incomeToUpdate = _incomes.Find(i => i.Id == incomeId);
-
-        if (incomeToUpdate is null)
-        {
-            throw new IncomeNotFoundException();
-        }
+        var incomeToUpdate = _incomes?.Find(i => i.Id == incomeId && i.Active)
+            ?? throw new IncomeNotFoundException();
 
         incomeToUpdate.Update(
             name,
@@ -124,23 +129,49 @@ public sealed class MonthlyBilling
         );
     }
 
-    public void AddPlan(Plan plan)
+    public void RemoveIncome(
+        IncomeId incomeId
+    )
     {
+        // TODO: Refactor - extract method
         if (State == State.Closed)
         {
             throw new MonthlyBillingAlreadyClosedException(Month, Year);
         }
 
+        // TODO: Refactor - extract method
+        if (incomeId is null)
+        {
+            throw new IncomeIdIsNullException();
+        }
+
+        var incomeToRemove = _incomes?.Find(i => i.Id == incomeId && i.Active)
+            ?? throw new IncomeNotFoundException();
+
+        incomeToRemove.Remove();
+    }
+
+    public void AddPlan(Plan plan)
+    {
+        // TODO: Refactor - extract method
+        if (State == State.Closed)
+        {
+            throw new MonthlyBillingAlreadyClosedException(Month, Year);
+        }
+
+        // TODO: Refactor - extract method
         if (plan is null)
         {
             throw new PlanIsNullException();
         }
 
+        // TODO: Refactor - extract method
         if (_plans.Any(p => p.Category.Equals(plan.Category)))
         {
             throw new PlanCategoryNotUniqueException(plan.Category.Value);
         }
 
+        // TODO: Refactor - extract method
         if (plan.Money.Currency != Currency)
         {
             throw new MonthlyBillingCurrencyMismatchException(plan.Money.Currency);
@@ -151,28 +182,34 @@ public sealed class MonthlyBilling
 
     public void AddExpense(PlanId planId, Expense expense)
     {
+        // TODO: Refactor - extract method
         if (State == State.Closed)
         {
             throw new MonthlyBillingAlreadyClosedException(Month, Year);
         }
 
+        // TODO: Refactor - extract method
         if (planId is null)
         {
             throw new PlanIdIsNullException();
         }
 
+        // TODO: Refactor - extract method
         if (expense is null)
         {
             throw new ExpenseIsNullException();
         }
 
+        // TODO: Refactor - extract method
         var plan = _plans.Find(p => p.Id == planId);
 
+        // TODO: Refactor - extract method
         if (plan is null)
         {
             throw new PlanNotFoundException(planId);
         }
 
+        // TODO: Refactor - extract method
         if (expense.Money.Currency != Currency)
         {
             throw new MonthlyBillingCurrencyMismatchException(expense.Money.Currency);
@@ -183,6 +220,7 @@ public sealed class MonthlyBilling
 
     public void Close()
     {
+        // TODO: Refactor - extract method
         if (State == State.Closed)
         {
             throw new MonthlyBillingAlreadyClosedException(Month, Year);
@@ -193,6 +231,7 @@ public sealed class MonthlyBilling
 
     public void Reopen()
     {
+        // TODO: Refactor - extract method
         if (State == State.Open)
         {
             throw new MonthlyBillingAlreadyOpenedException(Month, Year);

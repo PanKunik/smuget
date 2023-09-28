@@ -7,5 +7,6 @@ internal sealed class IncomeEntity
     public decimal MoneyAmount { get; set; }
     public string MoneyCurrency { get; set; }
     public bool Include { get; set; }
+    public bool Active { get; set; }
     public Guid MonthlyBillingId { get; set; }
 }

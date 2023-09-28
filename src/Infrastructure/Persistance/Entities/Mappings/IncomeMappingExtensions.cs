@@ -31,6 +31,7 @@ internal static class IncomeMappingExtensions
             MoneyAmount = domain.Money.Amount,
             MoneyCurrency = domain.Money.Currency.Value,
             Include = domain.Include,
+            Active = domain.Active,
             MonthlyBillingId = monthlyBillingId
         };
     }
