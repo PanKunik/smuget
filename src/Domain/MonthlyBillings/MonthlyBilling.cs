@@ -180,6 +180,28 @@ public sealed class MonthlyBilling
         _plans.Add(plan);
     }
 
+    public void RemovePlan(
+        PlanId planId
+    )
+    {
+        // TODO: Refactor - extract method
+        if (State == State.Closed)
+        {
+            throw new MonthlyBillingAlreadyClosedException(Month, Year);
+        }
+
+        // TODO: Refactor - extract method
+        if (planId is null)
+        {
+            throw new PlanIdIsNullException();
+        }
+
+        var planToRemove = _plans?.Find(i => i.Id == planId && i.Active)
+            ?? throw new PlanNotFoundException();
+
+        planToRemove.Remove();
+    }
+
     public void AddExpense(PlanId planId, Expense expense)
     {
         // TODO: Refactor - extract method

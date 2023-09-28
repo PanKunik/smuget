@@ -1,0 +1,7 @@
+@host = https://localhost:7188
+
+@monthlyBillingId = f26ff0b4-a1ad-4517-b78e-2ed1c34c808f
+@planId = cc1872a8-0fe5-46e3-91bd-5c1eebfdb97f
+
+DELETE {{host}}/api/monthlyBillings/{{monthlyBillingId}}/plans/{{planId}}
+Accept: application/json

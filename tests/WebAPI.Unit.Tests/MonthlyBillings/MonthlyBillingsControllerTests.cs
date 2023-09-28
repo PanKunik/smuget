@@ -8,6 +8,7 @@ using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.CloseMonthlyBilling;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
 using Application.MonthlyBillings.Commands.RemoveIncome;
+using Application.MonthlyBillings.Commands.RemovePlan;
 using Application.MonthlyBillings.Commands.ReopenMonthlyBilling;
 using Application.MonthlyBillings.Commands.UpdateIncome;
 using Application.MonthlyBillings.DTO;
@@ -31,6 +32,7 @@ public sealed class MonthlyBillingsControllerTests
     private readonly Mock<ICommandHandler<ReopenMonthlyBillingCommand>> _mockReopenMonthlyBillingCommandHandler;
     private readonly Mock<ICommandHandler<UpdateIncomeCommand>> _mockUpdateIncomeCommandHandler;
     private readonly Mock<ICommandHandler<RemoveIncomeCommand>> _mockRemoveIncomeCommandHandler;
+    private readonly Mock<ICommandHandler<RemovePlanCommand>> _mockRemovePlanCommandHandler;
 
     public MonthlyBillingsControllerTests()
     {
@@ -43,6 +45,7 @@ public sealed class MonthlyBillingsControllerTests
         _mockReopenMonthlyBillingCommandHandler = new Mock<ICommandHandler<ReopenMonthlyBillingCommand>>();
         _mockUpdateIncomeCommandHandler = new Mock<ICommandHandler<UpdateIncomeCommand>>();
         _mockRemoveIncomeCommandHandler = new Mock<ICommandHandler<RemoveIncomeCommand>>();
+        _mockRemovePlanCommandHandler = new Mock<ICommandHandler<RemovePlanCommand>>();
 
         _mockGetMonthlyBillingQueryHandler
             .Setup(m => m.HandleAsync(
@@ -63,7 +66,8 @@ public sealed class MonthlyBillingsControllerTests
             _mockCloseMonthlyBillingCommandHandler.Object,
             _mockReopenMonthlyBillingCommandHandler.Object,
             _mockUpdateIncomeCommandHandler.Object,
-            _mockRemoveIncomeCommandHandler.Object
+            _mockRemoveIncomeCommandHandler.Object,
+            _mockRemovePlanCommandHandler.Object
         );
     }
 
@@ -794,6 +798,65 @@ public sealed class MonthlyBillingsControllerTests
         _mockRemoveIncomeCommandHandler.Verify(
             m => m.HandleAsync(
                 It.IsAny<RemoveIncomeCommand>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task RemovePlan_OnSuccess_ShouldReturnNoContentResult()
+    {
+        // Arrange
+        var request = new RemovePlanRequest(
+                Guid.NewGuid(),
+                Guid.NewGuid()
+        );
+
+        // Act
+        var result = await _cut.RemovePlan(request);
+
+        // Assert
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .BeOfType<NoContentResult>();
+    }
+
+    [Fact]
+    public async Task RemovePlan_OnSuccess_ShouldReturn204StatusCode()
+    {
+        // Arrange
+        var request = new RemovePlanRequest(
+                Guid.NewGuid(),
+                Guid.NewGuid()
+        );
+
+        // Act
+        var result = (NoContentResult)await _cut.RemovePlan(request);
+
+        // Assert
+        result.StatusCode
+            .Should()
+            .Be(204);
+    }
+
+    [Fact]
+    public async Task RemovePlan_WhenInvoked_ShouldCallRemovePlanCommandHandler()
+    {
+        // Act
+        await _cut.RemovePlan(
+            new(
+                Guid.NewGuid(),
+                Guid.NewGuid()
+            )
+        );
+
+        // Assert
+        _mockRemovePlanCommandHandler.Verify(
+            m => m.HandleAsync(
+                It.IsAny<RemovePlanCommand>(),
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }

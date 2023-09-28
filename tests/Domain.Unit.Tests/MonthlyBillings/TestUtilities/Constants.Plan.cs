@@ -1,3 +1,4 @@
+using System;
 using Domain.MonthlyBillings;
 
 namespace Domain.Unit.Tests.MonthlyBillings.TestUtilities;
@@ -6,6 +7,7 @@ public static partial class Constants
 {
     public static class Plan
     {
+        public static readonly PlanId Id = new(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         public static readonly Category Category = new("Category");
         public static readonly Money Money = new(12.5M, new Currency("PLN"));
 

@@ -35,6 +35,7 @@ internal static class PlanMappingExtensions
             MoneyCurrency = domain.Money.Currency.Value,
             SortOrder = domain.SortOrder,
             MonthlyBillingId = monthlyBillingId,
+            Active = domain.Active,
             Expenses = domain.Expenses.Select(
                 e => e.ToEntity(domain.Id.Value)
             )

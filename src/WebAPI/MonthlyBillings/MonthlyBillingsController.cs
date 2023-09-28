@@ -5,6 +5,7 @@ using Application.MonthlyBillings.Commands.AddPlan;
 using Application.MonthlyBillings.Commands.CloseMonthlyBilling;
 using Application.MonthlyBillings.Commands.OpenMonthlyBilling;
 using Application.MonthlyBillings.Commands.RemoveIncome;
+using Application.MonthlyBillings.Commands.RemovePlan;
 using Application.MonthlyBillings.Commands.ReopenMonthlyBilling;
 using Application.MonthlyBillings.Commands.UpdateIncome;
 using Application.MonthlyBillings.DTO;
@@ -32,6 +33,7 @@ public sealed class MonthlyBillingsController : ControllerBase
     private readonly ICommandHandler<ReopenMonthlyBillingCommand> _reopenMonthlyBilling;
     private readonly ICommandHandler<UpdateIncomeCommand> _updateIncome;
     private readonly ICommandHandler<RemoveIncomeCommand> _removeIncome;
+    private readonly ICommandHandler<RemovePlanCommand> _removePlan;
 
     public MonthlyBillingsController(
         ICommandHandler<OpenMonthlyBillingCommand> openMonthlyBilling,
@@ -42,7 +44,8 @@ public sealed class MonthlyBillingsController : ControllerBase
         ICommandHandler<CloseMonthlyBillingCommand> closeMonthlyBilling,
         ICommandHandler<ReopenMonthlyBillingCommand> reopenMonthlyBilling,
         ICommandHandler<UpdateIncomeCommand> updateIncome,
-        ICommandHandler<RemoveIncomeCommand> removeIncome
+        ICommandHandler<RemoveIncomeCommand> removeIncome,
+        ICommandHandler<RemovePlanCommand> removePlan
     )
     {
         _openMonthlyBilling = openMonthlyBilling;
@@ -54,6 +57,7 @@ public sealed class MonthlyBillingsController : ControllerBase
         _reopenMonthlyBilling = reopenMonthlyBilling;
         _updateIncome = updateIncome;
         _removeIncome = removeIncome;
+        _removePlan = removePlan;
     }
 
     /// <summary>
@@ -294,6 +298,31 @@ public sealed class MonthlyBillingsController : ControllerBase
             new RemoveIncomeCommand(
                 monthlyBillingId,
                 incomeId
+            ),
+            token
+        );
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Removes specified plan from monthly billing by plan id.
+    /// </summary>
+    [HttpDelete("{monthlyBillingId}/plans/{planId}")]
+    [ProducesResponseType(typeof(NoContentResult), Status204NoContent)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
+    public async Task<IActionResult> RemovePlan(
+        [FromRoute] RemovePlanRequest request,
+        CancellationToken token = default
+    )
+    {
+        var (monthlyBillingId, planId) = request;
+
+        await _removePlan.HandleAsync(
+            new RemovePlanCommand(
+                monthlyBillingId,
+                planId
             ),
             token
         );

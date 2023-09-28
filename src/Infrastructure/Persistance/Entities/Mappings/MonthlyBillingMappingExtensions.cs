@@ -17,7 +17,10 @@ internal static class MonthlyBillingMappingExtensions
             new Month(entity.Month),
             new Currency(entity.Currency),
             State.GetByName(entity.State),
-            entity.Plans.ConvertAll(
+            entity.Plans
+                .Where(p => p.Active)
+                .ToList()
+                .ConvertAll(
                 p => p.ToDomain()
             ),
             entity.Incomes
