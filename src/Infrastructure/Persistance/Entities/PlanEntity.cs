@@ -8,5 +8,6 @@ internal sealed class PlanEntity
     public string MoneyCurrency { get; set; }
     public uint SortOrder { get; set; }
     public Guid MonthlyBillingId { get; set; }
+    public bool Active { get; set; }
     public List<ExpenseEntity> Expenses { get; set; }
 }

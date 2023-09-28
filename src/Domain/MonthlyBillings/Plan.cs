@@ -10,6 +10,7 @@ public sealed class Plan
     public Category Category { get; }
     public Money Money { get; }
     public uint SortOrder { get; }
+    public bool Active { get; private set; } = true;
     public IReadOnlyCollection<Expense> Expenses => _expenses.AsReadOnly();    
 
     public decimal SumOfExpenses
@@ -53,5 +54,10 @@ public sealed class Plan
     internal void AddExpense(Expense expense)
     {
         _expenses.Add(expense);
+    }
+
+    internal void Remove()
+    {
+        Active = false;
     }
 }

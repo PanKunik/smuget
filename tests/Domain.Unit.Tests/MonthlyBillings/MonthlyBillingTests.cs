@@ -590,6 +590,78 @@ public sealed class MonthlyBillingTests
     }
 
     [Fact]
+    public void RemovePlan_WhenPassedNullPlanId_ShouldThrowPlanIdIsNullException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+
+        var removePlan = () => cut.RemovePlan(
+            null
+        );
+
+        // Act & Assert
+        Assert.Throws<PlanIdIsNullException>(removePlan);
+    }
+
+    [Fact]
+    public void RemovePlan_WhenMonthlyBillingIsClosed_ShouldThrowMonthlyBillingAlreadyClosedException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+        cut.Close();
+
+        var removePlan = () => cut.RemovePlan(
+            new(Guid.NewGuid())
+        );
+
+        // Act & Assert
+        Assert.Throws<MonthlyBillingAlreadyClosedException>(removePlan);
+    }
+
+    [Fact]
+    public void RemovePlan_WhenPlanDoesntExistInMonthlyBilling_ShouldThrowPlanNotFoundException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+
+        var removePlan = () => cut.RemovePlan(
+            new(Guid.NewGuid())
+        );
+
+        // Act & Assert
+        Assert.Throws<PlanNotFoundException>(removePlan);
+    }
+
+    [Fact]
+    public void RemovePlan_WhenPassedProperData_ShouldRemovePlanFromMonthlyBilling()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: new List<Plan>()
+            {
+                new Plan(
+                    Constants.Plan.Id,
+                    Constants.Plan.Category,
+                    Constants.Plan.Money,
+                    12
+                )
+            }
+        );
+
+        // Act
+        cut.RemovePlan(
+            Constants.Plan.Id
+        );
+
+        // Assert
+        cut.Plans
+            .First().Active
+                .Should()
+                .BeFalse();
+    }
+
+
+    [Fact]
     public void SumOfPlans_WhenCalled_ShouldReturnExpectedValue()
     {
         // Arrange

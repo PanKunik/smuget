@@ -36,6 +36,10 @@ internal sealed class PlanEntityConfiguration : IEntityTypeConfiguration<PlanEnt
             .IsRequired();
 
         builder
+            .Property(p => p.Active)
+            .IsRequired();
+
+        builder
             .HasMany(p => p.Expenses)
             .WithOne()
             .HasForeignKey(e => e.PlanId)
