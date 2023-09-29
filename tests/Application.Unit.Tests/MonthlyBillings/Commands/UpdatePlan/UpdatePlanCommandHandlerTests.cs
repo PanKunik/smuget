@@ -26,7 +26,9 @@ public sealed class UpdatePlanCommandHandlerTests
         var command = UpdatePlanCommandUtilities.CreateCommand();
         _repository
             .GetById(new(command.MonthlyBillingId))
-            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling(
+                plans: new List<Plan>() { PlansUtilities.CreatePlan() }
+            ));
 
         // Act
         await _handler.HandleAsync(
