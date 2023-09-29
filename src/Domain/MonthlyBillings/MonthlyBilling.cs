@@ -180,6 +180,33 @@ public sealed class MonthlyBilling
         _plans.Add(plan);
     }
 
+    public void UpdatePlan(
+        PlanId planId,
+        Category category,
+        Money money,
+        uint sortOrder
+    )
+    {
+        if (State == State.Closed)
+        {
+            throw new MonthlyBillingAlreadyClosedException(Month, Year);
+        }
+
+        if (planId is null)
+        {
+            throw new PlanIdIsNullException();
+        }
+
+        var planToUpdate = _plans?.Find(p => p.Id == planId && p.Active)
+            ?? throw new PlanNotFoundException();
+
+        planToUpdate.Update(
+            category,
+            money,
+            sortOrder
+        );
+    }
+
     public void RemovePlan(
         PlanId planId
     )

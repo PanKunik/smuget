@@ -7,11 +7,11 @@ namespace Domain.MonthlyBillings;
 public sealed class Plan
 {
     public PlanId Id { get; } = new PlanId(Guid.NewGuid());
-    public Category Category { get; }
-    public Money Money { get; }
-    public uint SortOrder { get; }
+    public Category Category { get; private set; }
+    public Money Money { get; private set; }
+    public uint SortOrder { get; private set; }
     public bool Active { get; private set; } = true;
-    public IReadOnlyCollection<Expense> Expenses => _expenses.AsReadOnly();    
+    public IReadOnlyCollection<Expense> Expenses => _expenses.AsReadOnly();
 
     public decimal SumOfExpenses
         => _expenses?.Sum(e => e.Money.Amount) ?? 0m;
@@ -26,6 +26,7 @@ public sealed class Plan
         List<Expense> expenses = null
     )
     {
+        // TODO: Refactor - extract method
         if (planId is null)
         {
             throw new PlanIdIsNullException();
@@ -33,6 +34,7 @@ public sealed class Plan
 
         Id = planId;
 
+        // TODO: Refactor - extract method
         if (category is null)
         {
             throw new CategoryIsNullException();
@@ -40,6 +42,7 @@ public sealed class Plan
 
         Category = category;
 
+        // TODO: Refactor - extract method
         if (money is null)
         {
             throw new MoneyIsNullException();
@@ -54,6 +57,29 @@ public sealed class Plan
     internal void AddExpense(Expense expense)
     {
         _expenses.Add(expense);
+    }
+
+    internal void Update(
+        Category category,
+        Money money,
+        uint sortOrder
+    )
+    {
+        // TODO: Refactor - extract method
+        if (category is null)
+        {
+            throw new CategoryIsNullException();
+        }
+
+        // TODO: Refactor - extract method
+        if (money is null)
+        {
+            throw new MoneyIsNullException();
+        }
+
+        Category = category;
+        Money = money;
+        SortOrder = sortOrder;
     }
 
     internal void Remove()

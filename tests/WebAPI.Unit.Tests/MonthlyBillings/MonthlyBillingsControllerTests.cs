@@ -11,6 +11,7 @@ using Application.MonthlyBillings.Commands.RemoveIncome;
 using Application.MonthlyBillings.Commands.RemovePlan;
 using Application.MonthlyBillings.Commands.ReopenMonthlyBilling;
 using Application.MonthlyBillings.Commands.UpdateIncome;
+using Application.MonthlyBillings.Commands.UpdatePlan;
 using Application.MonthlyBillings.DTO;
 using Application.MonthlyBillings.Queries.GetByYearAndMonth;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +34,7 @@ public sealed class MonthlyBillingsControllerTests
     private readonly Mock<ICommandHandler<UpdateIncomeCommand>> _mockUpdateIncomeCommandHandler;
     private readonly Mock<ICommandHandler<RemoveIncomeCommand>> _mockRemoveIncomeCommandHandler;
     private readonly Mock<ICommandHandler<RemovePlanCommand>> _mockRemovePlanCommandHandler;
+    private readonly Mock<ICommandHandler<UpdatePlanCommand>> _mockUpdatePlanCommandHandler;
 
     public MonthlyBillingsControllerTests()
     {
@@ -46,6 +48,7 @@ public sealed class MonthlyBillingsControllerTests
         _mockUpdateIncomeCommandHandler = new Mock<ICommandHandler<UpdateIncomeCommand>>();
         _mockRemoveIncomeCommandHandler = new Mock<ICommandHandler<RemoveIncomeCommand>>();
         _mockRemovePlanCommandHandler = new Mock<ICommandHandler<RemovePlanCommand>>();
+        _mockUpdatePlanCommandHandler = new Mock<ICommandHandler<UpdatePlanCommand>>();
 
         _mockGetMonthlyBillingQueryHandler
             .Setup(m => m.HandleAsync(
@@ -67,7 +70,8 @@ public sealed class MonthlyBillingsControllerTests
             _mockReopenMonthlyBillingCommandHandler.Object,
             _mockUpdateIncomeCommandHandler.Object,
             _mockRemoveIncomeCommandHandler.Object,
-            _mockRemovePlanCommandHandler.Object
+            _mockRemovePlanCommandHandler.Object,
+            _mockUpdatePlanCommandHandler.Object
         );
     }
 
@@ -700,7 +704,7 @@ public sealed class MonthlyBillingsControllerTests
     }
 
     [Fact]
-    public async Task Open_OnSuccess_ShouldReturnStatusCode204()
+    public async Task UpdateIncome_OnSuccess_ShouldReturnStatusCode204()
     {
         // Act
         var result = (NoContentResult)await _cut.UpdateIncome(
@@ -857,6 +861,75 @@ public sealed class MonthlyBillingsControllerTests
         _mockRemovePlanCommandHandler.Verify(
             m => m.HandleAsync(
                 It.IsAny<RemovePlanCommand>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdatePlan_OnSuccess_ShouldReturnNoContentResult()
+    {
+        // Act
+        var result = await _cut.UpdatePlan(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            new(
+                "Updated Category",
+                11.24m,
+                "USD",
+                1
+            )
+        );
+
+        // Assert
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .BeOfType<NoContentResult>();
+    }
+
+    [Fact]
+    public async Task UpdatePlan_OnSuccess_ShouldReturnStatusCode204()
+    {
+        // Act
+        var result = (NoContentResult)await _cut.UpdatePlan(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            new(
+                "Updated Category",
+                11.24m,
+                "USD",
+                12
+            )
+        );
+
+        // Assert
+        result.StatusCode
+            .Should()
+            .Be(204);
+    }
+
+    [Fact]
+    public async Task UpdatePlan_WhenInvoked_ShouldCallUpdatePlanCommandHandler()
+    {
+        // Act
+        await _cut.UpdatePlan(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            new(
+                "Updated name",
+                11.24m,
+                "USD",
+                85
+            )
+        );
+
+        // Assert
+        _mockUpdatePlanCommandHandler.Verify(
+            m => m.HandleAsync(
+                It.IsAny<UpdatePlanCommand>(),
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }
