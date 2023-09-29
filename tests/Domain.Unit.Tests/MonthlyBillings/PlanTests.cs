@@ -123,6 +123,103 @@ public sealed class PlanTest
     }
 
     [Fact]
+    public void Update_WhenPassedNullCategory_ShouldThrowCategoryIsNullException()
+    {
+        // Arrange
+        var cut = new Plan(
+            Constants.Plan.Id,
+            Constants.Plan.Category,
+            Constants.Plan.Money,
+            1
+        );
+
+        var updatePlan = () => cut.Update(
+            null,
+            new Money(
+                123.45m,
+                new Currency("USD")
+            ),
+            2
+        );
+
+        // Act & Assert
+        Assert.Throws<CategoryIsNullException>(updatePlan);
+    }
+
+    [Fact]
+    public void Update_WhenPassedNullMoney_ShouldThrowMoneyIsNullException()
+    {
+        // Arrange
+        var cut = new Plan(
+            Constants.Plan.Id,
+            Constants.Plan.Category,
+            Constants.Plan.Money,
+            1
+        );
+
+        var updatePlan = () => cut.Update(
+            new Category("Updated Category for plan"),
+            null,
+            5
+        );
+
+        // Act & Assert
+        Assert.Throws<MoneyIsNullException>(updatePlan);
+    }
+
+    [Fact]
+    public void Update_WhenPassedProperData_ShouldUpdatePlan()
+    {
+        // Arrange
+        var cut = new Plan(
+            Constants.Plan.Id,
+            Constants.Plan.Category,
+            Constants.Plan.Money,
+            1
+        );
+
+        // Act
+        cut.Update(
+            new Category("Updated Category for plan"),
+            new Money(
+                123.45m,
+                new Currency("USD")
+            ),
+            5
+        );
+
+        // Assert
+        cut
+            .Should()
+            .Match<Plan>(
+                p => p.Category.Value == "Updated Category for plan"
+                  && p.Money.Amount == 123.45m
+                  && p.Money.Currency.Value == "USD"
+                  && p.SortOrder == 5
+            );
+    }
+
+    [Fact]
+    public void Remove_WhenCalled_ShouldSetActiveToFalse()
+    {
+        // Arrange
+        var cut = new Plan(
+            Constants.Plan.Id,
+            Constants.Plan.Category,
+            Constants.Plan.Money,
+            1
+        );
+
+        // Act
+        cut.Remove();
+
+        // Assert
+        cut.Active
+            .Should()
+            .BeFalse();
+    }
+
+    [Fact]
     public void SumOfExpense_WhenCalled_ShouldReturnExpectedValue()
     {
         // Arrange

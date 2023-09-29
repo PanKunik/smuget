@@ -590,6 +590,108 @@ public sealed class MonthlyBillingTests
     }
 
     [Fact]
+    public void UpdatePlan_WhenMonthlyBillingIsClosed_ShouldThrowMonthlyBillingAlreadyClosedException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+        cut.Close();
+
+        var updatePlan = () => cut.UpdatePlan(
+            new(Guid.NewGuid()),
+            new Category("Updated Plan Category"),
+            new Money(
+                546.43m,
+                new Currency("USD")
+            ),
+            12
+        );
+
+        // Act & Assert
+        Assert.Throws<MonthlyBillingAlreadyClosedException>(updatePlan);
+    }
+
+    [Fact]
+    public void UpdatePlan_WhenPlanIdIsNull_ShouldThrowPlanIdIsNullException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling();
+
+        var updatePlan = () => cut.UpdatePlan(
+            null,
+            new Category("Updated Plan Category"),
+            new Money(
+                546.43m,
+                new Currency("USD")
+            ),
+            12
+        );
+
+        // Act & Assert
+        Assert.Throws<PlanIdIsNullException>(updatePlan);
+    }
+
+    [Fact]
+    public void UpdatePlan_WhenPlanDoesntExistInMonthlyBilling_ShouldThrowPlanNotFoundException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: new List<Plan>()
+        );
+
+        var updatePlan = () => cut.UpdatePlan(
+            new(Guid.NewGuid()),
+            new Category("Updated Plan Category"),
+            new Money(
+                546.43m,
+                new Currency("USD")
+            ),
+            12
+        );
+        
+        // Act & Assert
+        Assert.Throws<PlanNotFoundException>(updatePlan);
+    }
+
+    [Fact]
+    public void UpdatePlan_WhenPassedProperData_ShouldUpdatePlan()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: new List<Plan>()
+            { 
+                new Plan(
+                    Constants.Plan.Id,
+                    Constants.Plan.Category,
+                    Constants.Plan.Money,
+                    1
+                )
+            }
+        );
+
+        // Act
+        cut.UpdatePlan(
+            Constants.Plan.Id,
+            new Category("Updated Plan Category"),
+            new Money(
+                546.43m,
+                new Currency("USD")
+            ),
+            12
+        );
+
+        //Assert
+        var firstPlan = cut.Plans.First();
+        firstPlan
+            .Should()
+            .Match<Plan>(
+                p => p.Category.Value == "Updated Plan Category"
+                  && p.Money.Amount == 546.43m
+                  && p.Money.Currency.Value == "USD"
+                  && p.SortOrder == 12
+            );
+    }
+
+    [Fact]
     public void RemovePlan_WhenPassedNullPlanId_ShouldThrowPlanIdIsNullException()
     {
         // Arrange
