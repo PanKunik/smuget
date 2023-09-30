@@ -267,6 +267,27 @@ public sealed class MonthlyBilling
         plan.AddExpense(expense);
     }
 
+    public void RemoveExpense(
+        PlanId planId,
+        ExpenseId expenseId
+    )
+    {
+        if (State == State.Closed)
+        {
+            throw new MonthlyBillingAlreadyClosedException(Month, Year);
+        }
+
+        if (planId is null)
+        {
+            throw new PlanIdIsNullException();
+        }
+
+        var planToRemoveExpense = _plans?.Find(p => p.Id == planId && p.Active)
+            ?? throw new PlanNotFoundException();
+
+        planToRemoveExpense.RemoveExpense(expenseId);
+    }
+
     public void Close()
     {
         // TODO: Refactor - extract method

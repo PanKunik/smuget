@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using Domain.Exceptions;
 using Domain.MonthlyBillings;
 using Domain.Unit.Tests.MonthlyBillings.TestUtilities;
@@ -647,7 +648,7 @@ public sealed class MonthlyBillingTests
             ),
             12
         );
-        
+
         // Act & Assert
         Assert.Throws<PlanNotFoundException>(updatePlan);
     }
@@ -658,7 +659,7 @@ public sealed class MonthlyBillingTests
         // Arrange
         var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
             plans: new List<Plan>()
-            { 
+            {
                 new Plan(
                     Constants.Plan.Id,
                     Constants.Plan.Category,
@@ -966,6 +967,103 @@ public sealed class MonthlyBillingTests
 
         // Act & Assert
         Assert.Throws<MonthlyBillingAlreadyClosedException>(addExpense);
+    }
+
+    [Fact]
+    public void RemoveExpense_WhenMonthlyBillingIsClosed_ShouldThrowMonthlyBillingAlreadyClosedException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: MonthlyBillingUtilities.CreatePlans(
+                expenses: MonthlyBillingUtilities.CreateExpenses(1)
+            )
+        );
+
+        cut.Close();
+
+        var removeExpense = () => cut.RemoveExpense(
+            Constants.Plan.Id,
+            Constants.Expense.Id
+        );
+
+        // Act & Assert
+        Assert.Throws<MonthlyBillingAlreadyClosedException>(removeExpense);
+    }
+
+    [Fact]
+    public void RemoveExpense_WhenPassedNullPlanId_ShouldThrowPlanIdIsNullException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: MonthlyBillingUtilities.CreatePlans(
+                expenses: MonthlyBillingUtilities.CreateExpenses(1)
+            )
+        );
+
+        var removeExpense = () => cut.RemoveExpense(
+            null,
+            Constants.Expense.Id
+        );
+
+        // Act & Assert
+        Assert.Throws<PlanIdIsNullException>(removeExpense);
+    }
+
+    [Fact]
+    public void RemoveExpense_WhenPassedPlanIdThatDoesntExist_ShouldThrowPlanNotFoundException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: MonthlyBillingUtilities.CreatePlans(
+                expenses: MonthlyBillingUtilities.CreateExpenses(1)
+            )
+        );
+
+        var removeExpense = () => cut.RemoveExpense(
+            new(Guid.NewGuid()),
+            Constants.Expense.Id
+        );
+
+        // Act & Assert
+        Assert.Throws<PlanNotFoundException>(removeExpense);
+    }
+
+    [Fact]
+    public void RemoveExpense_WhenPassedProperData_ShouldSetExpenseActiveToFalse()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: new List<Plan>()
+            {
+                new Plan(
+                    Constants.Plan.Id,
+                    Constants.Plan.Category,
+                    Constants.Plan.Money,
+                    1,
+                    new List<Expense>()
+                    {
+                        new Expense(
+                            Constants.Expense.Id,
+                            Constants.Expense.Money,
+                            Constants.Expense.ExpenseDate,
+                            Constants.Expense.Descripiton
+                        )
+                    }
+                )
+            }
+        );
+
+        // Act
+        cut.RemoveExpense(
+            Constants.Plan.Id,
+            Constants.Expense.Id
+        );
+
+        // Assert
+        var firstExpense = cut.Plans.First().Expenses.First();
+        firstExpense.Active
+            .Should()
+            .BeFalse();
     }
 
     [Fact]

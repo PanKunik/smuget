@@ -8,6 +8,7 @@ public sealed class Expense
     public Money Money { get; }
     public DateTimeOffset ExpenseDate { get; }
     public string Description { get; }
+    public bool Active { get; private set; } = true;
 
     public Expense(
         ExpenseId expenseId,
@@ -31,5 +32,10 @@ public sealed class Expense
         Money = money;
         ExpenseDate = expenseDate;
         Description = description;
+    }
+
+    internal void Remove()
+    {
+        Active = false;
     }
 }
