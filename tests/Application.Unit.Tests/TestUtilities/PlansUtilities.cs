@@ -4,7 +4,7 @@ namespace Application.Unit.Tests.TestUtilities;
 
 public static class PlansUtilities
 {
-    public static Plan CreatePlan()
+    public static Plan CreatePlan(List<Expense> expenses = null)
         => new(
             new(Constants.Constants.Plan.Id),
             new(Constants.Constants.Plan.Category),
@@ -12,6 +12,7 @@ public static class PlansUtilities
                 Constants.Constants.Plan.MoneyAmount,
                 new(Constants.Constants.Plan.Currency)
             ),
-            1
+            1,
+            expenses
         );
 }
