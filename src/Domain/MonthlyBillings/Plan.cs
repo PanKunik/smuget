@@ -59,6 +59,19 @@ public sealed class Plan
         _expenses.Add(expense);
     }
 
+    internal void RemoveExpense(ExpenseId expenseId)
+    {
+        if (expenseId is null)
+        {
+            throw new ExpenseIdIsNullException();
+        }
+
+        var expenseToRemove = _expenses?.Find(e => e.Id == expenseId && e.Active)
+            ?? throw new ExpenseNotFoundException();
+
+        expenseToRemove.Remove();
+    }
+
     internal void Update(
         Category category,
         Money money,

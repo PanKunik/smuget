@@ -7,5 +7,6 @@ internal sealed class ExpenseEntity
     public string MoneyCurrency { get; set; }
     public DateTimeOffset ExpenseDate { get; set; }
     public string Description { get; set; }
+    public bool Active { get; set; }
     public Guid PlanId { get; set; }
 }

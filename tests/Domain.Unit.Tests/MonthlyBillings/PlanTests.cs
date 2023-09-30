@@ -123,6 +123,94 @@ public sealed class PlanTest
     }
 
     [Fact]
+    public void RemoveExpense_WhenPassedNullExpenseId_ShouldThrowExpenseIdIsNullException()
+    {
+        // Arrange
+        var cut = new Plan(
+            Constants.Plan.Id,
+            Constants.Plan.Category,
+            Constants.Plan.Money,
+            1,
+            new List<Expense>()
+            {
+                new Expense(
+                    Constants.Expense.Id,
+                    Constants.Expense.Money,
+                    Constants.Expense.ExpenseDate,
+                    Constants.Expense.Descripiton
+                )
+            }
+        );
+
+        var removeExpense = () => cut.RemoveExpense(
+            null
+        );
+
+        // Act & Assert
+        Assert.Throws<ExpenseIdIsNullException>(removeExpense);
+    }
+
+    [Fact]
+    public void RemoveExpense_WhenExpenseNotFound_ShouldThrowExpenseNotFoundException()
+    {
+        // Arrange
+        var cut = new Plan(
+            Constants.Plan.Id,
+            Constants.Plan.Category,
+            Constants.Plan.Money,
+            1,
+            new List<Expense>()
+            {
+                new Expense(
+                    Constants.Expense.Id,
+                    Constants.Expense.Money,
+                    Constants.Expense.ExpenseDate,
+                    Constants.Expense.Descripiton
+                )
+            }
+        );
+
+        var removeExpense = () => cut.RemoveExpense(
+            new(Guid.NewGuid())
+        );
+
+        // Act & Assert
+        Assert.Throws<ExpenseNotFoundException>(removeExpense);
+    }
+
+    [Fact]
+    public void RemoveExpense_WhenPassedProperData_ShouldRemoveExpenseFromPlans()
+    {
+        // Arrange
+        var cut = new Plan(
+            Constants.Plan.Id,
+            Constants.Plan.Category,
+            Constants.Plan.Money,
+            1,
+            new List<Expense>()
+            {
+                new Expense(
+                    Constants.Expense.Id,
+                    Constants.Expense.Money,
+                    Constants.Expense.ExpenseDate,
+                    Constants.Expense.Descripiton
+                )
+            }
+        );
+
+        // Act
+        cut.RemoveExpense(
+            Constants.Expense.Id
+        );
+
+        // Assert
+        var firstExpense = cut.Expenses.First();
+        firstExpense.Active
+            .Should()
+            .BeFalse();
+    }
+
+    [Fact]
     public void Update_WhenPassedNullCategory_ShouldThrowCategoryIsNullException()
     {
         // Arrange

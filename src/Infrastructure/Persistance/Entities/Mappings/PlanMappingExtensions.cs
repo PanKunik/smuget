@@ -19,9 +19,12 @@ internal static class PlanMappingExtensions
                 new Currency(entity.MoneyCurrency)
             ),
             entity.SortOrder,
-            entity.Expenses.ConvertAll(
-                e => e.ToDomain()
-            )
+            entity.Expenses
+                .Where(e => e.Active)
+                .ToList()
+                .ConvertAll(
+                    e => e.ToDomain()
+                )
         );
     }
 

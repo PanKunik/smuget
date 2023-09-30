@@ -31,7 +31,8 @@ internal static class ExpenseMappingExtensions
             MoneyCurrency = domain.Money.Currency.Value,
             ExpenseDate = domain.ExpenseDate,
             Description = domain.Description,
-            PlanId = planId
+            PlanId = planId,
+            Active = domain.Active
         };
     }
 }

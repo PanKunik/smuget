@@ -1,6 +1,7 @@
 using System;
 using Domain.Exceptions;
 using Domain.MonthlyBillings;
+using Domain.Unit.Tests.MonthlyBillings.TestUtilities;
 
 namespace Domain.Unit.Tests.MonthlyBillings;
 
@@ -65,5 +66,25 @@ public sealed class ExpenseTests
 
         // Act & Assert
         Assert.Throws<MoneyIsNullException>(createExpense);
+    }
+
+    [Fact]
+    public void Remove_WhenCalled_ShouldSetActiveToFalse()
+    {
+        // Arrange
+        var cut = new Expense(
+            Constants.Expense.Id,
+            Constants.Expense.Money,
+            Constants.Expense.ExpenseDate,
+            Constants.Expense.Descripiton
+        );
+
+        // Act
+        cut.Remove();
+
+        // Assert
+        cut.Active
+            .Should()
+            .BeFalse();
     }
 }

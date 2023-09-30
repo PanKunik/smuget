@@ -7,7 +7,7 @@ public static partial class Constants
 {
     public static class Expense
     {
-        public static readonly Guid Id = Guid.NewGuid();
+        public static readonly ExpenseId Id = new(Guid.NewGuid());
         public static readonly DateTimeOffset ExpenseDate = new(new DateTime(2023, 6, 15));
         public static readonly Money Money = new(45.67M, new Currency("PLN"));
         public const string Descripiton = "Description";
