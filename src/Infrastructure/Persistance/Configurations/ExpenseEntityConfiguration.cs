@@ -37,6 +37,10 @@ internal sealed class ExpenseEntityConfiguration : IEntityTypeConfiguration<Expe
             .IsRequired();
 
         builder
+            .Property(e => e.Active)
+            .IsRequired();
+
+        builder
             .Property(e => e.PlanId)
             .IsRequired();
     }

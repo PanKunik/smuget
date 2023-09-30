@@ -29,7 +29,14 @@ public sealed class RemoveExpenseCommandHandlerTests
                 new(command.MonthlyBillingId)
             )
             .Returns(
-                MonthlyBillingUtilities.CreateMonthlyBilling()
+                MonthlyBillingUtilities.CreateMonthlyBilling(
+                    plans: new List<Plan>()
+                    {
+                        PlansUtilities.CreatePlan(
+                            expenses: new List<Expense>() { ExpenseUtilities.CreateExpense() }
+                        )
+                    }
+                )
             );
 
         // Act
