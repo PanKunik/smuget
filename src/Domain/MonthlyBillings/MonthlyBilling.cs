@@ -301,7 +301,15 @@ public sealed class MonthlyBilling
 
     public void Reopen()
     {
-        ThrowIfMonthlyBillingIsClosed();
+        ThrowIfMonthlyBillingIsOpened();
         State = State.Open;
+    }
+
+    private void ThrowIfMonthlyBillingIsOpened()
+    {
+        if (State == State.Open)
+        {
+            throw new MonthlyBillingAlreadyOpenedException(Month, Year);
+        }
     }
 }
