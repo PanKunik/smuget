@@ -18,11 +18,16 @@ public sealed class MoneyTests
         var result = createMoney();
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Match<Money>(
-            m => m.Amount == 15.06m
-            && m.Currency == new Currency("PLN")
-        );
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .Match<Money>(
+                m => m.Amount == 15.06m
+                  && m.Currency == new Currency("PLN")
+            );
     }
 
     [Theory]
@@ -39,11 +44,13 @@ public sealed class MoneyTests
         var result = left + right;
 
         // Assert
-        result.Should().Match<Money>(
-            m => m.Amount == expected
-            && m.Currency == left.Currency
-            && m.Currency == right.Currency
-        );
+        result
+            .Should()
+            .Match<Money>(
+                m => m.Amount == expected
+                  && m.Currency == left.Currency
+                  && m.Currency == right.Currency
+            );
     }
 
     [Fact]
@@ -73,11 +80,13 @@ public sealed class MoneyTests
         var result = left - right;
 
         // Assert
-        result.Should().Match<Money>(
-            m => m.Amount == expected
-            && m.Currency == left.Currency
-            && m.Currency == right.Currency
-        );
+        result
+            .Should()
+            .Match<Money>(
+                m => m.Amount == expected
+                  && m.Currency == left.Currency
+                  && m.Currency == right.Currency
+            );
     }
 
     [Fact]
@@ -104,7 +113,9 @@ public sealed class MoneyTests
         var result = money.Equals(equalTo);
 
         // Assert
-        result.Should().BeTrue();
+        result
+            .Should()
+            .BeTrue();
     }
 
     [Theory]
@@ -120,7 +131,9 @@ public sealed class MoneyTests
         var result = money.Equals(equalTo);
 
         // Assert
-        result.Should().BeFalse();
+        result
+            .Should()
+            .BeFalse();
     }
 
     [Theory]

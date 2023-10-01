@@ -11,14 +11,18 @@ public sealed class MonthlyBillingIdTests
     {
         // Arrange
         var guid = Guid.NewGuid();
-        var createMonthlyBillingId = () => new MonthlyBillingId(guid);
 
         // Act
-        var result = createMonthlyBillingId();
+        var result = new MonthlyBillingId(guid);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Value.Should().Be(guid);
+        result
+            .Should()
+            .NotBeNull();
+
+        result.Value
+            .Should()
+            .Be(guid);
     }
 
     [Fact]
@@ -44,7 +48,9 @@ public sealed class MonthlyBillingIdTests
         var result = cut.Equals(compareTo);
 
         // Assert
-        result.Should().BeTrue();
+        result
+            .Should()
+            .BeTrue();
     }
 
     [Fact]
@@ -58,6 +64,8 @@ public sealed class MonthlyBillingIdTests
         var result = cut.Equals(compareTo);
 
         // Assert
-        result.Should().BeFalse();
+        result
+            .Should()
+            .BeFalse();
     }
 }

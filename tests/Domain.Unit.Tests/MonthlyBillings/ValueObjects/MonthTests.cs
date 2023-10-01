@@ -15,10 +15,15 @@ public sealed class MonthTests
         var result = createMonth();
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Match<Month>(
-            m => m.Value == 1
-        );
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .Match<Month>(
+                m => m.Value == 1
+            );
     }
 
     [Theory]
@@ -31,7 +36,9 @@ public sealed class MonthTests
 
         // Act & Assert
         var exception = Assert.Throws<InvalidMonthException>(createMonth);
-        exception.Value.Should().Be(value);
+        exception.Value
+            .Should()
+            .Be(value);
     }
 
     [Fact]
@@ -45,7 +52,9 @@ public sealed class MonthTests
         var result = cut.Equals(compareTo);
 
         // Assert
-        result.Should().BeTrue();
+        result
+            .Should()
+            .BeTrue();
     }
 
     [Fact]
@@ -59,6 +68,8 @@ public sealed class MonthTests
         var result = cut.Equals(compareTo);
 
         // Assert
-        result.Should().BeFalse();
+        result
+            .Should()
+            .BeFalse();
     }
 }

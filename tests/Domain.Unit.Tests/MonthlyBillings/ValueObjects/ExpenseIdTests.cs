@@ -12,10 +12,8 @@ public sealed class ExpenseIdTests
         // Arrange
         var guid = Guid.NewGuid();
 
-        var createExpenseId = () => new ExpenseId(guid);
-
         // Act
-        var result = createExpenseId();
+        var result = new ExpenseId(guid);
 
         // Assert
         result

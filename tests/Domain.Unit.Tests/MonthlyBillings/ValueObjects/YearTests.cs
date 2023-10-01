@@ -15,10 +15,15 @@ public sealed class YearTests
         var result = createYear();
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Match<Year>(
-            y => y.Value == 2005
-        );
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .Match<Year>(
+                y => y.Value == 2005
+            );
     }
 
     [Theory]
@@ -32,7 +37,9 @@ public sealed class YearTests
 
         // Act & Assert
         var exception = Assert.Throws<InvalidYearException>(createYear);
-        exception.Value.Should().Be(value);
+        exception.Value
+            .Should()
+            .Be(value);
     }
 
     [Fact]
@@ -46,7 +53,9 @@ public sealed class YearTests
         var result = cut.Equals(compareTo);
 
         // Assert
-        result.Should().BeTrue();
+        result
+            .Should()
+            .BeTrue();
     }
 
     [Fact]
@@ -60,6 +69,8 @@ public sealed class YearTests
         var result = cut.Equals(compareTo);
 
         // Assert
-        result.Should().BeFalse();
+        result
+            .Should()
+            .BeFalse();
     }
 }

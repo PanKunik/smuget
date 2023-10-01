@@ -11,15 +11,20 @@ public sealed class PlanIdTests
     {
         // Arrange
         Guid guid = Guid.NewGuid();
-        var createPlanId = () => new PlanId(guid);
 
         // Act
-        var result = createPlanId();
+        var result = new PlanId(guid);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Match<PlanId>(
-            i => i.Value == guid);
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .Match<PlanId>(
+                i => i.Value == guid
+            );
     }
 
     [Fact]

@@ -46,6 +46,6 @@ public sealed class CategoryTests
         var createCategory = () => new Category(value);
 
         // Act & Assert
-        Assert.Throws<CategoryTooLongException>(createCategory);
+        Assert.Throws<CategoryIsTooLongException>(createCategory);
     }
 }
