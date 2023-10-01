@@ -11,15 +11,20 @@ public sealed class IncomeIdTests
     {
         // Arrange
         Guid guid = Guid.NewGuid();
-        var createIncomeId = () => new IncomeId(guid);
 
         // Act
-        var result = createIncomeId();
+        var result = new IncomeId(guid);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Match<IncomeId>(
-            i => i.Value == guid);
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .Match<IncomeId>(
+                i => i.Value == guid
+            );
     }
 
     [Fact]

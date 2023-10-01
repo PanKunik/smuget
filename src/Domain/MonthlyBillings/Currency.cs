@@ -59,6 +59,4 @@ public sealed class Currency
     {
         return Equals((object?)other);
     }
-
-    private Currency() { }
 }

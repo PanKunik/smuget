@@ -18,10 +18,15 @@ public sealed class NameTests
         var result = createName();
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Match<Name>(
-            d => d.Value == value
-        );
+        result
+            .Should()
+            .NotBeNull();
+        
+        result
+            .Should()
+            .Match<Name>(
+                d => d.Value == value
+            );
     }
 
     [Theory]

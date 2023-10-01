@@ -17,6 +17,4 @@ public sealed record PlanId
 
         Value = value;
     }
-
-    private PlanId() { }
 }
