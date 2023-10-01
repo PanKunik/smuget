@@ -23,35 +23,43 @@ public sealed class Plan
         Category category,
         Money money,
         uint sortOrder,
-        List<Expense> expenses = null
+        List<Expense>? expenses = null
     )
     {
-        // TODO: Refactor - extract method
-        if (planId is null)
-        {
-            throw new PlanIdIsNullException();
-        }
+        ThrowIfPlanIdIsNull(planId);
+        ThrowIfCategoryIsNull(category);
+        ThrowIfMoneyIsNull(money);
 
         Id = planId;
-
-        // TODO: Refactor - extract method
-        if (category is null)
-        {
-            throw new CategoryIsNullException();
-        }
-
         Category = category;
-
-        // TODO: Refactor - extract method
-        if (money is null)
-        {
-            throw new MoneyIsNullException();
-        }
-
         Money = money;
         SortOrder = sortOrder;
 
         _expenses = expenses ?? new();
+    }
+
+    private void ThrowIfPlanIdIsNull(PlanId planId)
+    {
+        if (planId is null)
+        {
+            throw new PlanIdIsNullException();
+        }
+    }
+
+    private void ThrowIfCategoryIsNull(Category category)
+    {
+        if (category is null)
+        {
+            throw new CategoryIsNullException();
+        }
+    }
+
+    private void ThrowIfMoneyIsNull(Money money)
+    {
+        if (money is null)
+        {
+            throw new MoneyIsNullException();
+        }
     }
 
     internal void AddExpense(Expense expense)
@@ -61,15 +69,20 @@ public sealed class Plan
 
     internal void RemoveExpense(ExpenseId expenseId)
     {
-        if (expenseId is null)
-        {
-            throw new ExpenseIdIsNullException();
-        }
+        ThrowIfExpenseIdIsNull(expenseId);
 
         var expenseToRemove = _expenses?.Find(e => e.Id == expenseId && e.Active)
             ?? throw new ExpenseNotFoundException();
 
         expenseToRemove.Remove();
+    }
+
+    private void ThrowIfExpenseIdIsNull(ExpenseId expenseId)
+    {
+        if (expenseId is null)
+        {
+            throw new ExpenseIdIsNullException();
+        }
     }
 
     internal void Update(
@@ -78,17 +91,8 @@ public sealed class Plan
         uint sortOrder
     )
     {
-        // TODO: Refactor - extract method
-        if (category is null)
-        {
-            throw new CategoryIsNullException();
-        }
-
-        // TODO: Refactor - extract method
-        if (money is null)
-        {
-            throw new MoneyIsNullException();
-        }
+        ThrowIfCategoryIsNull(category);
+        ThrowIfMoneyIsNull(money);
 
         Category = category;
         Money = money;
