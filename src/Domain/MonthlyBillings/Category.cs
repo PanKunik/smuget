@@ -4,7 +4,7 @@ namespace Domain.MonthlyBillings;
 
 public sealed record Category
 {
-    private const byte MaxLengthForCategoryName = 20;
+    private const byte MaxLengthForCategoryName = 30;
 
     public string Value { get; }
 
@@ -12,11 +12,14 @@ public sealed record Category
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            throw new CategoryIsNullException();    // TODO: Change name
+            throw new CategoryIsEmptyException();
+        }
+
+        if (value.Length > MaxLengthForCategoryName)
+        {
+            throw new CategoryTooLongException(MaxLengthForCategoryName);
         }
 
         Value = value;
     }
-
-    private Category() { }
 }

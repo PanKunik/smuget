@@ -15,8 +15,13 @@ public sealed class CategoryTests
         var result = createCategory();
 
         // Assert
-        result.Should().NotBeNull();
-        result.Value.Should().Be("Fuel");
+        result
+            .Should()
+            .NotBeNull();
+
+        result.Value
+            .Should()
+            .Be("Fuel");
     }
 
     [Theory]
@@ -29,6 +34,18 @@ public sealed class CategoryTests
         var createCategory = () => new Category(value);
 
         // Act & Assert
-        Assert.Throws<CategoryIsNullException>(createCategory);
+        Assert.Throws<CategoryIsEmptyException>(createCategory);
+    }
+
+    [Theory]
+    [InlineData("ThisIsAVeryLongCategoryNameThatExceedsCategoryLengthLimit")]
+    [InlineData("ThisIsACategoryThatExceedsLimit")]
+    public void Category_WhenPassedCategoryNameThatExceedsLengthLimit_ShouldThrowCategoryTooLongException(string value)
+    {
+        // Arrange
+        var createCategory = () => new Category(value);
+
+        // Act & Assert
+        Assert.Throws<CategoryTooLongException>(createCategory);
     }
 }
