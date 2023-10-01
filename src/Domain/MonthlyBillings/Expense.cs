@@ -17,21 +17,29 @@ public sealed class Expense
         string description
     )
     {
+        ThrowIfExpenseIdIsNull(expenseId);
+        ThrowIfMoneyIsNull(money);
+
+        Id = expenseId;
+        Money = money;
+        ExpenseDate = expenseDate;
+        Description = description;
+    }
+
+    private void ThrowIfExpenseIdIsNull(ExpenseId expenseId)
+    {
         if (expenseId is null)
         {
             throw new ExpenseIdIsNullException();
         }
+    }
 
-        Id = expenseId;
-
+    private void ThrowIfMoneyIsNull(Money money)
+    {
         if (money is null)
         {
             throw new MoneyIsNullException();
         }
-
-        Money = money;
-        ExpenseDate = expenseDate;
-        Description = description;
     }
 
     internal void Remove()
