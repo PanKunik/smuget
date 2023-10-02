@@ -103,12 +103,7 @@ public sealed class MonthlyBilling
         ThrowIfMonthlyBillingIsClosed();
         ThrowIfIncomeIsNull(income);
         ThrowIfIncomeNameNotUnique(income);
-
-        // TODO: Refactor - extract method
-        if (income.Money.Currency != Currency)
-        {
-            throw new MonthlyBillingCurrencyMismatchException(income.Money.Currency);
-        }
+        ThrowIfCurrencyMismatched(income.Money.Currency);
 
         _incomes.Add(income);
     }
@@ -134,6 +129,14 @@ public sealed class MonthlyBilling
         if (_incomes.Any(i => i.Name.Equals(income.Name)))
         {
             throw new IncomeNameNotUniqueException(income.Name.Value);
+        }
+    }
+
+    private void ThrowIfCurrencyMismatched(Currency currency)
+    {
+        if (currency != Currency)
+        {
+            throw new MonthlyBillingCurrencyMismatchException(currency);
         }
     }
 
@@ -183,12 +186,7 @@ public sealed class MonthlyBilling
         ThrowIfMonthlyBillingIsClosed();
         ThrowIfPlanIsNull(plan);
         ThrowIfPlanCategoryNotUnique(plan);
-
-        // TODO: Refactor - extract method
-        if (plan.Money.Currency != Currency)
-        {
-            throw new MonthlyBillingCurrencyMismatchException(plan.Money.Currency);
-        }
+        ThrowIfCurrencyMismatched(plan.Money.Currency);
 
         _plans.Add(plan);
     }
@@ -258,20 +256,15 @@ public sealed class MonthlyBilling
         ThrowIfMonthlyBillingIsClosed();
         ThrowIfPlanIdIsNull(planId);
         ThrowIfExpenseIsNull(expense);
+        ThrowIfCurrencyMismatched(expense.Money.Currency);
 
         var plan = _plans?.Find(p => p.Id == planId && p.Active)
             ?? throw new PlanNotFoundException();
 
-        // TODO: Refactor - extract method
-        if (expense.Money.Currency != Currency)
-        {
-            throw new MonthlyBillingCurrencyMismatchException(expense.Money.Currency);
-        }
-
         plan.AddExpense(expense);
     }
 
-    private static void ThrowIfExpenseIsNull(Expense expense)
+    private void ThrowIfExpenseIsNull(Expense expense)
     {
         if (expense is null)
         {

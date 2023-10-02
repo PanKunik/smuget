@@ -8,11 +8,15 @@ public sealed record MonthlyBillingId
 
     public MonthlyBillingId(Guid value)
     {
+        ThrowIfValueEqualsEmptyGuid(value);
+        Value = value;
+    }
+
+    private void ThrowIfValueEqualsEmptyGuid(Guid value)
+    {
         if (value == Guid.Empty)
         {
             throw new InvalidMonthlyBillingIdException();
         }
-
-        Value = value;
     }
 }

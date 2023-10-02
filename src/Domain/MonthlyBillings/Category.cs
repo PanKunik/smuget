@@ -10,11 +10,21 @@ public sealed record Category
 
     public Category(string value)
     {
+        ThrowIfValueIsNullOrWhiteSpace(value);
+        ThrowIfValueIsLongerThanMaximumLength(value);
+        Value = value;
+    }
+
+    private void ThrowIfValueIsNullOrWhiteSpace(string value)
+    {
         if (string.IsNullOrWhiteSpace(value))
         {
             throw new CategoryIsEmptyException();
         }
+    }
 
+    private void ThrowIfValueIsLongerThanMaximumLength(string value)
+    {
         if (value.Length > MaxLengthForCategoryName)
         {
             throw new CategoryIsTooLongException(
@@ -22,7 +32,5 @@ public sealed record Category
                 MaxLengthForCategoryName
             );
         }
-
-        Value = value;
     }
 }
