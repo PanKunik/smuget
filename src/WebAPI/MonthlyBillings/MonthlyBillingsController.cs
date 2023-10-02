@@ -8,6 +8,7 @@ using Application.MonthlyBillings.Commands.RemoveExpense;
 using Application.MonthlyBillings.Commands.RemoveIncome;
 using Application.MonthlyBillings.Commands.RemovePlan;
 using Application.MonthlyBillings.Commands.ReopenMonthlyBilling;
+using Application.MonthlyBillings.Commands.UpdateExpense;
 using Application.MonthlyBillings.Commands.UpdateIncome;
 using Application.MonthlyBillings.Commands.UpdatePlan;
 using Application.MonthlyBillings.DTO;
@@ -38,6 +39,7 @@ public sealed class MonthlyBillingsController : ControllerBase
     private readonly ICommandHandler<RemovePlanCommand> _removePlan;
     private readonly ICommandHandler<UpdatePlanCommand> _updatePlan;
     private readonly ICommandHandler<RemoveExpenseCommand> _removeExpense;
+    private readonly ICommandHandler<UpdateExpenseCommand> _updateExpense;
 
     public MonthlyBillingsController(
         ICommandHandler<OpenMonthlyBillingCommand> openMonthlyBilling,
@@ -51,7 +53,8 @@ public sealed class MonthlyBillingsController : ControllerBase
         ICommandHandler<RemoveIncomeCommand> removeIncome,
         ICommandHandler<RemovePlanCommand> removePlan,
         ICommandHandler<UpdatePlanCommand> updatePlan,
-        ICommandHandler<RemoveExpenseCommand> removeExpense
+        ICommandHandler<RemoveExpenseCommand> removeExpense,
+        ICommandHandler<UpdateExpenseCommand> updateExpense
     )
     {
         _openMonthlyBilling = openMonthlyBilling;
@@ -66,6 +69,7 @@ public sealed class MonthlyBillingsController : ControllerBase
         _removePlan = removePlan;
         _updatePlan = updatePlan;
         _removeExpense = removeExpense;
+        _updateExpense = updateExpense;
     }
 
     /// <summary>
@@ -388,6 +392,39 @@ public sealed class MonthlyBillingsController : ControllerBase
                 monthlyBillingId,
                 planId,
                 expenseId
+            ),
+            token
+        );
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Updates specified expense in monthly billing.
+    /// </summary>
+    [HttpPut("{monthlyBillingId}/plans/{planId}/expenses/{expenseId}")]
+    [ProducesResponseType(typeof(NoContentResult), Status204NoContent)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
+    public async Task<IActionResult> UpdateExpense(
+        [FromRoute(Name = "monthlyBillingId")] Guid monthlyBillingId,
+        [FromRoute(Name = "planId")] Guid planId,
+        [FromRoute(Name = "expenseId")] Guid expenseId,
+        [FromBody] UpdateExpenseRequest request,
+        CancellationToken token = default
+    )
+    {
+        var (moneyAmount, currency, expenseDate, description) = request;
+
+        await _updateExpense.HandleAsync(
+            new UpdateExpenseCommand(
+                monthlyBillingId,
+                planId,
+                expenseId,
+                moneyAmount,
+                currency,
+                expenseDate,
+                description
             ),
             token
         );
