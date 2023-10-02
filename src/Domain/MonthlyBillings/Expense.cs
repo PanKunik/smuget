@@ -5,9 +5,9 @@ namespace Domain.MonthlyBillings;
 public sealed class Expense
 {
     public ExpenseId Id { get; } = new ExpenseId(Guid.NewGuid());
-    public Money Money { get; }
-    public DateTimeOffset ExpenseDate { get; }
-    public string Description { get; }
+    public Money Money { get; private set; }
+    public DateTimeOffset ExpenseDate { get; private set; }
+    public string Description { get; private set; }
     public bool Active { get; private set; } = true;
 
     public Expense(
@@ -40,6 +40,19 @@ public sealed class Expense
         {
             throw new MoneyIsNullException();
         }
+    }
+
+    internal void Update(
+        Money money,
+        DateTimeOffset expenseDate,
+        string description
+    )
+    {
+        ThrowIfMoneyIsNull(money);
+
+        Money = money;
+        ExpenseDate = expenseDate;
+        Description = description;
     }
 
     internal void Remove()
