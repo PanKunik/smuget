@@ -1,0 +1,15 @@
+@host = https://localhost:7188
+
+@monthlyBillingId = ea157cb3-b923-47fc-b258-cd2fbd5f4c76
+@planId = 7315f446-2139-4ed4-a0cc-c9c0befc3915
+@expenseId = d1d31227-6594-47cb-8eb2-2dfe29a64a1d
+
+PUT {{host}}/api/monthlyBillings/{{monthlyBillingId}}/plans/{{planId}}/expenses/{{expenseId}}
+Content-Type: application/json
+
+{
+    "moneyAmount": 39.23,
+    "currency": "PLN",
+    "expenseDate": "2023-01-02T23:55:55+00:00",
+    "description": "Zaktualizownay opis 1"
+}

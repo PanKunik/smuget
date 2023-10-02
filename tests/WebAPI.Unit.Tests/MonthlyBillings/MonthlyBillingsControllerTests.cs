@@ -11,6 +11,7 @@ using Application.MonthlyBillings.Commands.RemoveExpense;
 using Application.MonthlyBillings.Commands.RemoveIncome;
 using Application.MonthlyBillings.Commands.RemovePlan;
 using Application.MonthlyBillings.Commands.ReopenMonthlyBilling;
+using Application.MonthlyBillings.Commands.UpdateExpense;
 using Application.MonthlyBillings.Commands.UpdateIncome;
 using Application.MonthlyBillings.Commands.UpdatePlan;
 using Application.MonthlyBillings.DTO;
@@ -37,6 +38,7 @@ public sealed class MonthlyBillingsControllerTests
     private readonly Mock<ICommandHandler<RemovePlanCommand>> _mockRemovePlanCommandHandler;
     private readonly Mock<ICommandHandler<UpdatePlanCommand>> _mockUpdatePlanCommandHandler;
     private readonly Mock<ICommandHandler<RemoveExpenseCommand>> _mockRemoveExpenseCommandHandler;
+    private readonly Mock<ICommandHandler<UpdateExpenseCommand>> _mockUpdateExpenseCommandHandler;
 
     public MonthlyBillingsControllerTests()
     {
@@ -52,6 +54,7 @@ public sealed class MonthlyBillingsControllerTests
         _mockRemovePlanCommandHandler = new Mock<ICommandHandler<RemovePlanCommand>>();
         _mockUpdatePlanCommandHandler = new Mock<ICommandHandler<UpdatePlanCommand>>();
         _mockRemoveExpenseCommandHandler = new Mock<ICommandHandler<RemoveExpenseCommand>>();
+        _mockUpdateExpenseCommandHandler = new Mock<ICommandHandler<UpdateExpenseCommand>>();
 
         _mockGetMonthlyBillingQueryHandler
             .Setup(m => m.HandleAsync(
@@ -75,7 +78,8 @@ public sealed class MonthlyBillingsControllerTests
             _mockRemoveIncomeCommandHandler.Object,
             _mockRemovePlanCommandHandler.Object,
             _mockUpdatePlanCommandHandler.Object,
-            _mockRemoveExpenseCommandHandler.Object
+            _mockRemoveExpenseCommandHandler.Object,
+            _mockUpdateExpenseCommandHandler.Object
         );
     }
 
@@ -937,7 +941,7 @@ public sealed class MonthlyBillingsControllerTests
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }
-    
+
     [Fact]
     public async Task RemoveExpense_OnSuccess_ShouldReturnNoContentResult()
     {
@@ -988,6 +992,78 @@ public sealed class MonthlyBillingsControllerTests
         _mockRemoveExpenseCommandHandler.Verify(
             m => m.HandleAsync(
                 It.IsAny<RemoveExpenseCommand>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateExpense_OnSuccess_ShouldReturnNoContentResult()
+    {
+        // Act
+        var result = await _cut.UpdateExpense(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            new(
+                11.24m,
+                "USD",
+                new DateTimeOffset(DateTime.Now),
+                "Updated description"
+            )
+        );
+
+        // Assert
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .BeOfType<NoContentResult>();
+    }
+
+    [Fact]
+    public async Task UpdateExpense_OnSuccess_ShouldReturnStatusCode204()
+    {
+        // Act
+        var result = (NoContentResult)await _cut.UpdateExpense(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            new(
+                11.24m,
+                "USD",
+                new DateTimeOffset(DateTime.Now),
+                "Updated description"
+            )
+        );
+
+        // Assert
+        result.StatusCode
+            .Should()
+            .Be(204);
+    }
+
+    [Fact]
+    public async Task UpdateExpense_WhenInvoked_ShouldCallUpdateExpenseCommandHandler()
+    {
+        // Act
+        await _cut.UpdateExpense(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            new(
+                11.24m,
+                "USD",
+                new DateTimeOffset(DateTime.Now),
+                "Updated description"
+            )
+        );
+
+        // Assert
+        _mockUpdateExpenseCommandHandler.Verify(
+            m => m.HandleAsync(
+                It.IsAny<UpdateExpenseCommand>(),
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }
