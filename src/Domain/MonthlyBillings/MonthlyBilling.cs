@@ -279,6 +279,27 @@ public sealed class MonthlyBilling
         }
     }
 
+    public void UpdateExpense(
+        PlanId planId,
+        ExpenseId expenseId,
+        Money money,
+        DateTimeOffset expenseDate,
+        string description
+    )
+    {
+        ThrowIfPlanIdIsNull(planId);
+
+        var planToUpdateExpense = _plans?.Find(p => p.Id == planId && p.Active)
+            ?? throw new PlanNotFoundException();
+
+        planToUpdateExpense.UpdateExpense(
+            expenseId,
+            money,
+            expenseDate,
+            description
+        );
+    }
+
     public void RemoveExpense(
         PlanId planId,
         ExpenseId expenseId

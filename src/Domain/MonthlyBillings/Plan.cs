@@ -67,6 +67,25 @@ public sealed class Plan
         _expenses.Add(expense);
     }
 
+    internal void UpdateExpense(
+        ExpenseId expenseId,
+        Money money,
+        DateTimeOffset expenseDate,
+        string description
+    )
+    {
+        ThrowIfExpenseIdIsNull(expenseId);
+
+        var expenseToUpdate = _expenses?.Find(e => e.Id == expenseId && e.Active)
+            ?? throw new ExpenseNotFoundException();
+
+        expenseToUpdate.Update(
+            money,
+            expenseDate,
+            description
+        );
+    }
+
     internal void RemoveExpense(ExpenseId expenseId)
     {
         ThrowIfExpenseIdIsNull(expenseId);

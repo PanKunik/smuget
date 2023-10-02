@@ -970,6 +970,56 @@ public sealed class MonthlyBillingTests
     }
 
     [Fact]
+    public void UpdateExpense_WhenPassedNullPlanId_ShouldThrowPlanIdIsNullException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: MonthlyBillingUtilities.CreatePlans(
+                expenses: MonthlyBillingUtilities.CreateExpenses(1)
+            )
+        );
+
+        var updateExpense = () => cut.UpdateExpense(
+            null,
+            new(Guid.NewGuid()),
+            new Money(
+                12376.23m,
+                new Currency("PLN")
+            ),
+            new DateTimeOffset(new DateTime(2023, 5, 13, 23, 33, 21)),
+            "Updated description"
+        );
+
+        // Act & Assert
+        Assert.Throws<PlanIdIsNullException>(updateExpense);
+    }
+
+    [Fact]
+    public void UpdateExpense_WhenPlanNotFound_ShouldThrowPlanNotFoundException()
+    {
+        // Arrange
+        var cut = MonthlyBillingUtilities.CreateMonthlyBilling(
+            plans: MonthlyBillingUtilities.CreatePlans(
+                expenses: MonthlyBillingUtilities.CreateExpenses(1)
+            )
+        );
+
+        var updateExpense = () => cut.UpdateExpense(
+            new(Guid.NewGuid()),
+            new(Guid.NewGuid()),
+            new Money(
+                12376.23m,
+                new Currency("PLN")
+            ),
+            new DateTimeOffset(new DateTime(2023, 5, 13, 23, 33, 21)),
+            "Updated description"
+        );
+
+        // Act & Assert
+        Assert.Throws<PlanNotFoundException>(updateExpense);
+    }
+
+    [Fact]
     public void RemoveExpense_WhenMonthlyBillingIsClosed_ShouldThrowMonthlyBillingAlreadyClosedException()
     {
         // Arrange

@@ -123,6 +123,117 @@ public sealed class PlanTest
     }
 
     [Fact]
+    public void UpdateExpense_WhenPassedNullExpenseId_ShouldThrowExpenseIdIsNullException()
+    {
+        // Arrange
+        var cut = new Plan(
+            Constants.Plan.Id,
+            Constants.Plan.Category,
+            Constants.Plan.Money,
+            1,
+            new List<Expense>()
+            {
+                new Expense(
+                    Constants.Expense.Id,
+                    Constants.Expense.Money,
+                    Constants.Expense.ExpenseDate,
+                    Constants.Expense.Descripiton
+                )
+            }
+        );
+
+        var updateExpense = () => cut.UpdateExpense(
+            null,
+            new Money(
+                987.43m,
+                new Currency("EUR")
+            ),
+            new DateTimeOffset(new DateTime(2023, 9, 1, 15, 4, 32)),
+            "Updated description"
+        );
+
+        // Act & Assert
+        Assert.Throws<ExpenseIdIsNullException>(updateExpense);
+    }
+
+    [Fact]
+    public void UpdateExpense_WhenExpenseNotFound_ShouldThrowExpenseNotFoundException()
+    {
+        // Arrange
+        var cut = new Plan(
+            Constants.Plan.Id,
+            Constants.Plan.Category,
+            Constants.Plan.Money,
+            1,
+            new List<Expense>()
+            {
+                new Expense(
+                    Constants.Expense.Id,
+                    Constants.Expense.Money,
+                    Constants.Expense.ExpenseDate,
+                    Constants.Expense.Descripiton
+                )
+            }
+        );
+
+        var updateExpense = () => cut.UpdateExpense(
+            new(Guid.NewGuid()),
+            new Money(
+                987.43m,
+                new Currency("EUR")
+            ),
+            new DateTimeOffset(new DateTime(2023, 9, 1, 15, 4, 32)),
+            "Updated description"
+        );
+
+        // Act & Assert
+        Assert.Throws<ExpenseNotFoundException>(updateExpense);
+    }
+
+    [Fact]
+    public void UpdateExpense_WhenPassedProperData_ShouldUpdateExpense()
+    {
+        // Arrange
+        var cut = new Plan(
+            Constants.Plan.Id,
+            Constants.Plan.Category,
+            Constants.Plan.Money,
+            1,
+            new List<Expense>()
+            {
+                new Expense(
+                    Constants.Expense.Id,
+                    Constants.Expense.Money,
+                    Constants.Expense.ExpenseDate,
+                    Constants.Expense.Descripiton
+                )
+            }
+        );
+
+        // Act
+        cut.UpdateExpense(
+            Constants.Expense.Id,
+            new Money(
+                987.43m,
+                new Currency("EUR")
+            ),
+            new DateTimeOffset(new DateTime(2023, 9, 1, 15, 4, 32)),
+            "Updated description"
+        );
+
+        // Assert
+        var firstExpense = cut.Expenses.First();
+        firstExpense
+            .Should()
+            .Match<Expense>(
+                e => e.Money.Amount == 987.43m
+                  && e.Money.Currency.Value == "EUR"
+                  && e.ExpenseDate == new DateTimeOffset(new DateTime(2023, 9, 1, 15, 4, 32))
+                  && e.Description == "Updated description"
+            );
+    }
+
+    [Fact]
     public void RemoveExpense_WhenPassedNullExpenseId_ShouldThrowExpenseIdIsNullException()
     {
         // Arrange
