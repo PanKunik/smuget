@@ -8,21 +8,27 @@ public sealed class Currency
 
     public string Value { get; }
 
-    public Currency(
-        string value
-    )
+    public Currency(string value)
+    {
+        ThrowIfValueIsNullOrWhiteSpace(value);
+        ThrowIfValueIsNotAvailable(value);
+        Value = value;
+    }
+
+    private void ThrowIfValueIsNullOrWhiteSpace(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
             throw new CurrencyIsNullException();
         }
+    }
 
+    private void ThrowIfValueIsNotAvailable(string value)
+    {
         if (!_currencies.Contains(value))
         {
             throw new InvalidCurrencyException(value);
         }
-
-        Value = value;
     }
 
     public override string ToString()

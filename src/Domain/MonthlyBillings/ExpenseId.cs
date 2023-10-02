@@ -8,11 +8,15 @@ public sealed record ExpenseId
 
     public ExpenseId(Guid value)
     {
+        ThrowIfValueEqualsEmptyGuid(value);
+        Value = value;
+    }
+
+    private void ThrowIfValueEqualsEmptyGuid(Guid value)
+    {
         if (value == Guid.Empty)
         {
             throw new InvalidExpenseIdException();
         }
-
-        Value = value;
     }
 }

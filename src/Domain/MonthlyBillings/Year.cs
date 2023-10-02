@@ -8,11 +8,16 @@ public sealed record Year
 
     public Year(int value)
     {
+        ThrowIfYearTooLow(value);
+
+        Value = value;
+    }
+
+    private void ThrowIfYearTooLow(int value)
+    {
         if (value <= 1900)
         {
             throw new InvalidYearException(value);
         }
-
-        Value = value;
     }
 }
