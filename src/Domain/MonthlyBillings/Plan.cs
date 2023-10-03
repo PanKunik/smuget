@@ -13,7 +13,7 @@ public sealed class Plan
     public bool Active { get; private set; } = true;
     public IReadOnlyCollection<Expense> Expenses => _expenses.AsReadOnly();
 
-    internal decimal SumOfExpenses
+    public decimal SumOfExpenses
         => _expenses?
             .Where(e => e.Active)
             .Sum(e => e.Money.Amount) ?? 0m;
