@@ -1,4 +1,4 @@
-namespace WebAPI.MonthlyBillings;
+namespace WebAPI.Expenses;
 
 /// <summary>
 /// Updated values for expense in monthly billing.

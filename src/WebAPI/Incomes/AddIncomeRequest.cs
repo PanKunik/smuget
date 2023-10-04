@@ -1,4 +1,4 @@
-namespace WebAPI.MonthlyBillings;
+namespace WebAPI.Incomes;
 
 /// <summary>
 /// Informations about new income for monthly billing.
