@@ -3,7 +3,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace WebAPI.MonthlyBillings;
+namespace WebAPI.Expenses;
 
 /// <summary>
 /// Informations about new expense.

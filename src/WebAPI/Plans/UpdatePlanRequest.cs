@@ -1,4 +1,4 @@
-namespace WebAPI.MonthlyBillings;
+namespace WebAPI.Plans;
 
 /// <summary>
 /// Updated values for plan in monthly billing.

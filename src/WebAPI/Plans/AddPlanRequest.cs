@@ -1,4 +1,4 @@
-namespace WebAPI.MonthlyBillings;
+namespace WebAPI.Plans;
 
 /// <summary>
 /// Informations about new plan in monthly billing.
