@@ -1,19 +1,9 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Abstractions.CQRS;
-using Application.MonthlyBillings.AddExpense;
-using Application.MonthlyBillings.AddIncome;
-using Application.MonthlyBillings.AddPlan;
 using Application.MonthlyBillings.CloseMonthlyBilling;
 using Application.MonthlyBillings.OpenMonthlyBilling;
-using Application.MonthlyBillings.RemoveExpense;
-using Application.MonthlyBillings.RemoveIncome;
-using Application.MonthlyBillings.RemovePlan;
 using Application.MonthlyBillings.ReopenMonthlyBilling;
-using Application.MonthlyBillings.UpdateExpense;
-using Application.MonthlyBillings.UpdateIncome;
-using Application.MonthlyBillings.UpdatePlan;
 using Application.MonthlyBillings;
 using Application.MonthlyBillings.GetByYearAndMonth;
 using Microsoft.AspNetCore.Mvc;
@@ -27,34 +17,16 @@ public sealed class MonthlyBillingsControllerTests
     private readonly MonthlyBillingsController _cut;
 
     private readonly Mock<ICommandHandler<OpenMonthlyBillingCommand>> _mockOpenMonthlyBillingCommandHandler;
-    private readonly Mock<ICommandHandler<AddIncomeCommand>> _mockAddIncomeCommandHandler;
-    private readonly Mock<ICommandHandler<AddPlanCommand>> _mockAddPlanCommandHandler;
-    private readonly Mock<ICommandHandler<AddExpenseCommand>> _mockAddExpenseCommandHandler;
     private readonly Mock<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>> _mockGetMonthlyBillingQueryHandler;
     private readonly Mock<ICommandHandler<CloseMonthlyBillingCommand>> _mockCloseMonthlyBillingCommandHandler;
     private readonly Mock<ICommandHandler<ReopenMonthlyBillingCommand>> _mockReopenMonthlyBillingCommandHandler;
-    private readonly Mock<ICommandHandler<UpdateIncomeCommand>> _mockUpdateIncomeCommandHandler;
-    private readonly Mock<ICommandHandler<RemoveIncomeCommand>> _mockRemoveIncomeCommandHandler;
-    private readonly Mock<ICommandHandler<RemovePlanCommand>> _mockRemovePlanCommandHandler;
-    private readonly Mock<ICommandHandler<UpdatePlanCommand>> _mockUpdatePlanCommandHandler;
-    private readonly Mock<ICommandHandler<RemoveExpenseCommand>> _mockRemoveExpenseCommandHandler;
-    private readonly Mock<ICommandHandler<UpdateExpenseCommand>> _mockUpdateExpenseCommandHandler;
 
     public MonthlyBillingsControllerTests()
     {
         _mockOpenMonthlyBillingCommandHandler = new Mock<ICommandHandler<OpenMonthlyBillingCommand>>();
-        _mockAddIncomeCommandHandler = new Mock<ICommandHandler<AddIncomeCommand>>();
-        _mockAddPlanCommandHandler = new Mock<ICommandHandler<AddPlanCommand>>();
-        _mockAddExpenseCommandHandler = new Mock<ICommandHandler<AddExpenseCommand>>();
         _mockGetMonthlyBillingQueryHandler = new Mock<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>>();
         _mockCloseMonthlyBillingCommandHandler = new Mock<ICommandHandler<CloseMonthlyBillingCommand>>();
         _mockReopenMonthlyBillingCommandHandler = new Mock<ICommandHandler<ReopenMonthlyBillingCommand>>();
-        _mockUpdateIncomeCommandHandler = new Mock<ICommandHandler<UpdateIncomeCommand>>();
-        _mockRemoveIncomeCommandHandler = new Mock<ICommandHandler<RemoveIncomeCommand>>();
-        _mockRemovePlanCommandHandler = new Mock<ICommandHandler<RemovePlanCommand>>();
-        _mockUpdatePlanCommandHandler = new Mock<ICommandHandler<UpdatePlanCommand>>();
-        _mockRemoveExpenseCommandHandler = new Mock<ICommandHandler<RemoveExpenseCommand>>();
-        _mockUpdateExpenseCommandHandler = new Mock<ICommandHandler<UpdateExpenseCommand>>();
 
         _mockGetMonthlyBillingQueryHandler
             .Setup(m => m.HandleAsync(
@@ -68,18 +40,9 @@ public sealed class MonthlyBillingsControllerTests
 
         _cut = new MonthlyBillingsController(
             _mockOpenMonthlyBillingCommandHandler.Object,
-            _mockAddIncomeCommandHandler.Object,
-            _mockAddPlanCommandHandler.Object,
-            _mockAddExpenseCommandHandler.Object,
             _mockGetMonthlyBillingQueryHandler.Object,
             _mockCloseMonthlyBillingCommandHandler.Object,
-            _mockReopenMonthlyBillingCommandHandler.Object,
-            _mockUpdateIncomeCommandHandler.Object,
-            _mockRemoveIncomeCommandHandler.Object,
-            _mockRemovePlanCommandHandler.Object,
-            _mockUpdatePlanCommandHandler.Object,
-            _mockRemoveExpenseCommandHandler.Object,
-            _mockUpdateExpenseCommandHandler.Object
+            _mockReopenMonthlyBillingCommandHandler.Object
         );
     }
 
@@ -152,306 +115,10 @@ public sealed class MonthlyBillingsControllerTests
     }
 
     [Fact]
-    public async Task AddIncome_OnSuccess_ShouldReturnCretedObjectResult()
-    {
-        // Arrange
-        var request = new AddIncomeRequest(
-            "TEST",
-            5284M,
-            "PLN"
-        );
-
-        // Act
-        var result = await _cut.AddIncome(Guid.NewGuid(), request);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().BeOfType<CreatedResult>();
-    }
-
-    [Fact]
-    public async Task AddIncome_OnSuccess_ShouldReturnStatusCode201()
-    {
-        // Arrange
-        var request = new AddIncomeRequest(
-            "TEST",
-            8761.97M,
-            "PLN"
-        );
-
-        // Act
-        var result = (CreatedResult)await _cut.AddIncome(Guid.NewGuid(), request);
-
-        // Assert
-        result.StatusCode.Should().Be(201);
-    }
-
-    [Fact]
-    public async Task AddIncome_WhenInvoked_ShouldCallAddIncomeCommandHandler()
-    {
-        // Arrange
-        var request = new AddIncomeRequest(
-            "TEST",
-            3456.20M,
-            "EUR");
-
-        // Act
-        await _cut.AddIncome(Guid.NewGuid(), request);
-
-        // Assert
-        _mockAddIncomeCommandHandler.Verify(
-            a => a.HandleAsync(
-                It.IsAny<AddIncomeCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
-    }
-
-    [Theory]
-    [InlineData("2b715a6c-b187-4885-9344-c35f7f639f97", "TEST", 3680.70, "PLN", true)]
-    public async Task AddIncome_WhenInvoked_ShouldPassParametersToCommand(Guid monthlyBillingId, string name, decimal amount, string currency, bool include)
-    {
-        // Arrange
-        var request = new AddIncomeRequest(
-            name,
-            amount,
-            currency,
-            include);
-
-        var token = new CancellationToken();
-
-        // Act
-        await _cut.AddIncome(
-            monthlyBillingId,
-            request,
-            token);
-
-        // Assert
-        _mockAddIncomeCommandHandler.Verify(
-            a => a.HandleAsync(
-                It.Is<AddIncomeCommand>(
-                    a => a.MonthlyBillingId == monthlyBillingId
-                    && a.Name == name
-                    && a.Amount == amount
-                    && a.Currency == currency
-                    && a.Include == include
-                ),
-                token),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task AddPlan_OnSuccess_ShouldReturnCreatedResult()
-    {
-        // Act
-        var result = await _cut.AddPlan(
-            Guid.NewGuid(),
-            new AddPlanRequest(
-                "Shopping",
-                100.0M,
-                "PLN",
-                1
-            )
-        );
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().BeOfType<CreatedResult>();
-    }
-
-    [Fact]
-    public async Task AddPlan_OnSuccess_ShouldReturn201StatusCode()
-    {
-        // Act
-        var result = (CreatedResult)await _cut.AddPlan(
-            Guid.NewGuid(),
-            new AddPlanRequest(
-                "Shopping",
-                100.0M,
-                "PLN",
-                1
-            ));
-
-        // Assert
-        result.StatusCode.Should().Be(201);
-    }
-
-    [Fact]
-    public async Task AddPlan_WhenCalled_ShouldCallAddPlanCommandHandler()
-    {
-        // Arrange
-        var addPlanRequest = new AddPlanRequest(
-            "Food",
-            10.0M,
-            "PLN",
-            1
-        );
-
-        // Act
-        await _cut.AddPlan(
-            Guid.NewGuid(),
-            addPlanRequest
-        );
-
-        // Assert
-        _mockAddPlanCommandHandler.Verify(m => m.HandleAsync(
-            It.IsAny<AddPlanCommand>(),
-            default), Times.Once);
-    }
-
-    [Fact]
-    public async Task AddPlan_WhenCalled_ShouldPassParametersToCommand()
-    {
-        // Arrange
-        var addPlanRequest = new AddPlanRequest(
-            "Fuel",
-            87.96M,
-            "PLN",
-            5
-        );
-
-        // Act
-        await _cut.AddPlan(
-            Guid.NewGuid(),
-            addPlanRequest
-        );
-
-        // Assert
-        _mockAddPlanCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.Is<AddPlanCommand>(
-                    c => c.Category == "Fuel"
-                    && c.MoneyAmount == 87.96M
-                    && c.Currency == "PLN"
-                    && c.SortOrder == 5
-                ),
-                default
-            ), Times.Once);
-    }
-
-    [Fact]
-    public async Task AddExpense_OnSuccess_ShouldReturnCreatedResult()
-    {
-        // Arrange
-        var request = new AddExpenseRequest(
-            154.09M,
-            "USD",
-            new DateTimeOffset(new DateTime(2023, 4, 1)),
-            "Description"
-        );
-
-        // Act
-        var result = await _cut.AddExpense(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            request
-        );
-
-        // Assert
-        result
-            .Should()
-            .NotBeNull();
-
-        result
-            .Should()
-            .BeOfType<CreatedResult>();
-    }
-
-    [Fact]
-    public async Task AddExpense_OnSuccess_ShouldReturn201Created()
-    {
-        // Arrange
-        var request = new AddExpenseRequest(
-            154.09M,
-            "USD",
-            new DateTimeOffset(new DateTime(2023, 4, 1)),
-            "Description"
-        );
-
-        // Act
-        var result = (CreatedResult)await _cut.AddExpense(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            request
-        );
-
-        // Assert
-        result.StatusCode
-            .Should()
-            .Be(201);
-    }
-
-    [Fact]
-    public async Task AddExpense_WhenInvoked_ShouldCallAddExpenseCommandHandler()
-    {
-        // Arrange
-        var request = new AddExpenseRequest(
-            154.09M,
-            "USD",
-            new DateTimeOffset(new DateTime(2023, 4, 1)),
-            "Description"
-        );
-
-        // Act
-        await _cut.AddExpense(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            request
-        );
-
-        // Assert
-        _mockAddExpenseCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<AddExpenseCommand>(),
-                It.IsAny<CancellationToken>()
-            ),
-            Times.Once());
-    }
-
-    [Fact]
-    public async Task AddExpense_WhenInvoked_ShouldPassParametersToCommandHandler()
-    {
-        // Arrange
-        var request = new AddExpenseRequest(
-            125.04M,
-            "PLN",
-            new DateTimeOffset(new DateTime(2023, 5, 1)),
-            "TEST"
-        );
-
-        var monthlyBillingId = Guid.NewGuid();
-        var planId = Guid.NewGuid();
-
-        // Act
-        await _cut.AddExpense(
-            monthlyBillingId,
-            planId,
-            request
-        );
-
-        // Assert
-        _mockAddExpenseCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.Is<AddExpenseCommand>(
-                    c => c.MonthlyBillingId == monthlyBillingId
-                    && c.PlanId == planId
-                    && c.Money == 125.04M
-                    && c.Currency == "PLN"
-                    && c.ExpenseDate == new DateTimeOffset(new DateTime(2023, 5, 1))
-                    && c.Description == "TEST"
-                ),
-                It.IsAny<CancellationToken>()
-            ),
-            Times.Once());
-    }
-
-    [Fact]
     public async Task Get_OnSuccess_ShouldReturnOkObjectResult()
     {
-        // Arrange
-        var request = new GetMonthlyBillingRequest(2023, 6);
-
         // Act
-        var result = await _cut.Get(request);
+        var result = await _cut.Get(2023, 6);
 
         // Assert
         result
@@ -466,11 +133,8 @@ public sealed class MonthlyBillingsControllerTests
     [Fact]
     public async Task Get_OnSuccess_ShouldReturnStatusCode200Ok()
     {
-        // Arrange
-        var request = new GetMonthlyBillingRequest(2023, 6);
-
         // Act
-        var result = (OkObjectResult)await _cut.Get(request);
+        var result = (OkObjectResult)await _cut.Get(2023, 6);
 
         // Assert
         result.StatusCode
@@ -484,14 +148,8 @@ public sealed class MonthlyBillingsControllerTests
     [InlineData(2021, 12)]
     public async Task Get_WhenInvokedWithParameters_ShouldPassThemToQueryHandler(ushort year, byte month)
     {
-        // Arrange
-        var request = new GetMonthlyBillingRequest(
-            year,
-            month
-        );
-
         // Act
-        await _cut.Get(request);
+        await _cut.Get(year, month);
 
         // Assert
         _mockGetMonthlyBillingQueryHandler.Verify(
@@ -509,14 +167,8 @@ public sealed class MonthlyBillingsControllerTests
     [Fact]
     public async Task Get_OnSuccess_ShouldReturnExpectedObjectType()
     {
-        // Arrange
-        var request = new GetMonthlyBillingRequest(
-            2023,
-            1
-        );
-
         // Act
-        var result = (OkObjectResult)await _cut.Get(request);
+        var result = (OkObjectResult)await _cut.Get(2023, 1);
 
         // Assert
         result.Value
@@ -531,14 +183,8 @@ public sealed class MonthlyBillingsControllerTests
     [Fact]
     public async Task Close_OnSuccess_ShouldReturnNoContentResult()
     {
-        // Arrange
-        var request = new CloseMonthlyBillingRequest(
-            2023,
-            1
-        );
-
         // Act
-        var result = await _cut.Close(request);
+        var result = await _cut.Close(2023, 1);
 
         // Assert
         result
@@ -553,14 +199,8 @@ public sealed class MonthlyBillingsControllerTests
     [Fact]
     public async Task Close_OnSuccess_ShouldReturn204StatusCode()
     {
-        // Arrange
-        var request = new CloseMonthlyBillingRequest(
-            2023,
-            1
-        );
-
         // Act
-        var result = (NoContentResult)await _cut.Close(request);
+        var result = (NoContentResult)await _cut.Close(2023, 1);
 
         // Assert
         result.StatusCode
@@ -572,7 +212,7 @@ public sealed class MonthlyBillingsControllerTests
     public async Task Close_WhenInvoked_ShouldCallCloseMonthlyBillingCommandHandler()
     {
         // Act
-        await _cut.Close(new(2020, 1));
+        await _cut.Close(2020, 1);
 
         // Assert
         _mockCloseMonthlyBillingCommandHandler.Verify(
@@ -595,7 +235,7 @@ public sealed class MonthlyBillingsControllerTests
         var token = new CancellationToken();
 
         // Act
-        await _cut.Close(new(year, month));
+        await _cut.Close(year, month);
 
         // Assert
         _mockCloseMonthlyBillingCommandHandler.Verify(
@@ -610,14 +250,8 @@ public sealed class MonthlyBillingsControllerTests
     [Fact]
     public async Task Reopen_OnSuccess_ShouldReturnNoContentResult()
     {
-        // Arrange
-        var request = new ReopenMonthlyBillingRequest(
-            2023,
-            1
-        );
-
         // Act
-        var result = await _cut.Reopen(request);
+        var result = await _cut.Reopen(2023, 1);
 
         // Assert
         result
@@ -632,14 +266,8 @@ public sealed class MonthlyBillingsControllerTests
     [Fact]
     public async Task Reopen_OnSuccess_ShouldReturn204StatusCode()
     {
-        // Arrange
-        var request = new ReopenMonthlyBillingRequest(
-            2023,
-            1
-        );
-
         // Act
-        var result = (NoContentResult)await _cut.Reopen(request);
+        var result = (NoContentResult)await _cut.Reopen(2023, 1);
 
         // Assert
         result.StatusCode
@@ -651,7 +279,7 @@ public sealed class MonthlyBillingsControllerTests
     public async Task Reopen_WhenInvoked_ShouldCallReopenMonthlyBillingCommandHandler()
     {
         // Act
-        await _cut.Reopen(new(2020, 1));
+        await _cut.Reopen(2020, 1);
 
         // Assert
         _mockReopenMonthlyBillingCommandHandler.Verify(
@@ -674,7 +302,7 @@ public sealed class MonthlyBillingsControllerTests
         var token = new CancellationToken();
 
         // Act
-        await _cut.Reopen(new(year, month));
+        await _cut.Reopen(year, month);
 
         // Assert
         _mockReopenMonthlyBillingCommandHandler.Verify(
@@ -683,388 +311,6 @@ public sealed class MonthlyBillingsControllerTests
                     c => c.Year == year
                       && c.Month == month),
                 token),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task UpdateIncome_OnSuccess_ShouldReturnNoContentResult()
-    {
-        // Act
-        var result = await _cut.UpdateIncome(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            new(
-                "Updated name",
-                11.24m,
-                "USD",
-                false
-            )
-        );
-
-        // Assert
-        result
-            .Should()
-            .NotBeNull();
-
-        result
-            .Should()
-            .BeOfType<NoContentResult>();
-    }
-
-    [Fact]
-    public async Task UpdateIncome_OnSuccess_ShouldReturnStatusCode204()
-    {
-        // Act
-        var result = (NoContentResult)await _cut.UpdateIncome(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            new(
-                "Updated name",
-                11.24m,
-                "USD",
-                false
-            )
-        );
-
-        // Assert
-        result.StatusCode
-            .Should()
-            .Be(204);
-    }
-
-    [Fact]
-    public async Task UpdateIncome_WhenInvoked_ShouldCallUpdateIncomeCommandHandler()
-    {
-        // Act
-        await _cut.UpdateIncome(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            new(
-                "Updated name",
-                11.24m,
-                "USD",
-                false
-            )
-        );
-
-        // Assert
-        _mockUpdateIncomeCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<UpdateIncomeCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task RemoveIncome_OnSuccess_ShouldReturnNoContentResult()
-    {
-        // Arrange
-        var request = new RemoveIncomeRequest(
-                Guid.NewGuid(),
-                Guid.NewGuid()
-        );
-
-        // Act
-        var result = await _cut.RemoveIncome(request);
-
-        // Assert
-        result
-            .Should()
-            .NotBeNull();
-
-        result
-            .Should()
-            .BeOfType<NoContentResult>();
-    }
-
-    [Fact]
-    public async Task RemoveIncome_OnSuccess_ShouldReturn204StatusCode()
-    {
-        // Arrange
-        var request = new RemoveIncomeRequest(
-                Guid.NewGuid(),
-                Guid.NewGuid()
-        );
-
-        // Act
-        var result = (NoContentResult)await _cut.RemoveIncome(request);
-
-        // Assert
-        result.StatusCode
-            .Should()
-            .Be(204);
-    }
-
-    [Fact]
-    public async Task RemoveIncome_WhenInvoked_ShouldCallRemoveIncomeCommandHandler()
-    {
-        // Act
-        await _cut.RemoveIncome(
-            new(
-                Guid.NewGuid(),
-                Guid.NewGuid()
-            )
-        );
-
-        // Assert
-        _mockRemoveIncomeCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<RemoveIncomeCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task RemovePlan_OnSuccess_ShouldReturnNoContentResult()
-    {
-        // Arrange
-        var request = new RemovePlanRequest(
-                Guid.NewGuid(),
-                Guid.NewGuid()
-        );
-
-        // Act
-        var result = await _cut.RemovePlan(request);
-
-        // Assert
-        result
-            .Should()
-            .NotBeNull();
-
-        result
-            .Should()
-            .BeOfType<NoContentResult>();
-    }
-
-    [Fact]
-    public async Task RemovePlan_OnSuccess_ShouldReturn204StatusCode()
-    {
-        // Arrange
-        var request = new RemovePlanRequest(
-                Guid.NewGuid(),
-                Guid.NewGuid()
-        );
-
-        // Act
-        var result = (NoContentResult)await _cut.RemovePlan(request);
-
-        // Assert
-        result.StatusCode
-            .Should()
-            .Be(204);
-    }
-
-    [Fact]
-    public async Task RemovePlan_WhenInvoked_ShouldCallRemovePlanCommandHandler()
-    {
-        // Act
-        await _cut.RemovePlan(
-            new(
-                Guid.NewGuid(),
-                Guid.NewGuid()
-            )
-        );
-
-        // Assert
-        _mockRemovePlanCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<RemovePlanCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task UpdatePlan_OnSuccess_ShouldReturnNoContentResult()
-    {
-        // Act
-        var result = await _cut.UpdatePlan(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            new(
-                "Updated Category",
-                11.24m,
-                "USD",
-                1
-            )
-        );
-
-        // Assert
-        result
-            .Should()
-            .NotBeNull();
-
-        result
-            .Should()
-            .BeOfType<NoContentResult>();
-    }
-
-    [Fact]
-    public async Task UpdatePlan_OnSuccess_ShouldReturnStatusCode204()
-    {
-        // Act
-        var result = (NoContentResult)await _cut.UpdatePlan(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            new(
-                "Updated Category",
-                11.24m,
-                "USD",
-                12
-            )
-        );
-
-        // Assert
-        result.StatusCode
-            .Should()
-            .Be(204);
-    }
-
-    [Fact]
-    public async Task UpdatePlan_WhenInvoked_ShouldCallUpdatePlanCommandHandler()
-    {
-        // Act
-        await _cut.UpdatePlan(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            new(
-                "Updated name",
-                11.24m,
-                "USD",
-                85
-            )
-        );
-
-        // Assert
-        _mockUpdatePlanCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<UpdatePlanCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task RemoveExpense_OnSuccess_ShouldReturnNoContentResult()
-    {
-        // Act
-        var result = await _cut.RemoveExpense(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid()
-        );
-
-        // Assert
-        result
-            .Should()
-            .NotBeNull();
-
-        result
-            .Should()
-            .BeOfType<NoContentResult>();
-    }
-
-    [Fact]
-    public async Task RemoveExpense_OnSuccess_ShouldReturnStatusCode204()
-    {
-        // Act
-        var result = (NoContentResult)await _cut.RemoveExpense(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid()
-        );
-
-        // Assert
-        result.StatusCode
-            .Should()
-            .Be(204);
-    }
-
-    [Fact]
-    public async Task RemoveExpense_WhenInvoked_ShouldCallRemoveExpenseCommandHandler()
-    {
-        // Act
-        await _cut.RemoveExpense(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid()
-        );
-
-        // Assert
-        _mockRemoveExpenseCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<RemoveExpenseCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task UpdateExpense_OnSuccess_ShouldReturnNoContentResult()
-    {
-        // Act
-        var result = await _cut.UpdateExpense(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            new(
-                11.24m,
-                "USD",
-                new DateTimeOffset(DateTime.Now),
-                "Updated description"
-            )
-        );
-
-        // Assert
-        result
-            .Should()
-            .NotBeNull();
-
-        result
-            .Should()
-            .BeOfType<NoContentResult>();
-    }
-
-    [Fact]
-    public async Task UpdateExpense_OnSuccess_ShouldReturnStatusCode204()
-    {
-        // Act
-        var result = (NoContentResult)await _cut.UpdateExpense(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            new(
-                11.24m,
-                "USD",
-                new DateTimeOffset(DateTime.Now),
-                "Updated description"
-            )
-        );
-
-        // Assert
-        result.StatusCode
-            .Should()
-            .Be(204);
-    }
-
-    [Fact]
-    public async Task UpdateExpense_WhenInvoked_ShouldCallUpdateExpenseCommandHandler()
-    {
-        // Act
-        await _cut.UpdateExpense(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            new(
-                11.24m,
-                "USD",
-                new DateTimeOffset(DateTime.Now),
-                "Updated description"
-            )
-        );
-
-        // Assert
-        _mockUpdateExpenseCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<UpdateExpenseCommand>(),
-                It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }
