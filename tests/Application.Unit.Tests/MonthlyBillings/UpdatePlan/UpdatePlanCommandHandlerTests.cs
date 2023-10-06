@@ -16,6 +16,11 @@ public sealed class UpdatePlanCommandHandlerTests
     public UpdatePlanCommandHandlerTests()
     {
         _repository = Substitute.For<IMonthlyBillingRepository>();
+
+        _repository
+            .GetById(new(Constants.MonthlyBilling.Id))
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
+
         _handler = new UpdatePlanCommandHandler(_repository);
     }
 
@@ -24,11 +29,6 @@ public sealed class UpdatePlanCommandHandlerTests
     {
         // Arrange
         var command = UpdatePlanCommandUtilities.CreateCommand();
-        _repository
-            .GetById(new(command.MonthlyBillingId))
-            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling(
-                plans: new List<Plan>() { PlansUtilities.CreatePlan() }
-            ));
 
         // Act
         await _handler.HandleAsync(
@@ -39,53 +39,88 @@ public sealed class UpdatePlanCommandHandlerTests
         // Assert
         await _repository
             .Received(1)
-            .GetById(new(command.MonthlyBillingId));
+            .GetById(Arg.Is<MonthlyBillingId>(m => m.Value == command.MonthlyBillingId));
     }
 
     [Fact]
-    public async Task HandleAsync_WhenCalledForNotExistingMonthlyBilling_ShouldThrowMonthlyBillingNotFoundException()
+    public async Task HandleAsync_WhenMonthlyBillingDoesntExist_ShouldThrowMonthlyBillingNotFoundException()
     {
         // Arrange
-        var command = UpdatePlanCommandUtilities.CreateCommand();
+        var updatePlan = new UpdatePlanCommand(
+            Guid.NewGuid(),
+            Constants.Plan.Id,
+            Constants.Plan.Category,
+            Constants.Plan.MoneyAmount,
+            Constants.Plan.Currency,
+            Constants.Plan.SortOrder
+        );
 
-        var updatePlan = async () => await _handler
+        var updatePlanAction = () => _handler
             .HandleAsync(
-                command,
+                updatePlan,
                 default
             );
 
         // Act & Assert
-        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(updatePlan);
+        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(updatePlanAction);
     }
 
     [Fact]
-    public async Task HandleAsync_WhenPassedProperData_ShouldCallSaveOnRepositoryOnce()
+    public async Task HandleAsync_WhenMotnhlyBillingFoundAndPlanUpdatedSuccessfully_ShouldCallSaveOnRepositoryOnce()
     {
         // Arrange
-        var command = UpdatePlanCommandUtilities.CreateCommand();
-        _repository
-            .GetById(new(command.MonthlyBillingId))
-            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling(
-                plans: new List<Plan>() { PlansUtilities.CreatePlan() }
-            ));
+        var updatePlan = UpdatePlanCommandUtilities.CreateCommand();
 
         // Act
         await _handler.HandleAsync(
-            command,
+            updatePlan,
             default
         );
 
         // Assert
         await _repository
             .Received(1)
-            .Save(Arg.Is<MonthlyBilling>(
-                m => m.Plans.Any(
-                    p => p.Id.Value == command.PlanId
-                      && p.Category.Value == "Updated Category"
-                      && p.Money.Amount == 258.96m
-                      && p.Money.Currency.Value == "EUR"
-                      && p.SortOrder == 99
-                )
-            ));
+            .Save(Arg.Any<MonthlyBilling>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_OnSuccess_PassedArgumentShouldContainUpdatedPlan()
+    {
+        // Arrange
+        var updatePlan = UpdatePlanCommandUtilities.CreateCommand();
+
+        MonthlyBilling passedArgument = null;
+
+        await _repository
+            .Save(Arg.Do<MonthlyBilling>(a => passedArgument = a));
+
+        // Act
+        await _handler.HandleAsync(
+            updatePlan,
+            default
+        );
+
+        // Assert
+        passedArgument
+            .Should()
+            .NotBeNull();
+
+        passedArgument?.Plans
+            .Should()
+            .ContainEquivalentOf(
+                new Plan(
+                    new(Guid.NewGuid()),
+                    new(updatePlan.Category),
+                    new(
+                        updatePlan.MoneyAmount,
+                        new(updatePlan.Currency)
+                    ),
+                    updatePlan.SortOrder
+                ),
+                c => c
+                    .Excluding(f => f.Id)
+                    .Excluding(f => f.Expenses)
+                    .Excluding(f => f.SumOfExpenses)
+            );
     }
 }
