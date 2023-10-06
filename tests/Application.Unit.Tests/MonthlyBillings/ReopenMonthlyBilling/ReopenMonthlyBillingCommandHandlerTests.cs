@@ -17,54 +17,101 @@ public sealed class ReopenMonthlyBillingCommandHandlerTests
     public ReopenMonthlyBillingCommandHandlerTests()
     {
         _repository = Substitute.For<IMonthlyBillingRepository>();
-        _handler = new ReopenMonthlyBillingCommandHandler(_repository);
-    }
 
-    [Fact]
-    public async Task HandleAsync_WhenMonthlyBillingNotFound_ShouldThrowMonthlyBillingNotFoundException()
-    {
-        // Arrange
-        var command = ReopenMonthlyBillingCommandUtilities.CreateCommand();
-
-        var reopenMonthlyBilling = async () => await _handler.HandleAsync(
-            command,
-            default
-        );
-
-        // Assert
-        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(reopenMonthlyBilling);
-    }
-
-    [Fact]
-    public async Task HandleAsync_WhenReopenMonthlyBillingIsValid_ShouldCallSaveOnRepositoryOnce()
-    {
-        // Arrange
-        var command = ReopenMonthlyBillingCommandUtilities.CreateCommand();
         var fakeMonthlyBilling = MonthlyBillingUtilities.CreateMonthlyBilling();
         fakeMonthlyBilling.Close();
 
         _repository
             .Get(
-                new(command.Year),
-                new(command.Month)
+                new(Constants.MonthlyBilling.Year),
+                new(Constants.MonthlyBilling.Month)
             )
             .Returns(fakeMonthlyBilling);
 
+        _handler = new ReopenMonthlyBillingCommandHandler(_repository);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenInvoked_ShouldCallGetOnRepositoryOnce()
+    {
+        // Arrange
+        var reopen = ReopenMonthlyBillingCommandUtilities.CreateCommand();
+
         // Act
         await _handler.HandleAsync(
-            command,
+            reopen,
             default
         );
 
         // Assert
         await _repository
             .Received(1)
-            .Save(
-                Arg.Is<MonthlyBilling>(
-                    m => m.Year == new Year(Constants.MonthlyBilling.Year)
-                      && m.Month == new Month(Constants.MonthlyBilling.Month)
-                      && m.State == State.Open
-                )
+            .Get(
+                Arg.Is<Year>(y => y.Value == reopen.Year),
+                Arg.Is<Month>(m => m.Value == reopen.Month)
             );
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenMonthlyBillingDoesntExist_ShouldThrowMonthlyBillingNotFoundException()
+    {
+        // Arrange
+        var reopen = new ReopenMonthlyBillingCommand(
+            2020,
+            1
+        );
+
+        var reopenAction = () => _handler.HandleAsync(
+            reopen,
+            default
+        );
+
+        // Assert
+        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(reopenAction);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenMonthlyBillingFoundAndSuccessfullyReopened_ShouldCallSaveOnRepositoryOnce()
+    {
+        // Arrange
+        var reopen = ReopenMonthlyBillingCommandUtilities.CreateCommand();
+
+        // Act
+        await _handler.HandleAsync(
+            reopen,
+            default
+        );
+
+        // Assert
+        await _repository
+            .Received(1)
+            .Save(Arg.Any<MonthlyBilling>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_OnSuccess_PassedArgumentShouldBeReopened()
+    {
+        // Arrange
+        var reopen = ReopenMonthlyBillingCommandUtilities.CreateCommand();
+
+        MonthlyBilling passedArgument = null;
+
+        await _repository
+            .Save(Arg.Do<MonthlyBilling>(m => passedArgument = m));
+
+        // Act
+        await _handler.HandleAsync(
+            reopen,
+            default
+        );
+
+        // Assert
+        passedArgument
+            .Should()
+            .NotBeNull();
+
+        passedArgument?.State
+            .Should()
+            .Be(State.Open);
     }
 }
