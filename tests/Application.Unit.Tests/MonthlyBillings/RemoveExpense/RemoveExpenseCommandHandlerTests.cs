@@ -84,7 +84,7 @@ public sealed class RemoveExpenseCommandHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_OnSuccess_PassedArgumentShouldDontHaveSelectedExpense()
+    public async Task HandleAsync_OnSuccess_PassedArgumentShouldContainNotActiveExpense()
     {
         // Arrange
         var removeExpenseCommand = RemoveExpenseCommandUtilities.CreateCommand();
