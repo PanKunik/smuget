@@ -7,6 +7,7 @@ using Domain.Repositories;
 
 namespace Application.MonthlyBillings.GetByYearAndMonth;
 
+// TODO: Read model (CQRS) - implement faster data reading
 public sealed class GetMonthlyBillingByYearAndMonthQueryHandler : IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>
 {
     private readonly IMonthlyBillingRepository _repository;
