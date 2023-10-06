@@ -13,7 +13,7 @@ public static class MonthlyBillingMappingsExtension
 
         return new MonthlyBillingDTO()
         {
-            Id = domain.Id.Value.ToString(),
+            Id = domain.Id.Value,
             Year = domain.Year.Value,
             Month = domain.Month.Value,
             State = domain.State.ToString(),

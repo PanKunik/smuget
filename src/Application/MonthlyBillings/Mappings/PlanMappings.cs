@@ -13,7 +13,7 @@ public static class PlanMappings
 
         return new PlanDTO()
         {
-            Id = domain.Id.Value.ToString(),
+            Id = domain.Id.Value,
             Category = domain.Category.Value,
             Money = domain.Money.ToString(),
             SortOrder = domain.SortOrder,

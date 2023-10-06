@@ -2,7 +2,7 @@ namespace Application.MonthlyBillings;
 
 public sealed class MonthlyBillingDTO
 {
-    public string Id { get; set; }
+    public Guid Id { get; set; }
     public int Year { get; set; }
     public int Month { get; set; }
     public string State { get; set; }

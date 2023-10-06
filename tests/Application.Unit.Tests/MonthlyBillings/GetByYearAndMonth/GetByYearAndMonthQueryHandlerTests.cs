@@ -1,3 +1,5 @@
+using System.Data.Common;
+using System.Linq.Expressions;
 using Application.Exceptions;
 using Application.MonthlyBillings;
 using Application.MonthlyBillings.GetByYearAndMonth;
@@ -18,40 +20,30 @@ public sealed class GetByYearAndMonthQueryHandlerTests
     {
         _repository = Substitute.For<IMonthlyBillingRepository>();
 
+        _repository
+            .Get(
+                new(Constants.MonthlyBilling.Year),
+                new(Constants.MonthlyBilling.Month)
+            )
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling(
+                plans: new List<Plan>() { PlansUtilities.CreatePlan(
+                            expenses: new List<Expense>() { ExpenseUtilities.CreateExpense() }
+                        )
+                    }
+            ));
+
         _handler = new GetMonthlyBillingByYearAndMonthQueryHandler(_repository);
     }
 
-    [Theory]
-    [InlineData(2023, 9)]
-    [InlineData(2022, 1)]
-    public async Task HandleAsync_WhenCalled_ShouldCallGetOnRepository(int year, int month)
+    [Fact]
+    public async Task HandleAsync_WhenInvoked_ShouldCallGetOnRepositoryOnce()
     {
         // Arrange
-        var query = new GetMonthlyBillingByYearAndMonthQuery(
-            (ushort)year,
-            (byte)month
-        );
-
-        _repository
-            .Get(
-                new(year),
-                new(month)
-            )
-            .Returns(
-                new MonthlyBilling(
-                    new(Constants.MonthlyBilling.Id),
-                    new(year),
-                    new(month),
-                    new(Constants.MonthlyBilling.Currency),
-                    Constants.MonthlyBilling.State,
-                    null,
-                    null
-                )
-            );
+        var getQuery = GetMonthlyBillingByYearAndMonthQueryUtilities.CreateQuery();
 
         // Act
-        var result = await _handler.HandleAsync(
-            query,
+        await _handler.HandleAsync(
+            getQuery,
             default
         );
 
@@ -59,45 +51,38 @@ public sealed class GetByYearAndMonthQueryHandlerTests
         await _repository
             .Received(1)
             .Get(
-                Arg.Is<Year>(y => y.Value == year),
-                Arg.Is<Month>(m => m.Value == month)
+                Arg.Is<Year>(y => y.Value == getQuery.Year),
+                Arg.Is<Month>(m => m.Value == getQuery.Month)
             );
     }
 
     [Fact]
-    public async Task HandleAsync_WhenMonthlyBillingNotFound_ShouldReturnMonthlyBillingNotFoundException()
+    public async Task HandleAsync_WhenMonthlyBillingDoesntExist_ShouldThrowMonthlyBillingNotFoundException()
     {
         // Arrange
-        var query = GetMonthlyBillingByYearAndMonthQueryUtilities.CreateQuery();
-        var get = () => _handler.HandleAsync(query, default);
+        var getQuery = new GetMonthlyBillingByYearAndMonthQuery(
+            2020,
+            1
+        );
+
+        var getAction = () => _handler.HandleAsync(
+            getQuery,
+            default
+        );
 
         // Act & Assert
-        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(get);
+        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(getAction);
     }
 
     [Fact]
-    public async Task HandleAsync_WhenCalled_ShouldReturnExpectedObject()
+    public async Task HandleAsync_WhenMonthlyBillingExists_ShouldReturnExpectedObject()
     {
         // Arrange
-        var query = GetMonthlyBillingByYearAndMonthQueryUtilities.CreateQuery();
-
-        _repository
-            .Get(
-                new(Constants.MonthlyBilling.Year),
-                new(Constants.MonthlyBilling.Month)
-            )
-            .Returns(
-                MonthlyBillingUtilities.CreateMonthlyBilling(
-                    MonthlyBillingUtilities.CreatePlans(
-                        MonthlyBillingUtilities.CreateExpenses()
-                    ),
-                    MonthlyBillingUtilities.CreateIncomes()
-                )
-            );
+        var getQuery = GetMonthlyBillingByYearAndMonthQueryUtilities.CreateQuery();
 
         // Act
         var result = await _handler.HandleAsync(
-            query,
+            getQuery,
             default
         );
 
@@ -108,15 +93,61 @@ public sealed class GetByYearAndMonthQueryHandlerTests
 
         result
             .Should()
-            .Match<MonthlyBillingDTO>(
-                m => m.Year == Constants.MonthlyBilling.Year
-                  && m.Month == Constants.MonthlyBilling.Month
-                  && m.State == Constants.MonthlyBilling.State.Name
-                  && m.SumOfIncome == 4321.45m
-                  && m.SumOfPlan == 2984.12m
-                  && m.SumOfExpenses == 2785.62m
-                  && m.SavingsForecast == 1337.33m
-                  && m.AccountBalance == 1535.83m
-            );
+            .BeEquivalentTo(ExpectedMonthlyBillingDTO2());
     }
+
+    private MonthlyBillingDTO ExpectedMonthlyBillingDTO2()
+        => new MonthlyBillingDTO()
+        {
+            Id = Constants.MonthlyBilling.Id,
+            Year = Constants.MonthlyBilling.Year,
+            Month = Constants.MonthlyBilling.Month,
+            State = Constants.MonthlyBilling.State.Name,
+            Incomes = ExpectedListOfIncomeDTOs(),
+            Plans = ExpectedListOfPlanDTOs(),
+            SavingsForecast = 1337.33m,
+            SumOfExpenses = Constants.Expense.Money,
+            SumOfIncome = Constants.Income.Amount,
+            SumOfIncomeAvailableForPlanning = Constants.Income.Amount,
+            SumOfPlan = Constants.Plan.MoneyAmount,
+            AccountBalance = 3392.91m
+        };
+
+    private List<IncomeDTO> ExpectedListOfIncomeDTOs()
+        => new List<IncomeDTO>()
+        {
+            new IncomeDTO()
+            {
+                Id = Constants.Income.Id,
+                Name = Constants.Income.NameFromIndex(0).Value,
+                Money = $"{ Constants.Income.Amount } { Constants.Income.Currency }",
+                Include = Constants.Income.Include
+            }
+        };
+
+    private List<PlanDTO> ExpectedListOfPlanDTOs()
+        => new List<PlanDTO>()
+        {
+            new PlanDTO()
+            {
+                Id = Constants.Plan.Id,
+                Category = Constants.Plan.Category,
+                Money = $"{ Constants.Plan.MoneyAmount } { Constants.Plan.Currency }",
+                SortOrder = Constants.Plan.SortOrder,
+                Expenses = ExpectedListOfExpenseDTOs(),
+                SumOfExpenses = Constants.Expense.Money
+            }
+        };
+
+    private List<ExpenseDTO> ExpectedListOfExpenseDTOs()
+        => new List<ExpenseDTO>()
+        {
+            new ExpenseDTO()
+            {
+                Id = Constants.Expense.Id,
+                Money = $"{ Constants.Expense.Money } { Constants.Expense.Currency }",
+                ExpenseDate = Constants.Expense.ExpenseDate,
+                Description = Constants.Expense.Description
+            }
+        };
 }

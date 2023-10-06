@@ -5,7 +5,7 @@ namespace Application.Unit.Tests.TestUtilities;
 public static class ExpenseUtilities
 {
     public static Expense CreateExpense()
-        => new Expense(
+        => new(
             new(Constants.Constants.Expense.Id),
             new(
                 Constants.Constants.Expense.Money,
