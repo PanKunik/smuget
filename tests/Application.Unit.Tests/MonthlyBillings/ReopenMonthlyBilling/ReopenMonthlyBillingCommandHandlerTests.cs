@@ -110,6 +110,14 @@ public sealed class ReopenMonthlyBillingCommandHandlerTests
             .Should()
             .NotBeNull();
 
+        passedArgument?.Year.Value
+            .Should()
+            .Be(reopen.Year);
+
+        passedArgument?.Month.Value
+            .Should()
+            .Be(reopen.Month);
+
         passedArgument?.State
             .Should()
             .Be(State.Open);

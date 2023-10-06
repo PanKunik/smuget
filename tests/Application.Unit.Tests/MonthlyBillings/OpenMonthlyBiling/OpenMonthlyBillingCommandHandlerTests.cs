@@ -110,5 +110,17 @@ public sealed class OpenMonthlyBilingCommandHandlerTests
         passedArgument?.State
             .Should()
             .Be(State.Open);
+
+        passedArgument?.Year.Value
+            .Should()
+            .Be(openCommand.Year);
+
+        passedArgument?.Month.Value
+            .Should()
+            .Be(openCommand.Month);
+
+        passedArgument?.Currency.Value
+            .Should()
+            .Be(openCommand.Currency);
     }
 }
