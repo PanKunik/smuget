@@ -102,6 +102,10 @@ public sealed class AddExpenseCommandHandlerTests
         );
 
         // Assert
+        passedMonthlyBilling
+            .Should()
+            .NotBeNull();
+
         passedMonthlyBilling?.Plans
             .First().Expenses
                 .Should()

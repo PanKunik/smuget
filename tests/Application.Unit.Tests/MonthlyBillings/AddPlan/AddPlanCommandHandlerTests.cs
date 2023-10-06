@@ -101,6 +101,10 @@ public sealed class AddPlanCommandHandlerTests
         );
 
         // Assert
+        passedArgument
+            .Should()
+            .NotBeNull();
+
         passedArgument?.Plans
             .Should()
             .ContainEquivalentOf(
