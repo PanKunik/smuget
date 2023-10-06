@@ -49,7 +49,7 @@ public sealed class AddExpenseCommandHandlerTests
     {
         // Arrange
         var addExpenseCommand = new AddExpenseCommand(
-            Guid.Parse("753d1889-0502-49f4-be59-25821729f6a9"),
+            Guid.NewGuid(),
             Constants.Plan.Id,
             Constants.Expense.Money,
             Constants.Expense.Currency,
