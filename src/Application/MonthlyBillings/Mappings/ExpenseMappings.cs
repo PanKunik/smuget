@@ -13,7 +13,7 @@ public static class ExpenseMappings
 
         return new ExpenseDTO()
         {
-            Id = domain.Id.Value.ToString(),
+            Id = domain.Id.Value,
             Money = domain.Money.ToString(),
             ExpenseDate = domain.ExpenseDate,
             Description = domain.Description

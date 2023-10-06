@@ -16,8 +16,7 @@ public static class IncomeMappings
             Id = domain.Id.Value,
             Name = domain.Name.Value,
             Money = domain.Money.ToString(),
-            Include = domain.Include,
-            Active = domain.Active
+            Include = domain.Include
         };
     }
 }
