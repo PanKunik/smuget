@@ -2,6 +2,7 @@ using Application.Exceptions;
 using Application.MonthlyBillings.RemoveExpense;
 using Application.Unit.Tests.MonthlyBillings.TestUtilities;
 using Application.Unit.Tests.TestUtilities;
+using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
 
@@ -15,6 +16,11 @@ public sealed class RemoveExpenseCommandHandlerTests
     public RemoveExpenseCommandHandlerTests()
     {
         _repository = Substitute.For<IMonthlyBillingRepository>();
+
+        _repository
+            .GetById(new(Constants.MonthlyBilling.Id))
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
+
         _handler = new RemoveExpenseCommandHandler(_repository);
     }
 
@@ -22,26 +28,11 @@ public sealed class RemoveExpenseCommandHandlerTests
     public async Task HandleAsync_WhenInvoked_ShouldCallGetByIdOnRepositoryOnce()
     {
         // Arrange
-        var command = RemoveExpenseCommandUtilities.CreateCommand();
-
-        _repository
-            .GetById(
-                new(command.MonthlyBillingId)
-            )
-            .Returns(
-                MonthlyBillingUtilities.CreateMonthlyBilling(
-                    plans: new List<Plan>()
-                    {
-                        PlansUtilities.CreatePlan(
-                            expenses: new List<Expense>() { ExpenseUtilities.CreateExpense() }
-                        )
-                    }
-                )
-            );
+        var removeExpense = RemoveExpenseCommandUtilities.CreateCommand();
 
         // Act
         await _handler.HandleAsync(
-            command,
+            removeExpense,
             default
         );
 
@@ -49,7 +40,9 @@ public sealed class RemoveExpenseCommandHandlerTests
         await _repository
             .Received(1)
             .GetById(
-                new(command.MonthlyBillingId)
+                Arg.Is<MonthlyBillingId>(
+                    m => m.Value == removeExpense.MonthlyBillingId
+                )
             );
     }
 
@@ -57,49 +50,64 @@ public sealed class RemoveExpenseCommandHandlerTests
     public async Task HandleAsync_WhenMonthlyBillingDoesntExist_ShouldThrowMonthlyBillingNotFoundException()
     {
         // Arrange
-        var command = RemoveExpenseCommandUtilities.CreateCommand();
+        var removeExpense = new RemoveExpenseCommand(
+            Guid.NewGuid(),
+            Constants.Plan.Id,
+            Constants.Expense.Id
+        );
 
-        var removeExpense = async () => await _handler.HandleAsync(
-            command,
+        var removeAction = () => _handler.HandleAsync(
+            removeExpense,
             default
         );
 
         // Act & Assert
-        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(removeExpense);
+        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(removeAction);
     }
 
     [Fact]
-    public async Task HandleAsync_WhenMonthlyBillingFound_ShouldCallSaveOnRepositoryOnce()
+    public async Task HandleAsync_WhenMonthyBillingFoundAndExpenseRemovedSuccessfully_ShouldCallSaveOnRepositoryOnce()
     {
         // Arrange
-        var command = RemoveExpenseCommandUtilities.CreateCommand();
-        var fakeMonthlyBilling = MonthlyBillingUtilities.CreateMonthlyBilling(
-            plans: new List<Plan>() { PlansUtilities.CreatePlan(
-                expenses: new List<Expense>() { ExpenseUtilities.CreateExpense() }
-            ) }
-        );
-
-        _repository
-            .GetById(
-                new(command.MonthlyBillingId)
-            )
-            .Returns(
-                fakeMonthlyBilling
-            );
+        var removeExpense = RemoveExpenseCommandUtilities.CreateCommand();
 
         // Act
         await _handler.HandleAsync(
-            command,
+            removeExpense,
             default
         );
 
         // Assert
         await _repository
             .Received(1)
-            .Save(
-                Arg.Is<MonthlyBilling>(
-                    m => m.Plans.Any(p => p.Expenses.Any(e => e.Active == false))
-                )
-            );
+            .Save(Arg.Any<MonthlyBilling>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_OnSuccess_PassedArgumentShouldDontHaveSelectedExpense()
+    {
+        // Arrange
+        var removeExpenseCommand = RemoveExpenseCommandUtilities.CreateCommand();
+
+        MonthlyBilling passedArgument = null;
+
+        await _repository
+            .Save(Arg.Do<MonthlyBilling>(a => passedArgument = a));
+
+        // Act
+        await _handler.HandleAsync(
+            removeExpenseCommand,
+            default
+        );
+
+        // Assert
+        passedArgument
+            .Should()
+            .NotBeNull();
+
+        passedArgument?.Plans
+            .First().Expenses
+                .Should()
+                .ContainSingle(x => x.Active == false);
     }
 }
