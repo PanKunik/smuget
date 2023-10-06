@@ -7,7 +7,7 @@ public static class RemovePlanCommandUtilities
 {
     public static RemovePlanCommand CreateCommand()
         => new(
-            Guid.NewGuid(),
+            Constants.MonthlyBilling.Id,
             Constants.Plan.Id
         );
 }

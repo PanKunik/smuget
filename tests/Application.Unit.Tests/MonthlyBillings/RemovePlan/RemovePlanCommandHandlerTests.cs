@@ -2,6 +2,7 @@ using Application.Exceptions;
 using Application.MonthlyBillings.RemovePlan;
 using Application.Unit.Tests.MonthlyBillings.TestUtilities;
 using Application.Unit.Tests.TestUtilities;
+using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
 
@@ -15,6 +16,11 @@ public sealed class RemovePlanCommandHandlerTests
     public RemovePlanCommandHandlerTests()
     {
         _repository = Substitute.For<IMonthlyBillingRepository>();
+
+        _repository
+            .GetById(new(Constants.MonthlyBilling.Id))
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
+
         _handler = new RemovePlanCommandHandler(_repository);
     }
 
@@ -22,74 +28,82 @@ public sealed class RemovePlanCommandHandlerTests
     public async Task HandleAsync_WhenInvoked_ShouldCallGetByIdOnRepositoryOnce()
     {
         // Arrange
-        var command = RemovePlanCommandUtilities.CreateCommand();
-        _repository
-            .GetById(new(command.MonthlyBillingId))
-            .Returns(
-                MonthlyBillingUtilities.CreateMonthlyBilling(
-                    plans: new List<Plan>()
-                    {
-                        PlansUtilities.CreatePlan()
-                    }
-                )
-            );
+        var removePlan = RemovePlanCommandUtilities.CreateCommand();
 
         // Act
         await _handler
             .HandleAsync(
-                command,
+                removePlan,
                 default
             );
 
         // Assert
         await _repository
             .Received(1)
-            .GetById(new(command.MonthlyBillingId));
+            .GetById(Arg.Is<MonthlyBillingId>(m => m.Value == removePlan.MonthlyBillingId));
     }
 
     [Fact]
-    public async Task HandleAsync_WhenMonthlyBillingDoesntExist_ShouldthrowMonthlyBillingNotFoundException()
+    public async Task HandleAsync_WhenMonthlyBillingDoesntExist_ShouldThrowMonthlyBillingNotFoundException()
     {
         // Arrange
-        var command = RemovePlanCommandUtilities.CreateCommand();
+        var removePlan = new RemovePlanCommand(
+            Guid.NewGuid(),
+            Constants.Plan.Id
+        );
 
-        var removePlan = async () => await _handler
+        var removePlanAction = () => _handler
             .HandleAsync(
-                command,
+                removePlan,
                 default
             );
 
         // Act & Assert
-        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(removePlan);
+        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(removePlanAction);
     }
 
     [Fact]
-    public async Task HandleAsync_WhenPassedProperData_ShouldCallSaveOnRepositoryOnce()
+    public async Task HandleAsync_WhenMonthlyBillingFoundAndRemovedPlanSuccessfully_ShouldCallSaveOnRepositoryOnce()
     {
         // Arrange
-        var command = RemovePlanCommandUtilities.CreateCommand();
-        var fakeMonthlyBilling = MonthlyBillingUtilities.CreateMonthlyBilling(
-            plans: new List<Plan>()
-            {
-                PlansUtilities.CreatePlan()
-            }
-        );
-        _repository
-            .GetById(new(command.MonthlyBillingId))
-            .Returns(fakeMonthlyBilling);
+        var removePlan = RemovePlanCommandUtilities.CreateCommand();
 
         // Act
-        await _handler
-            .HandleAsync(
-                command,
-                default
-            );
+        await _handler.HandleAsync(
+            removePlan,
+            default
+        );
 
         // Assert
         await _repository
             .Received(1)
-            .Save(Arg.Is<MonthlyBilling>(
-                m => m.Plans.Any(i => !i.Active)
-            ));
+            .Save(Arg.Any<MonthlyBilling>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_OnSuccess_PassedArgumentShouldContainNotActivePlan()
+    {
+        // Arrange
+        var removePlan = RemovePlanCommandUtilities.CreateCommand();
+
+        MonthlyBilling passedArgument = null;
+
+        await _repository
+            .Save(Arg.Do<MonthlyBilling>(a => passedArgument = a));
+
+        // Act
+        await _handler.HandleAsync(
+            removePlan,
+            default
+        );
+
+        // Assert
+        passedArgument
+            .Should()
+            .NotBeNull();
+
+        passedArgument?.Plans
+            .Should()
+            .ContainSingle(x => x.Active == false);
     }
 }
