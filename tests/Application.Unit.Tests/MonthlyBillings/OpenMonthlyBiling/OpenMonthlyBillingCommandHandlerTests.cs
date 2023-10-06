@@ -2,6 +2,7 @@ using Application.Exceptions;
 using Application.MonthlyBillings.OpenMonthlyBilling;
 using Application.Unit.Tests.MonthlyBillings.TestUtilities;
 using Application.Unit.Tests.TestUtilities;
+using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
 
@@ -15,50 +16,99 @@ public sealed class OpenMonthlyBilingCommandHandlerTests
     public OpenMonthlyBilingCommandHandlerTests()
     {
         _repository = Substitute.For<IMonthlyBillingRepository>();
+
+        _repository
+            .Get(
+                new(Constants.MonthlyBilling.Year),
+                new(Constants.MonthlyBilling.Month)
+            )
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
+
         _handler = new OpenMonthlyBillingCommandHandler(_repository);
     }
 
     [Fact]
-    public async Task HandleAsync_WhenOpenMonthlyBillingCommandIsValid_ShouldCallSaveOnRepositoryOnce()
+    public async Task HandleAsync_WhenInvoked_ShouldCallGetOnRepositoryOnce()
     {
         // Arrange
-        var openMonthlyBillingCommand = OpenMonthlyBilingCommandUtilities.CreateCommand();
+        var openCommand = OpenMonthlyBilingCommandUtilities.CreateCommand();
 
         // Act
         await _handler.HandleAsync(
-            openMonthlyBillingCommand,
+            openCommand,
             default
         );
 
         // Assert
         await _repository
             .Received(1)
-            .Save(
-                Arg.Is<MonthlyBilling>(
-                    m => m.Currency == new Currency("PLN")
-                      && m.Month == new Month(7)
-                      && m.Year == new Year(2023)
-                )
+            .Get(
+                new(openCommand.Year),
+                new(openCommand.Month)
             );
     }
 
     [Fact]
-    public async Task HandleAsync_WhenOpenMonthlyBillingExists_ShouldThrowMonthlyBillingAlreadyOpenedException()
+    public async Task HandleAsync_WhenMonthlyBillingForPassedYearAndMonthExist_ShouldThrowMonthlyBillingAlreadyOpenedException()
     {
         // Arrange
-        var openMonthlyBillingCommand = OpenMonthlyBilingCommandUtilities.CreateCommand();
-        _repository
-            .Get(
-                Arg.Is<Year>(y => y.Value == 2023),
-                Arg.Is<Month>(m => m.Value == 7)
-            )
-            .Returns(
-                MonthlyBillingUtilities.CreateMonthlyBilling()
-            );
+        var openCommand = new OpenMonthlyBillingCommand(
+            Constants.MonthlyBilling.Year,
+            Constants.MonthlyBilling.Month,
+            Constants.MonthlyBilling.Currency
+        );
 
-        var openMonthlyBilling = async () => await _handler.HandleAsync(openMonthlyBillingCommand);
+        var openAction = () => _handler.HandleAsync(
+            openCommand,
+            default
+        );
 
         // Act & Assert
-        await Assert.ThrowsAsync<MonthlyBillingAlreadyOpenedException>(openMonthlyBilling);
+        await Assert.ThrowsAsync<MonthlyBillingAlreadyOpenedException>(openAction);
+    }
+
+    [Fact]
+    public async Task HandleAsync_MonthlyBillingSuccessfullyOpened_ShouldCallSaveOnRepositoryOnce()
+    {
+        // Arrange
+        var openCommand = OpenMonthlyBilingCommandUtilities.CreateCommand();
+
+        // Act
+        await _handler.HandleAsync(
+            openCommand,
+            default
+        );
+
+        // Assert
+        await _repository
+            .Received(1)
+            .Save(Arg.Any<MonthlyBilling>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_OnSuccess_PassedArgumentShouldBeOpened()
+    {
+        // Arrange
+        MonthlyBilling passedArgument = null;
+
+        await _repository
+            .Save(Arg.Do<MonthlyBilling>(m => passedArgument = m));
+
+        var openCommand = OpenMonthlyBilingCommandUtilities.CreateCommand();
+
+        // Act
+        await _handler.HandleAsync(
+            openCommand,
+            default
+        );
+        
+        // Assert
+        passedArgument
+            .Should()
+            .NotBeNull();
+
+        passedArgument?.State
+            .Should()
+            .Be(State.Open);
     }
 }
