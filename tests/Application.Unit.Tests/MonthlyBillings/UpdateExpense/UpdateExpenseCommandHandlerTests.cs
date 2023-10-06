@@ -16,28 +16,19 @@ public sealed class UpdateExpenseCommandHandlerTests
     public UpdateExpenseCommandHandlerTests()
     {
         _repository = Substitute.For<IMonthlyBillingRepository>();
+
+        _repository
+            .GetById(new(Constants.MonthlyBilling.Id))
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
+
         _handler = new UpdateExpenseCommandHandler(_repository);
     }
 
     [Fact]
-    public async Task HandleAsync_WhenCalled_ShouldCallGetByIdOnRepositoryOnce()
+    public async Task HandleAsync_WhenInvoked_ShouldCallGetByIdOnRepositoryOnce()
     {
         // Arrange
         var command = UpdateExpenseCommandUtilities.CreateCommand();
-
-        _repository
-            .GetById(new(Constants.MonthlyBilling.Id))
-            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling(
-                plans: new List<Plan>()
-                {
-                    PlansUtilities.CreatePlan(
-                        new List<Expense>()
-                        {
-                            ExpenseUtilities.CreateExpense()
-                        }
-                    )
-                }
-            ));
 
         // Act
         await _handler.HandleAsync(
@@ -48,21 +39,86 @@ public sealed class UpdateExpenseCommandHandlerTests
         // Act & Assert
         await _repository
             .Received(1)
-            .GetById(new(command.MonthlyBillingId));
+            .GetById(Arg.Is<MonthlyBillingId>(m => m.Value == command.MonthlyBillingId));
     }
 
     [Fact]
     public async Task HandleAsync_WhenMonthlyBillingNotFound_ShouldThrowMonthlyBillingNotFound()
     {
         // Arrange
-        var command = UpdateExpenseCommandUtilities.CreateCommand();
+        var updateExpense = new UpdateExpenseCommand(
+            Guid.NewGuid(),
+            Constants.Plan.Id,
+            Constants.Expense.Id,
+            Constants.Expense.Money,
+            Constants.Expense.Currency,
+            Constants.Expense.ExpenseDate,
+            Constants.Expense.Description
+        );
 
-        var updateIncome = async () => await _handler.HandleAsync(
-            command,
+        var updateExpenseAction = () => _handler.HandleAsync(
+            updateExpense,
             default
         );
 
         // Act & Assert
-        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(updateIncome);
+        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(updateExpenseAction);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenMonthlyBillingFoundAndSuccessfullyUdpatedExpense_ShouldCallSaveOnRepositoryOnce()
+    {
+        // Arrange
+        var updateExpense = UpdateExpenseCommandUtilities.CreateCommand();
+
+        // Act
+        await _handler.HandleAsync(
+            updateExpense,
+            default
+        );
+
+        // Assert
+        await _repository
+            .Received(1)
+            .Save(Arg.Any<MonthlyBilling>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_OnSuccess_PassedArgumentShouldContainUpdatedExpense()
+    {
+        // Arrange
+        var updateExpense = UpdateExpenseCommandUtilities.CreateCommand();
+
+        MonthlyBilling passedArgument = null;
+
+        await _repository
+            .Save(Arg.Do<MonthlyBilling>(a => passedArgument = a));
+
+        // Act
+        await _handler.HandleAsync(
+            updateExpense,
+            default
+        );
+
+        // Assert
+        passedArgument
+            .Should()
+            .NotBeNull();
+
+        passedArgument?.Plans
+            .First().Expenses
+                .Should()
+                .ContainEquivalentOf(
+                    new Expense(
+                        new(Guid.NewGuid()),
+                        new(
+                            updateExpense.MoneyAmount,
+                            new(updateExpense.Currency)
+                        ),
+                        updateExpense.ExpenseDate,
+                        updateExpense.Description
+                    ),
+                    c => c.Excluding(f => f.Id)
+                );
     }
 }
