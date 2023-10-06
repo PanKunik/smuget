@@ -16,52 +16,98 @@ public sealed class CloseMonthlyBillingCommandHandlerTests
     public CloseMonthlyBillingCommandHandlerTests()
     {
         _repository = Substitute.For<IMonthlyBillingRepository>();
+
+        _repository
+            .Get(
+                new(Constants.MonthlyBilling.Year),
+                new(Constants.MonthlyBilling.Month)
+            )
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
+
         _handler = new CloseMonthlyBillingCommandHandler(_repository);
     }
 
     [Fact]
-    public async Task HandleAsync_WhenMonthlyBillingNotFound_ShouldThrowMonthlyBillingNotFoundException()
+    public async Task HandleAsync_WhenInvoked_ShouldCallGetOnRepositoryOnce()
     {
         // Arrange
-        var command = CloseMonthlyBillingCommandUtilities.CreateCommand();
-
-        var closeMonthlyBilling = async () => await _handler.HandleAsync(
-            command,
-            default
-        );
-
-        // Assert
-        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(closeMonthlyBilling);
-    }
-
-    [Fact]
-    public async Task HandleAsync_WhenCloseMonthlyBillingIsValid_ShouldCallSaveOnRepositoryOnce()
-    {
-        // Arrange
-        var command = CloseMonthlyBillingCommandUtilities.CreateCommand();
-
-        _repository
-            .Get(
-                new(command.Year),
-                new(command.Month)
-            )
-            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
+        var closeCommand = CloseMonthlyBillingCommandUtilities.CreateCommand();
 
         // Act
         await _handler.HandleAsync(
-            command,
+            closeCommand,
             default
         );
 
         // Assert
         await _repository
             .Received(1)
-            .Save(
-                Arg.Is<MonthlyBilling>(
-                    m => m.Year == new Year(Constants.MonthlyBilling.Year)
-                      && m.Month == new Month(Constants.MonthlyBilling.Month)
-                      && m.State == State.Closed
-                )
+            .Get(
+                Arg.Is<Year>(y => y.Value == closeCommand.Year),
+                Arg.Is<Month>(m => m.Value == closeCommand.Month)
             );
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenMonthlyBillingDoesntExist_ShouldThrowMonthlyBillingNotFoundException()
+    {
+        // Arrange
+        var closeCommand = new CloseMonthlyBillingCommand(
+            2000,
+            1
+        );
+
+        var closeAction = () => _handler.HandleAsync(
+            closeCommand,
+            default
+        );
+
+        // Act & Assert
+        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(closeAction);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenMonthlyBillingFoundAndClosedProperly_ShouldCallSaveOnRepositoryOnce()
+    {
+        // Arrange
+        var closeCommand = CloseMonthlyBillingCommandUtilities.CreateCommand();
+
+        // Act
+        await _handler.HandleAsync(
+            closeCommand,
+            default
+        );
+
+        // Assert
+        await _repository
+            .Received(1)
+            .Save(Arg.Any<MonthlyBilling>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_OnSuccess_PassedArgumentShouldBeClosed()
+    {
+        // Arrange
+        var closeCommand = CloseMonthlyBillingCommandUtilities.CreateCommand();
+
+        MonthlyBilling passedArgument = null;
+
+        await _repository
+            .Save(Arg.Do<MonthlyBilling>(a => passedArgument = a));
+
+        // Act
+        await _handler.HandleAsync(
+            closeCommand,
+            default
+        );
+
+        // Assert
+        passedArgument
+            .Should()
+            .NotBeNull();
+
+        passedArgument?.State
+            .Should()
+            .BeEquivalentTo(State.Closed);
     }
 }

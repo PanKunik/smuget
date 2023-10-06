@@ -82,7 +82,7 @@ public sealed class AddIncomeCommandHandlerTests
             .Received(1)
             .Save(Arg.Any<MonthlyBilling>());
     }
-    
+
     [Fact]
     public async Task HandleAsync_OnSuccess_PassedArgumentShouldContainNewIncome()
     {
@@ -101,6 +101,10 @@ public sealed class AddIncomeCommandHandlerTests
         );
 
         // Assert
+        passedMonthlyBilling
+            .Should()
+            .NotBeNull();
+
         passedMonthlyBilling?.Incomes
                 .Should()
                 .ContainEquivalentOf(
