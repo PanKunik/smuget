@@ -7,7 +7,7 @@ public static class RemoveIncomeCommandUtilities
 {
     public static RemoveIncomeCommand CreateCommand()
         => new(
-            Guid.NewGuid(),
+            Constants.MonthlyBilling.Id,
             Constants.Income.Id
         );
 }
