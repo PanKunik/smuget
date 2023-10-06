@@ -17,31 +17,18 @@ public sealed class AddExpenseCommandHandlerTests
     {
         _repository = Substitute.For<IMonthlyBillingRepository>();
 
+        _repository
+            .GetById(new(Constants.MonthlyBilling.Id))
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
+
         _handler = new AddExpenseCommandHandler(_repository);
     }
 
     [Fact]
-    public async Task HandleAsync_WhenAddExpenseCommandIsValid_ShouldAddExpenseToPlanInMonthlyBilling()
+    public async Task HandleAsync_WhenInvoked_ShouldCallGetByIdOnRepositoryOnce()
     {
         // Arrange
-        var monthlyBillingFake = MonthlyBillingUtilities.CreateMonthlyBilling(
-            new List<Plan>()
-            {
-                new(
-                    new(Guid.Parse("00000000-0000-0000-0000-000000000001")),
-                    new(Constants.Plan.Category),
-                    new(Constants.Plan.MoneyAmount, new(Constants.Plan.Currency)),
-                    1,
-                    MonthlyBillingUtilities.CreateExpenses(1)
-                )
-            }
-        );
-
         var addExpenseCommand = AddExpenseCommandUtilities.CreateCommand();
-
-        _repository
-            .GetById(new(Constants.MonthlyBilling.Id))
-            .Returns(monthlyBillingFake);
 
         // Act
         await _handler.HandleAsync(
@@ -52,27 +39,23 @@ public sealed class AddExpenseCommandHandlerTests
         // Assert
         await _repository
             .Received(1)
-            .Save(
-                Arg.Is<MonthlyBilling>(
-                    m => m.Plans.Any(
-                        p => p.Expenses.Any(
-                            e => e.Money == new Money(
-                                Constants.Expense.Money,
-                                new Currency(Constants.Expense.Currency)
-                            )
-                            && e.Description == Constants.Expense.Description
-                            && e.ExpenseDate == Constants.Expense.ExpenseDate
-                        )
-                    )
-                )
+            .GetById(
+                Arg.Is<MonthlyBillingId>(id => id.Value == addExpenseCommand.MonthlyBillingId)
             );
     }
 
     [Fact]
-    public async Task HandleAsync_WhenMonthlyBillingNotFound_ShouldthrowMonthlyBillingNotFoundException()
+    public async Task HandleAsync_WhenMonthlyBillingDoesntExist_ShouldThrowMonthlyBillingNotFoundException()
     {
         // Arrange
-        var addExpenseCommand = AddExpenseCommandUtilities.CreateCommand();
+        var addExpenseCommand = new AddExpenseCommand(
+            Guid.Parse("753d1889-0502-49f4-be59-25821729f6a9"),
+            Constants.Plan.Id,
+            Constants.Expense.Money,
+            Constants.Expense.Currency,
+            Constants.Expense.ExpenseDate,
+            Constants.Expense.Description
+        );
 
         var addExpense = () => _handler.HandleAsync(
             addExpenseCommand,
@@ -81,5 +64,58 @@ public sealed class AddExpenseCommandHandlerTests
 
         // Act & Assert
         await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(addExpense);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenMonthlyBillingFoundAndExpenseCreatedSuccessfully_ShouldCallSaveOnRepositoryOnce()
+    {
+        // Arrange
+        var addExpenseCommand = AddExpenseCommandUtilities.CreateCommand();
+
+        // Act
+        await _handler.HandleAsync(
+            addExpenseCommand,
+            default
+        );
+
+        // Assert
+        await _repository
+            .Received(1)
+            .Save(Arg.Any<MonthlyBilling>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_OnSuccess_PassedArgumentShouldContainNewExpense()
+    {
+        // Arrange
+        var addExpenseCommand = AddExpenseCommandUtilities.CreateCommand();
+
+        MonthlyBilling passedMonthlyBilling = null;
+
+        await _repository
+            .Save(Arg.Do<MonthlyBilling>(m => passedMonthlyBilling = m));
+
+        // Act
+        await _handler.HandleAsync(
+            addExpenseCommand,
+            default
+        );
+
+        // Assert
+        passedMonthlyBilling?.Plans
+            .First().Expenses
+                .Should()
+                .ContainEquivalentOf(
+                    new Expense(
+                        new(Guid.NewGuid()),
+                        new(
+                            addExpenseCommand.Money,
+                            new(addExpenseCommand.Currency)
+                        ),
+                        addExpenseCommand.ExpenseDate,
+                        addExpenseCommand.Description
+                    ),
+                    c => c.Excluding(f => f.Id)
+                );
     }
 }
