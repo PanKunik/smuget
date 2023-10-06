@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using Application.Exceptions;
 using Application.MonthlyBillings.AddPlan;
 using Application.Unit.Tests.MonthlyBillings.TestUtilities;
@@ -5,6 +6,7 @@ using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
+using NSubstitute.Routing.Handlers;
 
 namespace Application.Unit.Tests.MonthlyBillings.AddPlan;
 
@@ -17,18 +19,18 @@ public sealed class AddPlanCommandHandlerTests
     {
         _repository = Substitute.For<IMonthlyBillingRepository>();
 
+        _repository
+            .GetById(new(Constants.MonthlyBilling.Id))
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
+
         _handler = new AddPlanCommandHandler(_repository);
     }
 
     [Fact]
-    public async Task HandleAsync_AddPlanCommandIsValid_ShouldAddPlanToMonthlyBilling()
+    public async Task HandleAsync_WhenInvoked_ShouldCallGetByIdOnRepositoryOnce()
     {
         // Arrange
         var addPlanCommand = AddPlanCommandUtilities.CreateCommand();
-
-        _repository
-            .GetById(new(Constants.MonthlyBilling.Id))
-            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
         // Act
         await _handler.HandleAsync(
@@ -39,25 +41,22 @@ public sealed class AddPlanCommandHandlerTests
         // Assert
         await _repository
             .Received(1)
-            .Save(
-                Arg.Is<MonthlyBilling>(
-                    m => m.Plans.Any(
-                        p => p.Category == new Category(Constants.Plan.Category)
-                          && p.Money == new Money(
-                            Constants.Plan.MoneyAmount,
-                            new Currency(Constants.Plan.Currency)
-                          )
-                          && p.SortOrder == Constants.Plan.SortOrder
-                    )
-                )
-            );
+            .GetById(Arg.Is<MonthlyBillingId>(
+                m => m.Value == addPlanCommand.MonthlyBillingId
+            ));
     }
 
     [Fact]
     public async Task HandleAsync_WhenMonthlyBillingDoesntExist_ShouldThrowMonthlyBillingNotFoundException()
     {
         // Arrange
-        var addPlanCommand = AddPlanCommandUtilities.CreateCommand();
+        var addPlanCommand = new AddPlanCommand(
+            Guid.NewGuid(),
+            Constants.Plan.Category,
+            Constants.Plan.MoneyAmount,
+            Constants.Plan.Currency,
+            Constants.Plan.SortOrder
+        );
 
         var addPlan = () => _handler.HandleAsync(
             addPlanCommand,
@@ -66,5 +65,55 @@ public sealed class AddPlanCommandHandlerTests
 
         // Act & Assert
         await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(addPlan);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenMonthlyBillingFoundAndPlanCreatedSuccessfully_ShouldCallSaveOnRepositoryOnce()
+    {
+        // Arrange
+        var addPlanCommand = AddPlanCommandUtilities.CreateCommand();
+
+        // Act
+        await _handler.HandleAsync(
+            addPlanCommand,
+            default
+        );
+
+        // Assert
+        await _repository
+            .Received(1)
+            .Save(Arg.Any<MonthlyBilling>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_OnSuccess_PassedArgumentShouldContainNewPlan()
+    {
+        // Arrange
+        var addPlanCommand = AddPlanCommandUtilities.CreateCommand();
+
+        MonthlyBilling passedArgument = null;
+        await _repository.Save(Arg.Do<MonthlyBilling>(a => passedArgument = a));
+
+        // Act
+        await _handler.HandleAsync(
+            addPlanCommand,
+            default
+        );
+
+        // Assert
+        passedArgument?.Plans
+            .Should()
+            .ContainEquivalentOf(
+                new Plan(
+                    new(Guid.NewGuid()),
+                    new(addPlanCommand.Category),
+                    new(
+                        addPlanCommand.MoneyAmount,
+                        new(addPlanCommand.Currency)
+                    ),
+                    addPlanCommand.SortOrder
+                ),
+                c => c.Excluding(f => f.Id)
+            );
     }
 }
