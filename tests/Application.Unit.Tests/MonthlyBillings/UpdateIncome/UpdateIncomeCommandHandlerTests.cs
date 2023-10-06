@@ -16,77 +16,107 @@ public sealed class UpdateIncomeCommandHandlerTests
     public UpdateIncomeCommandHandlerTests()
     {
         _repository = Substitute.For<IMonthlyBillingRepository>();
+
+        _repository
+            .GetById(new(Constants.MonthlyBilling.Id))
+            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
+
         _handler = new UpdateIncomeCommandHandler(_repository);
     }
 
     [Fact]
-    public async Task HandleAsync_WhenCalled_ShouldCallGetByIdOnRepositoryOnce()
+    public async Task HandleAsync_WhenInvoked_ShouldCallGetByIdOnRepositoryOnce()
     {
         // Arrange
-        var command = UpdateIncomeCommandUtilities.CreateCommand();
-
-        _repository
-            .GetById(new(Constants.MonthlyBilling.Id))
-            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling(
-                incomes: new List<Income>() { IncomesUtilities.CreateIncome() }
-            ));
+        var updateIncome = UpdateIncomeCommandUtilities.CreateCommand();
 
         // Act
         await _handler.HandleAsync(
-            command,
+            updateIncome,
             default
         );
 
         // Act & Assert
         await _repository
             .Received(1)
-            .GetById(new(command.MonthlyBillingId));
+            .GetById(Arg.Is<MonthlyBillingId>(m => m.Value == updateIncome.MonthlyBillingId));
     }
 
     [Fact]
-    public async Task HandleAsync_WhenMonthlyBillingNotFound_ShouldThrowMonthlyBillingNotFound()
+    public async Task HandleAsync_WhenMonthlyBillingDoesntExist_ShouldThrowMonthlyBillingNotFound()
     {
         // Arrange
-        var command = UpdateIncomeCommandUtilities.CreateCommand();
+        var updateIncome = new UpdateIncomeCommand(
+            Guid.NewGuid(),
+            Constants.Income.Id,
+            Constants.Income.Name,
+            Constants.Income.Amount,
+            Constants.Income.Currency,
+            Constants.Income.Include
+        );
 
-        var updateIncome = async () => await _handler.HandleAsync(
-            command,
+        var updateIncomeAction = () => _handler.HandleAsync(
+            updateIncome,
             default
         );
 
         // Act & Assert
-        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(updateIncome);
+        await Assert.ThrowsAsync<MonthlyBillingNotFoundException>(updateIncomeAction);
     }
 
     [Fact]
-    public async Task HandleAsync_WhenUpdateIncomeCommandIsValid_ShouldCallSaveOnRepositoryOnce()
+    public async Task HandleAsync_WhenMonthlyBillingFoundAndIncomeUpdatedSuccessfully_ShouldCallSaveOnRepositoryOnce()
     {
         // Arrange
-        var command = UpdateIncomeCommandUtilities.CreateCommand();
-
-        _repository
-            .GetById(new(Constants.MonthlyBilling.Id))
-            .Returns(MonthlyBillingUtilities.CreateMonthlyBilling(
-                incomes: new List<Income>() { IncomesUtilities.CreateIncome() }
-            ));
+        var updateIncome = UpdateIncomeCommandUtilities.CreateCommand();
 
         // Act
         await _handler.HandleAsync(
-            command,
+            updateIncome,
             default
         );
 
         // Assert
         await _repository
             .Received(1)
-            .Save(
-                Arg.Is<MonthlyBilling>(
-                    m => m.Incomes.FirstOrDefault(
-                        i => i.Name.Value == "Updated Name Income"
-                          && i.Money.Amount == 1234.56m
-                          && i.Money.Currency.Value == "EUR"
-                          && i.Include == false) != null
-                )
+            .Save(Arg.Any<MonthlyBilling>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_OnSuccess_PassedArgumentShouldContainUpdatedIncome()
+    {
+        // Arrange
+        var updateIncome = UpdateIncomeCommandUtilities.CreateCommand();
+
+        MonthlyBilling passedArgument = null;
+
+        await _repository
+            .Save(Arg.Do<MonthlyBilling>(a => passedArgument = a));
+
+        // Act
+        await _handler.HandleAsync(
+            updateIncome,
+            default
+        );
+
+        // Assert
+        passedArgument
+            .Should()
+            .NotBeNull();
+
+        passedArgument?.Incomes
+            .Should()
+            .ContainEquivalentOf(
+                new Income(
+                    new(Guid.NewGuid()),
+                    new(updateIncome.Name),
+                    new(
+                        updateIncome.MoneyAmount,
+                        new(updateIncome.Currency)
+                    ),
+                    updateIncome.Include
+                ),
+                c => c.Excluding(f => f.Id)
             );
     }
 }
