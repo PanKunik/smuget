@@ -2,7 +2,7 @@ using Domain.MonthlyBillings;
 
 namespace Application.Unit.Tests.TestUtilities;
 
-public static class ExpenseUtilities
+public static class ExpensesUtilities
 {
     public static Expense CreateExpense()
         => new(

@@ -27,7 +27,7 @@ public sealed class GetByYearAndMonthQueryHandlerTests
             )
             .Returns(MonthlyBillingUtilities.CreateMonthlyBilling(
                 plans: new List<Plan>() { PlansUtilities.CreatePlan(
-                            expenses: new List<Expense>() { ExpenseUtilities.CreateExpense() }
+                            expenses: new List<Expense>() { ExpensesUtilities.CreateExpense() }
                         )
                     }
             ));
