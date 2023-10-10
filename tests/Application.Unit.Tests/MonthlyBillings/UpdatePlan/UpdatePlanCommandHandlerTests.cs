@@ -10,12 +10,12 @@ namespace Application.Unit.Tests.MonthlyBillings.UpdatePlan;
 
 public sealed class UpdatePlanCommandHandlerTests
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
     private readonly UpdatePlanCommandHandler _handler;
 
     public UpdatePlanCommandHandlerTests()
     {
-        _repository = Substitute.For<IMonthlyBillingRepository>();
+        _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
             .GetById(new(Constants.MonthlyBilling.Id))

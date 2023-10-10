@@ -11,12 +11,12 @@ namespace Application.Unit.Tests.MonthlyBillings.ReopenMonthlyBilling;
 public sealed class ReopenMonthlyBillingCommandHandlerTests
 {
 
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
     private readonly ReopenMonthlyBillingCommandHandler _handler;
 
     public ReopenMonthlyBillingCommandHandlerTests()
     {
-        _repository = Substitute.For<IMonthlyBillingRepository>();
+        _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         var fakeMonthlyBilling = MonthlyBillingUtilities.CreateMonthlyBilling();
         fakeMonthlyBilling.Close();

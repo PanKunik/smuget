@@ -7,9 +7,9 @@ namespace Application.MonthlyBillings.RemoveIncome;
 
 public sealed class RemoveIncomeCommandHandler : ICommandHandler<RemoveIncomeCommand>
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
 
-    public RemoveIncomeCommandHandler(IMonthlyBillingRepository repository)
+    public RemoveIncomeCommandHandler(IMonthlyBillingsRepository repository)
     {
         _repository = repository;
     }

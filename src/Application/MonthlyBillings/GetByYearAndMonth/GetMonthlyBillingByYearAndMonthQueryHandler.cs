@@ -9,9 +9,9 @@ namespace Application.MonthlyBillings.GetByYearAndMonth;
 // TODO: Read model (CQRS) - implement faster data reading
 public sealed class GetMonthlyBillingByYearAndMonthQueryHandler : IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
 
-    public GetMonthlyBillingByYearAndMonthQueryHandler(IMonthlyBillingRepository repository)
+    public GetMonthlyBillingByYearAndMonthQueryHandler(IMonthlyBillingsRepository repository)
     {
         _repository = repository;
     }

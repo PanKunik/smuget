@@ -10,12 +10,12 @@ namespace Application.Unit.Tests.MonthlyBillings.RemoveIncome;
 
 public sealed class RemoveIncomeCommandHandlerTests
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
     private readonly RemoveIncomeCommandHandler _handler;
 
     public RemoveIncomeCommandHandlerTests()
     {
-        _repository = Substitute.For<IMonthlyBillingRepository>();
+        _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
             .GetById(new(Constants.MonthlyBilling.Id))

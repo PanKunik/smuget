@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistance.Repositories;
 
-internal sealed class MonthlyBillingRepository : IMonthlyBillingRepository
+internal sealed class MonthlyBillingsRepository : IMonthlyBillingsRepository
 {
     private readonly SmugetDbContext _dbContext;
 
-    public MonthlyBillingRepository(SmugetDbContext dbContext)
+    public MonthlyBillingsRepository(SmugetDbContext dbContext)
     {
         _dbContext = dbContext;
     }

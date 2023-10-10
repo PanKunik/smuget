@@ -9,6 +9,7 @@ internal sealed class SmugetDbContext : DbContext
         : base(options) { }
 
     public DbSet<MonthlyBillingEntity> MonthlyBillings { get; set; }
+    public DbSet<UserEntity> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

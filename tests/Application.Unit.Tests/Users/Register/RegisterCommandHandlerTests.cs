@@ -10,13 +10,13 @@ namespace Application.Unit.Tests.Users.Register;
 
 public sealed class RegisterCommandHandlerTests
 {
-    private readonly IUserRepository _repository;
+    private readonly IUsersRepository _repository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly RegisterCommandHandler _cut;
 
     public RegisterCommandHandlerTests()
     {
-        _repository = Substitute.For<IUserRepository>();
+        _repository = Substitute.For<IUsersRepository>();
 
         _repository
             .GetByEmail(new(Constants.User.Email))
@@ -86,12 +86,10 @@ public sealed class RegisterCommandHandlerTests
         );
 
         // Assert
-        await _passwordHasher
+        _passwordHasher
             .Received(1)
             .Secure(
-                Arg.Is<Password>(
-                    p => p.Value == register.Password
-                )
+                Arg.Is<string>(p => p == register.Password)
             );
     }
 

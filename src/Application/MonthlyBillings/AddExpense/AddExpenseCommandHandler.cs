@@ -7,9 +7,9 @@ namespace Application.MonthlyBillings.AddExpense;
 
 public sealed class AddExpenseCommandHandler : ICommandHandler<AddExpenseCommand>
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
 
-    public AddExpenseCommandHandler(IMonthlyBillingRepository repository)
+    public AddExpenseCommandHandler(IMonthlyBillingsRepository repository)
     {
         _repository = repository;
     }
