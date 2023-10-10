@@ -7,9 +7,9 @@ namespace Application.MonthlyBillings.RemovePlan;
 
 public sealed class RemovePlanCommandHandler : ICommandHandler<RemovePlanCommand>
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
 
-    public RemovePlanCommandHandler(IMonthlyBillingRepository repository)
+    public RemovePlanCommandHandler(IMonthlyBillingsRepository repository)
     {
         _repository = repository;
     }

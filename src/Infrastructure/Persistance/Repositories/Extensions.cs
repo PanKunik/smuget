@@ -7,7 +7,8 @@ internal static class RepositoryExtensions
 {
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddTransient<IMonthlyBillingRepository, MonthlyBillingRepository>();
+        services.AddTransient<IMonthlyBillingsRepository, MonthlyBillingsRepository>();
+        services.AddTransient<IUsersRepository, UsersRepository>();
 
         return services;
     }

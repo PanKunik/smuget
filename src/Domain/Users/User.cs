@@ -4,7 +4,7 @@ namespace Domain.Users;
 
 public sealed class User
 {
-    public UserId UserId { get; }
+    public UserId Id { get; }
     public Email Email { get; }
     public FirstName FirstName { get; }
     public string SecuredPassword { get; }
@@ -16,7 +16,7 @@ public sealed class User
         string securedPassword
     )
     {
-        UserId = userId ?? throw new UserIdIsNullException();
+        Id = userId ?? throw new UserIdIsNullException();
         Email = email ?? throw new EmailIsNullException();
         FirstName = firstName ?? throw new FirstNameIsNullException();
         

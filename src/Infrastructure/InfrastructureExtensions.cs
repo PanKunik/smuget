@@ -4,6 +4,7 @@ using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Builder;
 using Infrastructure.Persistance.Repositories;
 using Microsoft.Extensions.Configuration;
+using Infrastructure.Security;
 
 namespace Infrastructure;
 
@@ -13,6 +14,7 @@ public static class InfrastructureExtensions
     {
         services.AddDbContext(configuration);
         services.AddRepositories();
+        services.AddSecurity();
 
         services.AddSingleton<ExceptionMiddleware>();
 

@@ -7,9 +7,9 @@ namespace Application.MonthlyBillings.UpdatePlan;
 
 public sealed class UpdatePlanCommandHandler : ICommandHandler<UpdatePlanCommand>
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
 
-    public UpdatePlanCommandHandler(IMonthlyBillingRepository repository)
+    public UpdatePlanCommandHandler(IMonthlyBillingsRepository repository)
     {
         _repository = repository;
     }

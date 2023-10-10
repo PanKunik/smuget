@@ -10,12 +10,12 @@ namespace Application.Unit.Tests.MonthlyBillings.AddExpense;
 
 public sealed class AddExpenseCommandHandlerTests
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
     private readonly AddExpenseCommandHandler _handler;
 
     public AddExpenseCommandHandlerTests()
     {
-        _repository = Substitute.For<IMonthlyBillingRepository>();
+        _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
             .GetById(new(Constants.MonthlyBilling.Id))

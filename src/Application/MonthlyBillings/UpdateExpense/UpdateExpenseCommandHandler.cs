@@ -7,10 +7,10 @@ namespace Application.MonthlyBillings.UpdateExpense;
 
 public sealed class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
 
     public UpdateExpenseCommandHandler(
-        IMonthlyBillingRepository repository
+        IMonthlyBillingsRepository repository
     )
     {
         _repository = repository;

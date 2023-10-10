@@ -11,11 +11,11 @@ namespace Application.Unit.Tests.MonthlyBillings.OpenMonthlyBiling;
 public sealed class OpenMonthlyBilingCommandHandlerTests
 {
     private readonly OpenMonthlyBillingCommandHandler _handler;
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
 
     public OpenMonthlyBilingCommandHandlerTests()
     {
-        _repository = Substitute.For<IMonthlyBillingRepository>();
+        _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
             .Get(

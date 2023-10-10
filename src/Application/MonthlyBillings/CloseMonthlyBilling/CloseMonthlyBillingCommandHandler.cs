@@ -7,10 +7,10 @@ namespace Application.MonthlyBillings.CloseMonthlyBilling;
 
 public sealed class CloseMonthlyBillingCommandHandler : ICommandHandler<CloseMonthlyBillingCommand>
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
 
     public CloseMonthlyBillingCommandHandler(
-        IMonthlyBillingRepository repository
+        IMonthlyBillingsRepository repository
     )
     {
         _repository = repository;

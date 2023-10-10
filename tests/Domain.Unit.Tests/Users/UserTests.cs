@@ -30,7 +30,7 @@ public sealed class UserTests
         result
             .Should()
             .Match<User>(
-                u => u.UserId == userId
+                u => u.Id == userId
                   && u.Email == email
                   && u.FirstName == firstName
                   && u.SecuredPassword == securedPassword

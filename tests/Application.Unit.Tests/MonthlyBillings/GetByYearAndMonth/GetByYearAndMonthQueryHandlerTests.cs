@@ -13,12 +13,12 @@ namespace Application.Unit.Tests.MonthlyBillings.GetByYearAndMonth;
 
 public sealed class GetByYearAndMonthQueryHandlerTests
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
     private readonly GetMonthlyBillingByYearAndMonthQueryHandler _handler;
 
     public GetByYearAndMonthQueryHandlerTests()
     {
-        _repository = Substitute.For<IMonthlyBillingRepository>();
+        _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
             .Get(

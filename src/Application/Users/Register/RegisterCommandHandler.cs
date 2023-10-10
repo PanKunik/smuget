@@ -8,11 +8,11 @@ namespace Application.Users.Register;
 
 public sealed class RegisterCommandHandler : ICommandHandler<RegisterCommand>
 {
-    private readonly IUserRepository _repository;
+    private readonly IUsersRepository _repository;
     private readonly IPasswordHasher _passwordHasher;
 
     public RegisterCommandHandler(
-        IUserRepository repository,
+        IUsersRepository repository,
         IPasswordHasher passwordHasher
     )
     {
@@ -36,7 +36,7 @@ public sealed class RegisterCommandHandler : ICommandHandler<RegisterCommand>
             throw new UserWithSameEmailAlreadyExistsException();
         }
 
-        var securedPassword = await _passwordHasher.Secure(password);
+        var securedPassword = _passwordHasher.Secure(password.Value);
 
         var user = new User(
             new(Guid.NewGuid()),

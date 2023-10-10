@@ -7,9 +7,9 @@ namespace Application.MonthlyBillings.OpenMonthlyBilling;
 
 public sealed class OpenMonthlyBillingCommandHandler : ICommandHandler<OpenMonthlyBillingCommand>
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
 
-    public OpenMonthlyBillingCommandHandler(IMonthlyBillingRepository repository)
+    public OpenMonthlyBillingCommandHandler(IMonthlyBillingsRepository repository)
     {
         _repository = repository;
     }

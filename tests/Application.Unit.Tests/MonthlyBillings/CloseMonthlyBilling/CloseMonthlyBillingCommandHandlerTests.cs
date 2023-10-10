@@ -10,12 +10,12 @@ namespace Application.Unit.Tests.MonthlyBillings.CloseMonthlyBilling;
 
 public sealed class CloseMonthlyBillingCommandHandlerTests
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
     private readonly CloseMonthlyBillingCommandHandler _handler;
 
     public CloseMonthlyBillingCommandHandlerTests()
     {
-        _repository = Substitute.For<IMonthlyBillingRepository>();
+        _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
             .Get(

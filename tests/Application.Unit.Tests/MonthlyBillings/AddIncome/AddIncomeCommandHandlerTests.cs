@@ -11,11 +11,11 @@ namespace Application.Unit.Tests.MonthlyBillings.AddIncome;
 public sealed class AddIncomeCommandHandlerTests
 {
     private readonly AddIncomeCommandHandler _handler;
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
 
     public AddIncomeCommandHandlerTests()
     {
-        _repository = Substitute.For<IMonthlyBillingRepository>();
+        _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
             .GetById(new(Constants.MonthlyBilling.Id))

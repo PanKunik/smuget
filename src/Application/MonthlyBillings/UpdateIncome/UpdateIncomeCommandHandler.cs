@@ -7,9 +7,9 @@ namespace Application.MonthlyBillings.UpdateIncome;
 
 public sealed class UpdateIncomeCommandHandler : ICommandHandler<UpdateIncomeCommand>
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
 
-    public UpdateIncomeCommandHandler(IMonthlyBillingRepository repository)
+    public UpdateIncomeCommandHandler(IMonthlyBillingsRepository repository)
     {
         _repository = repository;
     }

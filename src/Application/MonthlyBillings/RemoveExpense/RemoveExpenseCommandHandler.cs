@@ -7,9 +7,9 @@ namespace Application.MonthlyBillings.RemoveExpense;
 
 public sealed class RemoveExpenseCommandHandler : ICommandHandler<RemoveExpenseCommand>
 {
-    private readonly IMonthlyBillingRepository _repository;
+    private readonly IMonthlyBillingsRepository _repository;
 
-    public RemoveExpenseCommandHandler(IMonthlyBillingRepository repository)
+    public RemoveExpenseCommandHandler(IMonthlyBillingsRepository repository)
     {
         _repository = repository;
     }
