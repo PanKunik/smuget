@@ -13,13 +13,13 @@ public sealed class UserTests
         var userId = new UserId(Guid.NewGuid());
         var email = new Email("test@example.com");
         var firstName = new FirstName("John");
-        var password = new Password("P@ssw0rd1.");
+        var securedPassword = "4a6fafec30def6bfe3ac4e8a538810ff";
 
         var result = new User(
             userId,
             email,
             firstName,
-            password
+            securedPassword
         );
 
         // Assert
@@ -33,7 +33,7 @@ public sealed class UserTests
                 u => u.UserId == userId
                   && u.Email == email
                   && u.FirstName == firstName
-                  && u.Password == password
+                  && u.SecuredPassword == securedPassword
             );
     }
 
@@ -60,7 +60,7 @@ public sealed class UserTests
             new(Guid.NewGuid()),
             null,
             new("John"),
-            new("P@ssw0rd1.")
+            "4a6fafec30def6bfe3ac4e8a538810ff"
         );
 
         // Act & Assert
@@ -75,25 +75,30 @@ public sealed class UserTests
             new(Guid.NewGuid()),
             new("john-test@test-example-mono.com"),
             null,
-            new("P@ssw0rd1.")
+            "4a6fafec30def6bfe3ac4e8a538810ff"
         );
 
         // Act & Assert
         Assert.Throws<FirstNameIsNullException>(createUser);
     }
 
-    [Fact]
-    public void User_WhenPassedNullPassword_ShouldThrowPasswordIsNullException()
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(null)]
+    public void User_WhenPassedNullOrWhiteSpacePassword_ShouldThrowPasswordIsNullException(
+        string value
+    )
     {
         // Arrange
         var createUser = () => new User(
             new(Guid.NewGuid()),
             new("john-test@test-example-mono.com"),
             new("John"),
-            null
+            value
         );
 
         // Act & Assert
-        Assert.Throws<PasswordIsNullException>(createUser);
+        Assert.Throws<PasswordIsEmptyException>(createUser);
     }
 }
