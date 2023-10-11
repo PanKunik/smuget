@@ -41,4 +41,54 @@ public sealed class PasswordTests
         // Act & Assert
         Assert.Throws<PasswordIsTooLongException>(createPassword);
     }
+
+    [Theory]
+    [InlineData("Pa$0!1.")]
+    [InlineData("Passw0!")]
+    public void Password_WhenValueIsTooShort_ShouldThrowPasswordIsTooShortException(string value)
+    {
+        // Arrange
+        var createPassword = () => new Password(
+            value
+        );
+
+        // Act & Assert
+        Assert.Throws<PasswordIsTooShortException>(createPassword);
+    }
+
+    [Fact]
+    public void Password_WhenValueDoesntHaveBigLetter_ShouldThrowPasswordBigLetterMissingException()
+    {
+        // Arrange
+        var createPassword = () => new Password(
+            "p@s$w0rd1!."
+        );
+
+        // Act & Assert
+        Assert.Throws<PasswordBigLetterMissingException>(createPassword);
+    }
+
+    [Fact]
+    public void Password_WhenValueDoesntHaveNumberCharacter_ShouldThrowPasswordNumberCharacterMissingException()
+    {
+        // Arrange
+        var createPassword = () => new Password(
+            "P@s$word!."
+        );
+
+        // Act & Assert
+        Assert.Throws<PasswordNumberCharacterMissingException>(createPassword);
+    }
+
+    [Fact]
+    public void Password_WhenValueDoesntHaveSpecialCharacter_ShouldThrowPasswordSpecialCharacterMissingException()
+    {
+        // Arrange
+        var createPassword = () => new Password(
+            "Passw0rd1"
+        );
+
+        // Act & Assert
+        Assert.Throws<PasswordSpecialCharacterMissingException>(createPassword);
+    }
 }
