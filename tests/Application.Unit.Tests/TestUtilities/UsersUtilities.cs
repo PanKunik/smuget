@@ -9,6 +9,6 @@ public static class UsersUtilities
             new(Constants.Constants.User.Id),
             new(Constants.Constants.User.Email),
             new(Constants.Constants.User.FirstName),
-            new(Constants.Constants.User.Password)
+            new(Constants.Constants.User.SecuredPassword)
         );
 }
