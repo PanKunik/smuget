@@ -3,12 +3,14 @@ using Application.MonthlyBillings.AddExpense;
 using Application.MonthlyBillings.RemoveExpense;
 using Application.MonthlyBillings.UpdateExpense;
 using Infrastructure.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebAPI.Expenses;
 
+[Authorize]
 [ApiController]
 [Route("api/monthlyBillings/{monthlyBillingId}/plans/{planId}/expenses")]
 [Consumes("application/json")]

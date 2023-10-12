@@ -7,9 +7,11 @@ using Application.MonthlyBillings.GetByYearAndMonth;
 using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebAPI.MonthlyBillings;
 
+[Authorize]
 [ApiController]
 [Route("api/monthlyBillings")]
 [Consumes("application/json")]

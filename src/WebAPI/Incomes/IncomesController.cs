@@ -3,11 +3,13 @@ using Application.MonthlyBillings.AddIncome;
 using Application.MonthlyBillings.RemoveIncome;
 using Application.MonthlyBillings.UpdateIncome;
 using Infrastructure.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebAPI.Incomes;
 
+[Authorize]
 [ApiController]
 [Route("api/monthlyBillings/{monthlyBillingId}/incomes")]
 [Consumes("application/json")]
