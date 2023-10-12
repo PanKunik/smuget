@@ -1,10 +1,9 @@
 @host = https://localhost:7188
 
-POST {{host}}/api/users/register
+POST {{host}}/api/users/login
 Content-Type: application/json
 
 {
     "Email": "patrykpatryk@patryk.pl",
-    "FirstName": "Patryk",
     "Password": "1qA)rfvg"
 }

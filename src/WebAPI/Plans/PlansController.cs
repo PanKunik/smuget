@@ -3,11 +3,13 @@ using Application.MonthlyBillings.AddPlan;
 using Application.MonthlyBillings.RemovePlan;
 using Application.MonthlyBillings.UpdatePlan;
 using Infrastructure.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebAPI.Plans;
 
+[Authorize]
 [ApiController]
 [Route("api/monthlyBillings/{monthlyBillingId}/plans")]
 [Consumes("application/json")]
