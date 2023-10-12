@@ -8,6 +8,7 @@ public static class ReopenMonthlyBillingCommandUtilities
     public static ReopenMonthlyBillingCommand CreateCommand()
         => new(
             Constants.MonthlyBilling.Year,
-            Constants.MonthlyBilling.Month
+            Constants.MonthlyBilling.Month,
+            Constants.User.Id
         );
 }

@@ -9,37 +9,37 @@ public sealed class AddExpenseCommandHandler : ICommandHandler<AddExpenseCommand
 {
     private readonly IMonthlyBillingsRepository _repository;
 
-    public AddExpenseCommandHandler(IMonthlyBillingsRepository repository)
+    public AddExpenseCommandHandler(
+        IMonthlyBillingsRepository repository
+    )
     {
-        _repository = repository;
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
-    public async Task HandleAsync(AddExpenseCommand command, CancellationToken cancellationToken = default)
+    public async Task HandleAsync(
+        AddExpenseCommand command,
+        CancellationToken cancellationToken = default
+    )
     {
-        var monthlyBilling = await _repository.GetById(
-            new MonthlyBillingId(command.MonthlyBillingId)
-        );
-
-        if (monthlyBilling is null)
-        {
-            throw new MonthlyBillingNotFoundException();
-        }
+        var entity = await _repository.GetById(
+            new(command.MonthlyBillingId),
+            new(command.UserId)
+        ) ?? throw new MonthlyBillingNotFoundException();
 
         var expense = new Expense(
-            new ExpenseId(Guid.NewGuid()),
-            new Money(
+            new(Guid.NewGuid()),
+            new(
                 command.Money,
-                new Currency(command.Currency)
+                new(command.Currency)
             ),
             command.ExpenseDate,
             command.Description
         );
 
-        monthlyBilling.AddExpense(
-            new PlanId(command.PlanId),
+        entity.AddExpense(
+            new(command.PlanId),
             expense
         );
-
-        await _repository.Save(monthlyBilling);
+        await _repository.Save(entity);
     }
 }

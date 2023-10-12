@@ -7,5 +7,6 @@ public sealed record AddPlanCommand(
     string Category,
     decimal MoneyAmount,
     string Currency,
-    uint SortOrder
+    uint SortOrder,
+    Guid UserId
 ) : ICommand;

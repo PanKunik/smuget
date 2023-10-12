@@ -5,6 +5,7 @@ using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.Unit.Tests.MonthlyBillings.ReopenMonthlyBilling;
 
@@ -24,7 +25,8 @@ public sealed class ReopenMonthlyBillingCommandHandlerTests
         _repository
             .Get(
                 new(Constants.MonthlyBilling.Year),
-                new(Constants.MonthlyBilling.Month)
+                new(Constants.MonthlyBilling.Month),
+                new(Constants.User.Id)
             )
             .Returns(fakeMonthlyBilling);
 
@@ -48,7 +50,8 @@ public sealed class ReopenMonthlyBillingCommandHandlerTests
             .Received(1)
             .Get(
                 Arg.Is<Year>(y => y.Value == reopen.Year),
-                Arg.Is<Month>(m => m.Value == reopen.Month)
+                Arg.Is<Month>(m => m.Value == reopen.Month),
+                Arg.Is<UserId>(m => m.Value == reopen.UserId)
             );
     }
 
@@ -58,7 +61,8 @@ public sealed class ReopenMonthlyBillingCommandHandlerTests
         // Arrange
         var reopen = new ReopenMonthlyBillingCommand(
             2020,
-            1
+            1,
+            Constants.User.Id
         );
 
         var reopenAction = () => _handler.HandleAsync(

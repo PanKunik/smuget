@@ -13,6 +13,7 @@ public static class UpdateExpenseCommandUtilities
             456.42m,
             "USD",
             new DateTimeOffset(new DateTime(2023, 9, 11, 13, 43, 22)),
-            "Updated description"
+            "Updated description",
+            Constants.User.Id
         );
 }

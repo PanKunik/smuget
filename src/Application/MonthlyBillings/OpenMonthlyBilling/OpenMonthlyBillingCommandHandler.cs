@@ -2,6 +2,7 @@ using Application.Abstractions.CQRS;
 using Application.Exceptions;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.MonthlyBillings.OpenMonthlyBilling;
 
@@ -9,20 +10,27 @@ public sealed class OpenMonthlyBillingCommandHandler : ICommandHandler<OpenMonth
 {
     private readonly IMonthlyBillingsRepository _repository;
 
-    public OpenMonthlyBillingCommandHandler(IMonthlyBillingsRepository repository)
+    public OpenMonthlyBillingCommandHandler(
+        IMonthlyBillingsRepository repository
+    )
     {
-        _repository = repository;
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
-    public async Task HandleAsync(OpenMonthlyBillingCommand command, CancellationToken cancellationToken = default)
+    public async Task HandleAsync(
+        OpenMonthlyBillingCommand command,
+        CancellationToken cancellationToken = default
+    )
     {
         var year = new Year(command.Year);
         var month = new Month(command.Month);
         var currency = new Currency(command.Currency);
+        var userId = new UserId(command.UserId);
 
         var existingMonthlyBilling = await _repository.Get(
             year,
-            month
+            month,
+            userId
         );
 
         if (existingMonthlyBilling is not null)
@@ -34,15 +42,13 @@ public sealed class OpenMonthlyBillingCommandHandler : ICommandHandler<OpenMonth
         }
 
         var monthlyBilling = new MonthlyBilling(
-            new MonthlyBillingId(Guid.NewGuid()),
+            new(Guid.NewGuid()),
             year,
             month,
             currency,
             State.Open,
-            null,
-            null
+            userId
         );
-
         await _repository.Save(monthlyBilling);
     }
 }

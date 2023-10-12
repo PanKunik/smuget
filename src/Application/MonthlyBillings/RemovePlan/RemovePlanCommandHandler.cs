@@ -1,6 +1,5 @@
 using Application.Abstractions.CQRS;
 using Application.Exceptions;
-using Domain.MonthlyBillings;
 using Domain.Repositories;
 
 namespace Application.MonthlyBillings.RemovePlan;
@@ -9,9 +8,11 @@ public sealed class RemovePlanCommandHandler : ICommandHandler<RemovePlanCommand
 {
     private readonly IMonthlyBillingsRepository _repository;
 
-    public RemovePlanCommandHandler(IMonthlyBillingsRepository repository)
+    public RemovePlanCommandHandler(
+        IMonthlyBillingsRepository repository
+    )
     {
-        _repository = repository;
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
     public async Task HandleAsync(
@@ -19,13 +20,12 @@ public sealed class RemovePlanCommandHandler : ICommandHandler<RemovePlanCommand
         CancellationToken cancellationToken = default
     )
     {
-        MonthlyBillingId monthlyBillingId = new(command.MonthlyBillingId);
-        var entity = await _repository.GetById(monthlyBillingId)
-            ?? throw new MonthlyBillingNotFoundException();
+        var entity = await _repository.GetById(
+            new(command.MonthlyBillingId),
+            new(command.UserId)
+        ) ?? throw new MonthlyBillingNotFoundException();
 
-        PlanId PlanId = new(command.PlanId);
-        entity.RemovePlan(PlanId);
-
+        entity.RemovePlan(new(command.PlanId));
         await _repository.Save(entity);
     }
 }

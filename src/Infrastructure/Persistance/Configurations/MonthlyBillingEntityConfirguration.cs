@@ -1,5 +1,6 @@
 using Infrastructure.Persistance.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistance.Configurations;
@@ -32,6 +33,10 @@ internal sealed class MonthlyBillingEntityConfiguration : IEntityTypeConfigurati
 
         builder
             .Property(b => b.State)
+            .IsRequired();
+
+        builder
+            .Property(b => b.UserId)
             .IsRequired();
 
         builder

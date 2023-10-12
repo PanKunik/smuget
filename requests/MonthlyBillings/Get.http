@@ -1,7 +1,8 @@
 @host = https://localhost:7188
 
-@year = 2020
-@month = 4
+@year = 2023
+@month = 10
 
 GET {{host}}/api/monthlyBillings/{{year}}/{{month}}
 Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1N2E5YjNlYi0xNzk2LTRlMGQtYTZiNC1mYzEwYmQzZjkzYjIiLCJ1bmlxdWVfbmFtZSI6IjU3YTliM2ViLTE3OTYtNGUwZC1hNmI0LWZjMTBiZDNmOTNiMiIsIm5iZiI6MTY5NzE0NDExMSwiZXhwIjoxNjk3MTQ1MzExLCJpc3MiOiJzbXVnZXQtaXNzdWVyIiwiYXVkIjoic211Z2V0LWF1ZGllbmNlIn0.GkZ_Y73COw8Vt9P51JvLquLBUxdsEQCm_bpefZ2ziDo

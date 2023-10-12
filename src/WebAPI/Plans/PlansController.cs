@@ -5,6 +5,7 @@ using Application.MonthlyBillings.UpdatePlan;
 using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Services.Users;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebAPI.Plans;
@@ -19,16 +20,19 @@ public sealed class PlansController : ControllerBase
     private readonly ICommandHandler<AddPlanCommand> _addPlan;
     private readonly ICommandHandler<UpdatePlanCommand> _updatePlan;
     private readonly ICommandHandler<RemovePlanCommand> _removePlan;
+    private readonly IUserService _userService;
 
     public PlansController(
         ICommandHandler<AddPlanCommand> addPlan,
         ICommandHandler<UpdatePlanCommand> updatePlan,
-        ICommandHandler<RemovePlanCommand> removePlan
+        ICommandHandler<RemovePlanCommand> removePlan,
+        IUserService userService
     )
     {
         _addPlan = addPlan;
         _updatePlan = updatePlan;
         _removePlan = removePlan;
+        _userService = userService;
     }
 
     /// <summary>
@@ -53,8 +57,11 @@ public sealed class PlansController : ControllerBase
                 category,
                 amount,
                 currency,
-                sortOrder),
-            token);
+                sortOrder,
+                _userService.UserId
+            ),
+            token
+        );
 
         return Created("", null);
     }
@@ -84,7 +91,8 @@ public sealed class PlansController : ControllerBase
                 category,
                 moneyAmount,
                 currency,
-                sortOrder
+                sortOrder,
+                _userService.UserId
             ),
             token
         );
@@ -110,7 +118,8 @@ public sealed class PlansController : ControllerBase
         await _removePlan.HandleAsync(
             new RemovePlanCommand(
                 monthlyBillingId,
-                planId
+                planId,
+                _userService.UserId
             ),
             token
         );

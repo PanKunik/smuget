@@ -4,5 +4,6 @@ namespace Application.MonthlyBillings.ReopenMonthlyBilling;
 
 public sealed record ReopenMonthlyBillingCommand(
     ushort Year,
-    byte Month
+    byte Month,
+    Guid UserId
 ) : ICommand;

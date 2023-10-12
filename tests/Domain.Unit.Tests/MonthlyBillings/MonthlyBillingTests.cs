@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 using Domain.Exceptions;
 using Domain.MonthlyBillings;
 using Domain.Unit.Tests.MonthlyBillings.TestUtilities;
@@ -48,6 +47,7 @@ public sealed class MonthlyBillingTests
                 new Month(3),
                 new Currency("PLN"),
                 State.Open,
+                Constants.User.Id,
                 null,
                 null
             );
@@ -67,12 +67,33 @@ public sealed class MonthlyBillingTests
                 null,
                 new Currency("PLN"),
                 State.Open,
+                Constants.User.Id,
                 null,
                 null
             );
 
         // Act & Assert
         Assert.Throws<MonthIsNullException>(createMonthlyBilling);
+    }
+
+    [Fact]
+    public void MonthlyBilling_WhenPassedNullUserId_ShouldThrowUserIdIsNullException()
+    {
+        // Arrange
+        var createMonthlyBilling = ()
+            => new MonthlyBilling(
+                new MonthlyBillingId(Guid.NewGuid()),
+                new Year(2007),
+                new Month(3),
+                new Currency("PLN"),
+                State.Open,
+                null,
+                null,
+                null
+            );
+
+        // Act & Assert
+        Assert.Throws<UserIdIsNullException>(createMonthlyBilling);
     }
 
     [Fact]
@@ -86,6 +107,7 @@ public sealed class MonthlyBillingTests
                 new Month(3),
                 null,
                 State.Open,
+                Constants.User.Id,
                 null,
                 null
             );
@@ -103,7 +125,8 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
-            Constants.MonthlyBilling.State
+            Constants.MonthlyBilling.State,
+            Constants.User.Id
         );
 
         // Act
@@ -194,7 +217,8 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
-            Constants.MonthlyBilling.State
+            Constants.MonthlyBilling.State,
+            Constants.User.Id
         );
 
         var addIncomeWithOtherCurrency = () => cut.AddIncome(
@@ -364,7 +388,8 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
-            Constants.MonthlyBilling.State
+            Constants.MonthlyBilling.State,
+            Constants.User.Id
         );
 
         // Act
@@ -400,7 +425,8 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
-            Constants.MonthlyBilling.State
+            Constants.MonthlyBilling.State,
+            Constants.User.Id
         );
 
         // Act
@@ -434,7 +460,8 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
-            Constants.MonthlyBilling.State
+            Constants.MonthlyBilling.State,
+            Constants.User.Id
         );
 
         // Act
@@ -475,6 +502,7 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
+            Constants.User.Id,
             null,
             null
         );
@@ -549,7 +577,8 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
-            Constants.MonthlyBilling.State
+            Constants.MonthlyBilling.State,
+            Constants.User.Id
         );
 
         var addPlanWithOtherCurrency = () => cut.AddPlan(
@@ -927,6 +956,7 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
+            Constants.User.Id,
             plans: MonthlyBillingUtilities.CreatePlans()
         );
 

@@ -5,6 +5,7 @@ using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.Unit.Tests.MonthlyBillings.AddExpense;
 
@@ -18,7 +19,10 @@ public sealed class AddExpenseCommandHandlerTests
         _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
-            .GetById(new(Constants.MonthlyBilling.Id))
+            .GetById(
+                new(Constants.MonthlyBilling.Id),
+                new(Constants.User.Id)
+            )
             .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
         _handler = new AddExpenseCommandHandler(_repository);
@@ -40,7 +44,8 @@ public sealed class AddExpenseCommandHandlerTests
         await _repository
             .Received(1)
             .GetById(
-                Arg.Is<MonthlyBillingId>(id => id.Value == addExpenseCommand.MonthlyBillingId)
+                Arg.Is<MonthlyBillingId>(id => id.Value == addExpenseCommand.MonthlyBillingId),
+                Arg.Is<UserId>(u => u.Value == addExpenseCommand.UserId)
             );
     }
 
@@ -54,7 +59,8 @@ public sealed class AddExpenseCommandHandlerTests
             Constants.Expense.Money,
             Constants.Expense.Currency,
             Constants.Expense.ExpenseDate,
-            Constants.Expense.Description
+            Constants.Expense.Description,
+            Constants.User.Id
         );
 
         var addExpense = () => _handler.HandleAsync(

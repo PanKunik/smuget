@@ -9,5 +9,6 @@ public sealed record UpdateExpenseCommand(
     decimal MoneyAmount,
     string Currency,
     DateTimeOffset ExpenseDate,
-    string Description
+    string Description,
+    Guid UserId
 ) : ICommand;

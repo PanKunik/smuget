@@ -8,5 +8,6 @@ public sealed record AddExpenseCommand(
     decimal Money,
     string Currency,
     DateTimeOffset ExpenseDate,
-    string Description
+    string Description,
+    Guid UserId
 ) : ICommand;

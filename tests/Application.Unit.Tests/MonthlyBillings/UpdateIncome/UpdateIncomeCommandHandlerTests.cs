@@ -5,6 +5,7 @@ using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.Unit.Tests.MonthlyBillings.UpdateIncome;
 
@@ -18,7 +19,10 @@ public sealed class UpdateIncomeCommandHandlerTests
         _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
-            .GetById(new(Constants.MonthlyBilling.Id))
+            .GetById(
+                new(Constants.MonthlyBilling.Id),
+                new(Constants.User.Id)
+            )
             .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
         _handler = new UpdateIncomeCommandHandler(_repository);
@@ -39,7 +43,10 @@ public sealed class UpdateIncomeCommandHandlerTests
         // Act & Assert
         await _repository
             .Received(1)
-            .GetById(Arg.Is<MonthlyBillingId>(m => m.Value == updateIncome.MonthlyBillingId));
+            .GetById(
+                Arg.Is<MonthlyBillingId>(m => m.Value == updateIncome.MonthlyBillingId),
+                Arg.Is<UserId>(m => m.Value == updateIncome.UserId)
+            );
     }
 
     [Fact]
@@ -52,7 +59,8 @@ public sealed class UpdateIncomeCommandHandlerTests
             Constants.Income.Name,
             Constants.Income.Amount,
             Constants.Income.Currency,
-            Constants.Income.Include
+            Constants.Income.Include,
+            Constants.User.Id
         );
 
         var updateIncomeAction = () => _handler.HandleAsync(

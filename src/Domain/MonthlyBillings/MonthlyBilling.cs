@@ -1,4 +1,5 @@
 using Domain.Exceptions;
+using Domain.Users;
 
 namespace Domain.MonthlyBillings;
 
@@ -12,6 +13,7 @@ public sealed class MonthlyBilling
     public Month Month { get; }
     public Currency Currency { get; }
     public State State { get; private set; } = State.Open;
+    public UserId UserId { get; private set; }
     public IReadOnlyCollection<Income> Incomes => _incomes.AsReadOnly();
     public IReadOnlyCollection<Plan> Plans => _plans.AsReadOnly();
 
@@ -47,6 +49,7 @@ public sealed class MonthlyBilling
         Month month,
         Currency currency,
         State state,
+        UserId userId,
         List<Plan>? plans = null,
         List<Income>? incomes = null
     )
@@ -55,12 +58,14 @@ public sealed class MonthlyBilling
         ThrowIfYearIsNull(year);
         ThrowIfMonthIsNull(month);
         ThrowIfCurrencyIsNull(currency);
+        ThrowIfUserIdIsNull(userId);
 
         Id = monthlyBillingId;
         Year = year;
         Month = month;
         Currency = currency;
         State = state;    // TODO: Check for null
+        UserId = userId;
 
         _plans = plans ?? new();
         _incomes = incomes ?? new();
@@ -95,6 +100,14 @@ public sealed class MonthlyBilling
         if (currency is null)
         {
             throw new CurrencyIsNullException();
+        }
+    }
+
+    private void ThrowIfUserIdIsNull(UserId userId)
+    {
+        if (userId is null)
+        {
+            throw new UserIdIsNullException();
         }
     }
 

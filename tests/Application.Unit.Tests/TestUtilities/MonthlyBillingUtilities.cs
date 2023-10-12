@@ -14,6 +14,7 @@ public static class MonthlyBillingUtilities
             new(Constants.Constants.MonthlyBilling.Month),
             new(Constants.Constants.MonthlyBilling.Currency),
             Constants.Constants.MonthlyBilling.State,
+            new(Constants.Constants.User.Id),
             plans ?? CreatePlans(),
             incomes ?? CreateIncomes()
         );

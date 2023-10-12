@@ -1,4 +1,5 @@
 using Domain.MonthlyBillings;
+using Domain.Users;
 
 namespace Infrastructure.Persistance.Entities.Mappings;
 
@@ -17,6 +18,7 @@ internal static class MonthlyBillingMappingExtensions
             new Month(entity.Month),
             new Currency(entity.Currency),
             State.GetByName(entity.State),
+            new UserId(entity.UserId),
             entity.Plans
                 .Where(p => p.Active)
                 .ToList()
@@ -41,6 +43,7 @@ internal static class MonthlyBillingMappingExtensions
             Month = domain.Month.Value,
             State = domain.State.ToString(),
             Currency = domain.Currency.Value,
+            UserId = domain.UserId.Value,
             Plans = domain.Plans.Select(
                 p => p.ToEntity(domain.Id.Value)
             )

@@ -5,6 +5,7 @@ using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.Unit.Tests.MonthlyBillings.AddPlan;
 
@@ -18,7 +19,10 @@ public sealed class AddPlanCommandHandlerTests
         _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
-            .GetById(new(Constants.MonthlyBilling.Id))
+            .GetById(
+                new(Constants.MonthlyBilling.Id),
+                new(Constants.User.Id)
+            )
             .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
         _handler = new AddPlanCommandHandler(_repository);
@@ -39,9 +43,10 @@ public sealed class AddPlanCommandHandlerTests
         // Assert
         await _repository
             .Received(1)
-            .GetById(Arg.Is<MonthlyBillingId>(
-                m => m.Value == addPlanCommand.MonthlyBillingId
-            ));
+            .GetById(
+                Arg.Is<MonthlyBillingId>(m => m.Value == addPlanCommand.MonthlyBillingId),
+                Arg.Is<UserId>(u => u.Value == addPlanCommand.UserId)
+            );
     }
 
     [Fact]
@@ -53,7 +58,8 @@ public sealed class AddPlanCommandHandlerTests
             Constants.Plan.Category,
             Constants.Plan.MoneyAmount,
             Constants.Plan.Currency,
-            Constants.Plan.SortOrder
+            Constants.Plan.SortOrder,
+            Constants.User.Id
         );
 
         var addPlan = () => _handler.HandleAsync(

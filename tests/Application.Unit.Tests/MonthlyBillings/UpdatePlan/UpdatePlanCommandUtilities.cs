@@ -12,6 +12,7 @@ public static class UpdatePlanCommandUtilities
             "Updated Category",
             258.96m,
             "EUR",
-            99
+            99,
+            Constants.User.Id
         );
 }

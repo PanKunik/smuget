@@ -1,15 +1,16 @@
 @host = https://localhost:7188
 
-@monthlyBillingId = ea157cb3-b923-47fc-b258-cd2fbd5f4c76
-@planId = 7315f446-2139-4ed4-a0cc-c9c0befc3915
-@expenseId = d1d31227-6594-47cb-8eb2-2dfe29a64a1d
+@monthlyBillingId = 5ef03521-3296-4866-bbaf-369f6c117fee
+@planId = 176ab79c-22f8-4868-88ac-c567d1c26208
+@expenseId = f1e8ffc1-ac67-464f-8736-fa1aa85986ac
 
 PUT {{host}}/api/monthlyBillings/{{monthlyBillingId}}/plans/{{planId}}/expenses/{{expenseId}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1N2E5YjNlYi0xNzk2LTRlMGQtYTZiNC1mYzEwYmQzZjkzYjIiLCJ1bmlxdWVfbmFtZSI6IjU3YTliM2ViLTE3OTYtNGUwZC1hNmI0LWZjMTBiZDNmOTNiMiIsIm5iZiI6MTY5NzE0NDExMSwiZXhwIjoxNjk3MTQ1MzExLCJpc3MiOiJzbXVnZXQtaXNzdWVyIiwiYXVkIjoic211Z2V0LWF1ZGllbmNlIn0.GkZ_Y73COw8Vt9P51JvLquLBUxdsEQCm_bpefZ2ziDo
 Content-Type: application/json
 
 {
-    "moneyAmount": 39.23,
+    "moneyAmount": 85.45,
     "currency": "PLN",
-    "expenseDate": "2023-01-02T23:55:55+00:00",
-    "description": "Zaktualizownay opis 1"
+    "expenseDate": "2023-10-15T16:54:11+00:00",
+    "description": "Lidl"
 }

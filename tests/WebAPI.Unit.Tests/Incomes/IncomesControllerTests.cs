@@ -8,6 +8,7 @@ using Application.MonthlyBillings.UpdateIncome;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using WebAPI.Incomes;
+using WebAPI.Services.Users;
 
 namespace WebAPI.Unit.Tests.Incomes;
 
@@ -18,17 +19,24 @@ public sealed class IncomesControllerTests
     private readonly Mock<ICommandHandler<AddIncomeCommand>> _mockAddIncomeCommandHandler;
     private readonly Mock<ICommandHandler<UpdateIncomeCommand>> _mockUpdateIncomeCommandHandler;
     private readonly Mock<ICommandHandler<RemoveIncomeCommand>> _mockRemoveIncomeCommandHandler;
+    private readonly Mock<IUserService> _mockUserService;
 
     public IncomesControllerTests()
     {
         _mockAddIncomeCommandHandler = new Mock<ICommandHandler<AddIncomeCommand>>();
         _mockUpdateIncomeCommandHandler = new Mock<ICommandHandler<UpdateIncomeCommand>>();
         _mockRemoveIncomeCommandHandler = new Mock<ICommandHandler<RemoveIncomeCommand>>();
+        _mockUserService = new Mock<IUserService>();
+
+        _mockUserService
+            .Setup(m => m.UserId)
+            .Returns(Guid.NewGuid());
 
         _cut = new IncomesController(
             _mockAddIncomeCommandHandler.Object,
             _mockUpdateIncomeCommandHandler.Object,
-            _mockRemoveIncomeCommandHandler.Object
+            _mockRemoveIncomeCommandHandler.Object,
+            _mockUserService.Object
         );
     }
 

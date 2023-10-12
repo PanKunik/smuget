@@ -1,3 +1,4 @@
+using System.Data;
 using Application.Exceptions;
 using Application.MonthlyBillings.OpenMonthlyBilling;
 using Application.Unit.Tests.MonthlyBillings.TestUtilities;
@@ -20,7 +21,8 @@ public sealed class OpenMonthlyBilingCommandHandlerTests
         _repository
             .Get(
                 new(Constants.MonthlyBilling.Year),
-                new(Constants.MonthlyBilling.Month)
+                new(Constants.MonthlyBilling.Month),
+                new(Constants.User.Id)
             )
             .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
@@ -44,7 +46,8 @@ public sealed class OpenMonthlyBilingCommandHandlerTests
             .Received(1)
             .Get(
                 new(openCommand.Year),
-                new(openCommand.Month)
+                new(openCommand.Month),
+                new(openCommand.UserId)
             );
     }
 
@@ -55,7 +58,8 @@ public sealed class OpenMonthlyBilingCommandHandlerTests
         var openCommand = new OpenMonthlyBillingCommand(
             Constants.MonthlyBilling.Year,
             Constants.MonthlyBilling.Month,
-            Constants.MonthlyBilling.Currency
+            Constants.MonthlyBilling.Currency,
+            Constants.User.Id
         );
 
         var openAction = () => _handler.HandleAsync(
@@ -101,7 +105,7 @@ public sealed class OpenMonthlyBilingCommandHandlerTests
             openCommand,
             default
         );
-        
+
         // Assert
         passedArgument
             .Should()
@@ -122,5 +126,9 @@ public sealed class OpenMonthlyBilingCommandHandlerTests
         passedArgument?.Currency.Value
             .Should()
             .Be(openCommand.Currency);
+
+        passedArgument?.UserId.Value
+            .Should()
+            .Be(openCommand.UserId);
     }
 }

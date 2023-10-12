@@ -9,6 +9,7 @@ public static class OpenMonthlyBilingCommandUtilities
         => new (
             Constants.MonthlyBilling.Year + 1,
             Constants.MonthlyBilling.Month + 1,
-            Constants.MonthlyBilling.Currency
+            Constants.MonthlyBilling.Currency,
+            Constants.User.Id
         );
 }

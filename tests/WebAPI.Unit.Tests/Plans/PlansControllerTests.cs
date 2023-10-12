@@ -8,6 +8,7 @@ using Application.MonthlyBillings.UpdatePlan;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using WebAPI.Plans;
+using WebAPI.Services.Users;
 
 namespace WebAPI.Unit.Tests.Plans;
 
@@ -18,17 +19,24 @@ public sealed class PlansControllerTests
     private readonly Mock<ICommandHandler<AddPlanCommand>> _mockAddPlanCommandHandler;
     private readonly Mock<ICommandHandler<RemovePlanCommand>> _mockRemovePlanCommandHandler;
     private readonly Mock<ICommandHandler<UpdatePlanCommand>> _mockUpdatePlanCommandHandler;
+    private readonly Mock<IUserService> _mockUserService;
 
     public PlansControllerTests()
     {
         _mockAddPlanCommandHandler = new Mock<ICommandHandler<AddPlanCommand>>();
         _mockRemovePlanCommandHandler = new Mock<ICommandHandler<RemovePlanCommand>>();
         _mockUpdatePlanCommandHandler = new Mock<ICommandHandler<UpdatePlanCommand>>();
+        _mockUserService = new Mock<IUserService>();
+
+        _mockUserService
+            .Setup(m => m.UserId)
+            .Returns(Guid.NewGuid());
 
         _cut = new PlansController(
             _mockAddPlanCommandHandler.Object,
             _mockUpdatePlanCommandHandler.Object,
-            _mockRemovePlanCommandHandler.Object
+            _mockRemovePlanCommandHandler.Object,
+            _mockUserService.Object
         );
     }
 

@@ -18,6 +18,7 @@ public static class MonthlyBillingUtilities
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
+            Constants.User.Id,
             plans ?? CreatePlans(expenses),
             incomes ?? CreateIncomes()
         );

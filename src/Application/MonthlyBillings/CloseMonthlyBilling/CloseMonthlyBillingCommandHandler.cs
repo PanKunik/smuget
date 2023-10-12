@@ -1,6 +1,5 @@
 using Application.Abstractions.CQRS;
 using Application.Exceptions;
-using Domain.MonthlyBillings;
 using Domain.Repositories;
 
 namespace Application.MonthlyBillings.CloseMonthlyBilling;
@@ -13,7 +12,7 @@ public sealed class CloseMonthlyBillingCommandHandler : ICommandHandler<CloseMon
         IMonthlyBillingsRepository repository
     )
     {
-        _repository = repository;
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
     public async Task HandleAsync(
@@ -21,23 +20,16 @@ public sealed class CloseMonthlyBillingCommandHandler : ICommandHandler<CloseMon
         CancellationToken cancellationToken = default
     )
     {
-        var year = new Year(command.Year);
-        var month = new Month(command.Month);
-
-        var monthlyBilling = await _repository.Get(
-            year,
-            month
-        );
-
-        if (monthlyBilling is null)
-        {
-            throw new MonthlyBillingNotFoundException(
-                (ushort)year.Value,
-                (byte)month.Value
+        var entity = await _repository.Get(
+            new(command.Year),
+            new(command.Month),
+            new(command.UserId)
+        ) ?? throw new MonthlyBillingNotFoundException(
+                (ushort)command.Year,
+                (byte)command.Month
             );
-        }
 
-        monthlyBilling.Close();
-        await _repository.Save(monthlyBilling);
+        entity.Close();
+        await _repository.Save(entity);
     }
 }
