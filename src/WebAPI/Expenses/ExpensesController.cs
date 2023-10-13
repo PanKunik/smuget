@@ -6,6 +6,7 @@ using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using WebAPI.Services.Users;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebAPI.Expenses;
@@ -20,16 +21,19 @@ public sealed class ExpensesController : ControllerBase
     private readonly ICommandHandler<AddExpenseCommand> _addExpense;
     private readonly ICommandHandler<UpdateExpenseCommand> _updateExpense;
     private readonly ICommandHandler<RemoveExpenseCommand> _removeExpense;
+    private readonly IUserService _userService;
 
     public ExpensesController(
         ICommandHandler<AddExpenseCommand> addExpense,
         ICommandHandler<RemoveExpenseCommand> removeExpense,
-        ICommandHandler<UpdateExpenseCommand> updateExpense
+        ICommandHandler<UpdateExpenseCommand> updateExpense,
+        IUserService userService
     )
     {
         _addExpense = addExpense;
         _updateExpense = updateExpense;
         _removeExpense = removeExpense;
+        _userService = userService;
     }
 
     /// <summary>
@@ -57,7 +61,8 @@ public sealed class ExpensesController : ControllerBase
                 amount,
                 currency,
                 date,
-                description
+                description,
+                _userService.UserId
             ),
             token
         );
@@ -93,7 +98,8 @@ public sealed class ExpensesController : ControllerBase
                 moneyAmount,
                 currency,
                 expenseDate,
-                description
+                description,
+                _userService.UserId
             ),
             token
         );
@@ -122,7 +128,8 @@ public sealed class ExpensesController : ControllerBase
             new RemoveExpenseCommand(
                 monthlyBillingId,
                 planId,
-                expenseId
+                expenseId,
+                _userService.UserId
             ),
             token
         );

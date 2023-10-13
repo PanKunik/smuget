@@ -12,6 +12,7 @@ public static class UpdateIncomeCommandUtilities
             "Updated Name Income",
             1234.56m,
             "EUR",
-            false
+            false,
+            Constants.User.Id
         );
 }

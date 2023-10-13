@@ -12,6 +12,7 @@ public static class AddExpenseCommandUtilities
             Constants.Expense.Money,
             Constants.Expense.Currency,
             Constants.Expense.ExpenseDate,
-            Constants.Expense.Description
+            Constants.Expense.Description,
+            Constants.User.Id
         );
 }

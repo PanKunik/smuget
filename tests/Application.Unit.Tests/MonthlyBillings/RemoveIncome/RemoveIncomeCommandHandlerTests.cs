@@ -5,6 +5,7 @@ using Application.Unit.Tests.TestUtilities.Constants;
 using Application.Unit.Tests.TestUtilities;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.Unit.Tests.MonthlyBillings.RemoveIncome;
 
@@ -18,7 +19,10 @@ public sealed class RemoveIncomeCommandHandlerTests
         _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
-            .GetById(new(Constants.MonthlyBilling.Id))
+            .GetById(
+                new(Constants.MonthlyBilling.Id),
+                new(Constants.User.Id)
+            )
             .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
         _handler = new RemoveIncomeCommandHandler(_repository);
@@ -40,7 +44,10 @@ public sealed class RemoveIncomeCommandHandlerTests
         // Assert
         await _repository
             .Received(1)
-            .GetById(Arg.Is<MonthlyBillingId>(m => m.Value == command.MonthlyBillingId));
+            .GetById(
+                Arg.Is<MonthlyBillingId>(m => m.Value == command.MonthlyBillingId),
+                Arg.Is<UserId>(u => u.Value == command.UserId)
+            );
     }
 
     [Fact]
@@ -49,7 +56,8 @@ public sealed class RemoveIncomeCommandHandlerTests
         // Arrange
         var removeIncome = new RemoveIncomeCommand(
             Guid.NewGuid(),
-            Constants.Income.Id
+            Constants.Income.Id,
+            Constants.User.Id
         );
 
         var removeIncomeAction = async () => await _handler

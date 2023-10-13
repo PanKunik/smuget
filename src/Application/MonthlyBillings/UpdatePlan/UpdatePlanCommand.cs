@@ -8,5 +8,6 @@ public sealed record UpdatePlanCommand(
     string Category,
     decimal MoneyAmount,
     string Currency,
-    uint SortOrder
+    uint SortOrder,
+    Guid UserId
 ) : ICommand;

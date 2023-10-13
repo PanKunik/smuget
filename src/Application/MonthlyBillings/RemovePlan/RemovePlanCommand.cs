@@ -4,5 +4,6 @@ namespace Application.MonthlyBillings.RemovePlan;
 
 public sealed record RemovePlanCommand(
     Guid MonthlyBillingId,
-    Guid PlanId
+    Guid PlanId,
+    Guid UserId
 ) : ICommand;

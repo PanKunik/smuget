@@ -1,8 +1,9 @@
 @host = https://localhost:7188
 
-@monthlyBillingId = 2330a403-64e8-4325-b38c-cb229e2ba9b2
-@planId = a3d2fc36-0d6f-4424-9b4d-af3979b3fc4b
-@expenseId = 561b1ef2-312a-4adf-935d-db99a4fc183d
+@monthlyBillingId = 5ef03521-3296-4866-bbaf-369f6c117fee
+@planId = 176ab79c-22f8-4868-88ac-c567d1c26208
+@expenseId = dd18198f-31f0-4148-93a5-986fc83c2bb9
 
 DELETE {{host}}/api/monthlyBillings/{{monthlyBillingId}}/plans/{{planId}}/expenses/{{expenseId}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1N2E5YjNlYi0xNzk2LTRlMGQtYTZiNC1mYzEwYmQzZjkzYjIiLCJ1bmlxdWVfbmFtZSI6IjU3YTliM2ViLTE3OTYtNGUwZC1hNmI0LWZjMTBiZDNmOTNiMiIsIm5iZiI6MTY5NzE0NDExMSwiZXhwIjoxNjk3MTQ1MzExLCJpc3MiOiJzbXVnZXQtaXNzdWVyIiwiYXVkIjoic211Z2V0LWF1ZGllbmNlIn0.GkZ_Y73COw8Vt9P51JvLquLBUxdsEQCm_bpefZ2ziDo
 Accept: application/json

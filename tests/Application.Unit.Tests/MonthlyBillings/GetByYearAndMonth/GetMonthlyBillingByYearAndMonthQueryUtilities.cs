@@ -8,6 +8,7 @@ public static class GetMonthlyBillingByYearAndMonthQueryUtilities
     public static GetMonthlyBillingByYearAndMonthQuery CreateQuery()
         => new(
             Constants.MonthlyBilling.Year,
-            Constants.MonthlyBilling.Month
+            Constants.MonthlyBilling.Month,
+            Constants.User.Id
         );
 }

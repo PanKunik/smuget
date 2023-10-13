@@ -8,6 +8,7 @@ using Application.MonthlyBillings.UpdateExpense;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using WebAPI.Expenses;
+using WebAPI.Services.Users;
 
 namespace WebAPI.Unit.Tests.Expenses;
 
@@ -18,17 +19,24 @@ public sealed class ExpensesControllerTests
     private readonly Mock<ICommandHandler<AddExpenseCommand>> _mockAddExpenseCommandHandler;
     private readonly Mock<ICommandHandler<UpdateExpenseCommand>> _mockUpdateExpenseCommandHandler;
     private readonly Mock<ICommandHandler<RemoveExpenseCommand>> _mockRemoveExpenseCommandHandler;
+    private readonly Mock<IUserService> _mockUserService;
 
     public ExpensesControllerTests()
     {
         _mockAddExpenseCommandHandler = new Mock<ICommandHandler<AddExpenseCommand>>();
         _mockUpdateExpenseCommandHandler = new Mock<ICommandHandler<UpdateExpenseCommand>>();
         _mockRemoveExpenseCommandHandler = new Mock<ICommandHandler<RemoveExpenseCommand>>();
+        _mockUserService = new Mock<IUserService>();
+
+        _mockUserService
+            .Setup(m => m.UserId)
+            .Returns(Guid.NewGuid());
 
         _cut = new ExpensesController(
             _mockAddExpenseCommandHandler.Object,
             _mockRemoveExpenseCommandHandler.Object,
-            _mockUpdateExpenseCommandHandler.Object
+            _mockUpdateExpenseCommandHandler.Object,
+            _mockUserService.Object
         );
     }
 

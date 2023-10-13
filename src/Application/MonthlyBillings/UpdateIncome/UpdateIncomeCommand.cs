@@ -8,5 +8,6 @@ public sealed record UpdateIncomeCommand(
     string Name,
     decimal MoneyAmount,
     string Currency,
-    bool Include
+    bool Include,
+    Guid UserId
 ) : ICommand;

@@ -8,6 +8,7 @@ using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Authorization;
+using WebAPI.Services.Users;
 
 namespace WebAPI.MonthlyBillings;
 
@@ -22,18 +23,21 @@ public sealed class MonthlyBillingsController : ControllerBase
     private readonly IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO> _getMonthlyBilling;
     private readonly ICommandHandler<CloseMonthlyBillingCommand> _closeMonthlyBilling;
     private readonly ICommandHandler<ReopenMonthlyBillingCommand> _reopenMonthlyBilling;
+    private readonly IUserService _userService;
 
     public MonthlyBillingsController(
         ICommandHandler<OpenMonthlyBillingCommand> openMonthlyBilling,
         IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO> getMonthlyBilling,
         ICommandHandler<CloseMonthlyBillingCommand> closeMonthlyBilling,
-        ICommandHandler<ReopenMonthlyBillingCommand> reopenMonthlyBilling
+        ICommandHandler<ReopenMonthlyBillingCommand> reopenMonthlyBilling,
+        IUserService userService
     )
     {
         _openMonthlyBilling = openMonthlyBilling;
         _getMonthlyBilling = getMonthlyBilling;
         _closeMonthlyBilling = closeMonthlyBilling;
         _reopenMonthlyBilling = reopenMonthlyBilling;
+        _userService = userService;
     }
 
     /// <summary>
@@ -53,7 +57,8 @@ public sealed class MonthlyBillingsController : ControllerBase
             new OpenMonthlyBillingCommand(
                 year,
                 month,
-                currency
+                currency,
+                _userService.UserId
             ),
             token
         );
@@ -79,7 +84,8 @@ public sealed class MonthlyBillingsController : ControllerBase
         var result = await _getMonthlyBilling.HandleAsync(
             new GetMonthlyBillingByYearAndMonthQuery(
                 year,
-                month
+                month,
+                _userService.UserId
             ),
             token
         );
@@ -105,7 +111,8 @@ public sealed class MonthlyBillingsController : ControllerBase
         await _closeMonthlyBilling.HandleAsync(
             new CloseMonthlyBillingCommand(
                 year,
-                month
+                month,
+                _userService.UserId
             ),
             token
         );
@@ -131,7 +138,8 @@ public sealed class MonthlyBillingsController : ControllerBase
         await _reopenMonthlyBilling.HandleAsync(
             new ReopenMonthlyBillingCommand(
                 year,
-                month
+                month,
+                _userService.UserId
             ),
             token
         );

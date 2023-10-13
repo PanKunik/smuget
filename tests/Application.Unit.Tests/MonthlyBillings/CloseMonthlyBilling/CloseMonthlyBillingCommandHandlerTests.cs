@@ -5,6 +5,7 @@ using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.Unit.Tests.MonthlyBillings.CloseMonthlyBilling;
 
@@ -20,7 +21,8 @@ public sealed class CloseMonthlyBillingCommandHandlerTests
         _repository
             .Get(
                 new(Constants.MonthlyBilling.Year),
-                new(Constants.MonthlyBilling.Month)
+                new(Constants.MonthlyBilling.Month),
+                new(Constants.User.Id)
             )
             .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
@@ -44,7 +46,8 @@ public sealed class CloseMonthlyBillingCommandHandlerTests
             .Received(1)
             .Get(
                 Arg.Is<Year>(y => y.Value == closeCommand.Year),
-                Arg.Is<Month>(m => m.Value == closeCommand.Month)
+                Arg.Is<Month>(m => m.Value == closeCommand.Month),
+                Arg.Is<UserId>(u => u.Value == closeCommand.UserId)
             );
     }
 
@@ -54,7 +57,8 @@ public sealed class CloseMonthlyBillingCommandHandlerTests
         // Arrange
         var closeCommand = new CloseMonthlyBillingCommand(
             2000,
-            1
+            1,
+            Constants.User.Id
         );
 
         var closeAction = () => _handler.HandleAsync(

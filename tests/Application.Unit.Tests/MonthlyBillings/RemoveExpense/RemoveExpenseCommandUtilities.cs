@@ -9,6 +9,7 @@ public static class RemoveExpenseCommandUtilities
         => new(
             Constants.MonthlyBilling.Id,
             Constants.Plan.Id,
-            Constants.Expense.Id
+            Constants.Expense.Id,
+            Constants.User.Id
         );
 }

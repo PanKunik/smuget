@@ -5,6 +5,7 @@ using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.Unit.Tests.MonthlyBillings.RemovePlan;
 
@@ -18,7 +19,10 @@ public sealed class RemovePlanCommandHandlerTests
         _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
-            .GetById(new(Constants.MonthlyBilling.Id))
+            .GetById(
+                new(Constants.MonthlyBilling.Id),
+                new(Constants.User.Id)
+            )
             .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
         _handler = new RemovePlanCommandHandler(_repository);
@@ -40,7 +44,10 @@ public sealed class RemovePlanCommandHandlerTests
         // Assert
         await _repository
             .Received(1)
-            .GetById(Arg.Is<MonthlyBillingId>(m => m.Value == removePlan.MonthlyBillingId));
+            .GetById(
+                Arg.Is<MonthlyBillingId>(m => m.Value == removePlan.MonthlyBillingId),
+                Arg.Is<UserId>(u => u.Value == removePlan.UserId)
+            );
     }
 
     [Fact]
@@ -49,7 +56,8 @@ public sealed class RemovePlanCommandHandlerTests
         // Arrange
         var removePlan = new RemovePlanCommand(
             Guid.NewGuid(),
-            Constants.Plan.Id
+            Constants.Plan.Id,
+            Constants.User.Id
         );
 
         var removePlanAction = () => _handler

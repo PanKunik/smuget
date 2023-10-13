@@ -5,6 +5,7 @@ using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.Unit.Tests.MonthlyBillings.UpdateExpense;
 
@@ -18,7 +19,10 @@ public sealed class UpdateExpenseCommandHandlerTests
         _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
-            .GetById(new(Constants.MonthlyBilling.Id))
+            .GetById(
+                new(Constants.MonthlyBilling.Id),
+                new(Constants.User.Id)
+            )
             .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
         _handler = new UpdateExpenseCommandHandler(_repository);
@@ -39,7 +43,10 @@ public sealed class UpdateExpenseCommandHandlerTests
         // Act & Assert
         await _repository
             .Received(1)
-            .GetById(Arg.Is<MonthlyBillingId>(m => m.Value == command.MonthlyBillingId));
+            .GetById(
+                Arg.Is<MonthlyBillingId>(m => m.Value == command.MonthlyBillingId),
+                Arg.Is<UserId>(u => u.Value == command.UserId)
+            );
     }
 
     [Fact]
@@ -53,7 +60,8 @@ public sealed class UpdateExpenseCommandHandlerTests
             Constants.Expense.Money,
             Constants.Expense.Currency,
             Constants.Expense.ExpenseDate,
-            Constants.Expense.Description
+            Constants.Expense.Description,
+            Constants.User.Id
         );
 
         var updateExpenseAction = () => _handler.HandleAsync(

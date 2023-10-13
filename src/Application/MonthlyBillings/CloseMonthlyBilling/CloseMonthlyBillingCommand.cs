@@ -4,5 +4,6 @@ namespace Application.MonthlyBillings.CloseMonthlyBilling;
 
 public sealed record CloseMonthlyBillingCommand(
     int Year,
-    int Month
+    int Month,
+    Guid UserId
 ) : ICommand;

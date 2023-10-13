@@ -5,5 +5,6 @@ namespace Application.MonthlyBillings.RemoveExpense;
 public sealed record RemoveExpenseCommand(
     Guid MonthlyBillingId,
     Guid PlanId,
-    Guid ExpenseId
+    Guid ExpenseId,
+    Guid UserId
 ) : ICommand;

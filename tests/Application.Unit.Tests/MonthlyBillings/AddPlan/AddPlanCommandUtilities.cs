@@ -11,6 +11,7 @@ public static class AddPlanCommandUtilities
             Constants.Plan.Category,
             Constants.Plan.MoneyAmount,
             Constants.Plan.Currency,
-            Constants.Plan.SortOrder
+            Constants.Plan.SortOrder,
+            Constants.User.Id
         );
 }

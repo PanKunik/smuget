@@ -9,6 +9,8 @@ using Application.MonthlyBillings.GetByYearAndMonth;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using WebAPI.MonthlyBillings;
+using System;
+using WebAPI.Services.Users;
 
 namespace WebAPI.Unit.Tests.MonthlyBillings;
 
@@ -20,6 +22,7 @@ public sealed class MonthlyBillingsControllerTests
     private readonly Mock<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>> _mockGetMonthlyBillingQueryHandler;
     private readonly Mock<ICommandHandler<CloseMonthlyBillingCommand>> _mockCloseMonthlyBillingCommandHandler;
     private readonly Mock<ICommandHandler<ReopenMonthlyBillingCommand>> _mockReopenMonthlyBillingCommandHandler;
+    private readonly Mock<IUserService> _mockUserService;
 
     public MonthlyBillingsControllerTests()
     {
@@ -27,6 +30,11 @@ public sealed class MonthlyBillingsControllerTests
         _mockGetMonthlyBillingQueryHandler = new Mock<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>>();
         _mockCloseMonthlyBillingCommandHandler = new Mock<ICommandHandler<CloseMonthlyBillingCommand>>();
         _mockReopenMonthlyBillingCommandHandler = new Mock<ICommandHandler<ReopenMonthlyBillingCommand>>();
+        _mockUserService = new Mock<IUserService>();
+
+        _mockUserService
+            .Setup(m => m.UserId)
+            .Returns(Guid.NewGuid());
 
         _mockGetMonthlyBillingQueryHandler
             .Setup(m => m.HandleAsync(
@@ -42,7 +50,8 @@ public sealed class MonthlyBillingsControllerTests
             _mockOpenMonthlyBillingCommandHandler.Object,
             _mockGetMonthlyBillingQueryHandler.Object,
             _mockCloseMonthlyBillingCommandHandler.Object,
-            _mockReopenMonthlyBillingCommandHandler.Object
+            _mockReopenMonthlyBillingCommandHandler.Object,
+            _mockUserService.Object
         );
     }
 

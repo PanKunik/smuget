@@ -5,6 +5,7 @@ using Application.MonthlyBillings.UpdateIncome;
 using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Services.Users;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebAPI.Incomes;
@@ -19,16 +20,19 @@ public sealed class IncomesController : ControllerBase
     private readonly ICommandHandler<AddIncomeCommand> _addIncome;
     private readonly ICommandHandler<UpdateIncomeCommand> _updateIncome;
     private readonly ICommandHandler<RemoveIncomeCommand> _removeIncome;
+    private readonly IUserService _userService;
 
     public IncomesController(
         ICommandHandler<AddIncomeCommand> addIncome,
         ICommandHandler<UpdateIncomeCommand> updateIncome,
-        ICommandHandler<RemoveIncomeCommand> removeIncome
+        ICommandHandler<RemoveIncomeCommand> removeIncome,
+        IUserService userService
     )
     {
         _addIncome = addIncome;
         _updateIncome = updateIncome;
         _removeIncome = removeIncome;
+        _userService = userService;
     }
 
     /// <summary>
@@ -53,8 +57,11 @@ public sealed class IncomesController : ControllerBase
                 name,
                 amount,
                 currency,
-                include),
-            token);
+                include,
+                _userService.UserId
+            ),
+            token
+        );
 
         return Created("", null);
     }
@@ -84,7 +91,8 @@ public sealed class IncomesController : ControllerBase
                 name,
                 moneyAmount,
                 currency,
-                include
+                include,
+                _userService.UserId
             ),
             token
         );
@@ -110,7 +118,8 @@ public sealed class IncomesController : ControllerBase
         await _removeIncome.HandleAsync(
             new RemoveIncomeCommand(
                 monthlyBillingId,
-                incomeId
+                incomeId,
+                _userService.UserId
             ),
             token
         );

@@ -7,6 +7,7 @@ internal sealed class MonthlyBillingEntity
     public int Month { get; set; }
     public string State { get; set; }
     public string Currency { get; set; }
+    public Guid UserId { get; set; }
     public List<IncomeEntity> Incomes { get; set; }
     public List<PlanEntity> Plans { get; set; }
 }

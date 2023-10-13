@@ -8,6 +8,7 @@ public static class CloseMonthlyBillingCommandUtilities
     public static CloseMonthlyBillingCommand CreateCommand()
         => new(
             Constants.MonthlyBilling.Year,
-            Constants.MonthlyBilling.Month
+            Constants.MonthlyBilling.Month,
+            Constants.User.Id
         );
 }

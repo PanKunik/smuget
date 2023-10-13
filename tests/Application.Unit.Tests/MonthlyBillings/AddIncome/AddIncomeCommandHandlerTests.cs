@@ -5,6 +5,7 @@ using Domain.Repositories;
 using Application.Unit.Tests.TestUtilities.Constants;
 using Application.Unit.Tests.TestUtilities;
 using Application.Exceptions;
+using Domain.Users;
 
 namespace Application.Unit.Tests.MonthlyBillings.AddIncome;
 
@@ -18,7 +19,10 @@ public sealed class AddIncomeCommandHandlerTests
         _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
-            .GetById(new(Constants.MonthlyBilling.Id))
+            .GetById(
+                new(Constants.MonthlyBilling.Id),
+                new(Constants.User.Id)
+            )
             .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
         _handler = new AddIncomeCommandHandler(_repository);
@@ -40,7 +44,8 @@ public sealed class AddIncomeCommandHandlerTests
         await _repository
             .Received(1)
             .GetById(
-                Arg.Is<MonthlyBillingId>(id => id.Value == addIncomeCommand.MonthlyBillingId)
+                Arg.Is<MonthlyBillingId>(id => id.Value == addIncomeCommand.MonthlyBillingId),
+                Arg.Is<UserId>(u => u.Value == addIncomeCommand.UserId)
             );
     }
 
@@ -53,7 +58,8 @@ public sealed class AddIncomeCommandHandlerTests
             Constants.Income.Name,
             Constants.Income.Amount,
             Constants.Income.Currency,
-            Constants.Income.Include
+            Constants.Income.Include,
+            Constants.User.Id
         );
 
         var addIncome = () => _handler.HandleAsync(

@@ -9,33 +9,34 @@ public sealed class AddPlanCommandHandler : ICommandHandler<AddPlanCommand>
 {
     private readonly IMonthlyBillingsRepository _repository;
 
-    public AddPlanCommandHandler(IMonthlyBillingsRepository repository)
+    public AddPlanCommandHandler(
+        IMonthlyBillingsRepository repository
+    )
     {
-        _repository = repository;
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
-    public async Task HandleAsync(AddPlanCommand command, CancellationToken cancellationToken = default)
+    public async Task HandleAsync(
+        AddPlanCommand command,
+        CancellationToken cancellationToken = default
+    )
     {
-        var monthlyBilling = await _repository.GetById(
-            new MonthlyBillingId(command.MonthlyBillingId)
-        );
-
-        if (monthlyBilling is null)
-        {
-            throw new MonthlyBillingNotFoundException();
-        }
+        var entity = await _repository.GetById(
+            new(command.MonthlyBillingId),
+            new(command.UserId)
+        ) ?? throw new MonthlyBillingNotFoundException();
 
         var plan = new Plan(
-            new PlanId(Guid.NewGuid()),
-            new Category(command.Category),
-            new Money(
+            new(Guid.NewGuid()),
+            new(command.Category),
+            new(
                 command.MoneyAmount,
-                new Currency(command.Currency)
+                new(command.Currency)
             ),
             command.SortOrder
         );
 
-        monthlyBilling.AddPlan(plan);
-        await _repository.Save(monthlyBilling);
+        entity.AddPlan(plan);
+        await _repository.Save(entity);
     }
 }

@@ -1,14 +1,15 @@
 @host = https://localhost:7188
 
-@monthlyBillingId = 820db3c1-70b7-484a-b4f4-4304bb62d32a
-@planId = 102c9a20-6dc5-408a-984f-60df68e897df
+@monthlyBillingId = 5ef03521-3296-4866-bbaf-369f6c117fee
+@planId = 176ab79c-22f8-4868-88ac-c567d1c26208
 
 POST {{host}}/api/monthlyBillings/{{monthlyBillingId}}/plans/{{planId}}/expenses
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1N2E5YjNlYi0xNzk2LTRlMGQtYTZiNC1mYzEwYmQzZjkzYjIiLCJ1bmlxdWVfbmFtZSI6IjU3YTliM2ViLTE3OTYtNGUwZC1hNmI0LWZjMTBiZDNmOTNiMiIsIm5iZiI6MTY5NzE0NDExMSwiZXhwIjoxNjk3MTQ1MzExLCJpc3MiOiJzbXVnZXQtaXNzdWVyIiwiYXVkIjoic211Z2V0LWF1ZGllbmNlIn0.GkZ_Y73COw8Vt9P51JvLquLBUxdsEQCm_bpefZ2ziDo
 Content-Type: application/json
 
 {
-    "money": 32.78,
+    "money": 452.62,
     "currency": "PLN",
-    "expenseDate": "2023-08-15T17:33:17+00:00",
-    "description": "Auchan"
+    "expenseDate": "2023-10-23T14:59:17+00:00",
+    "description": "Akumulator do samochodu"
 }

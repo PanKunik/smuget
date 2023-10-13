@@ -1,13 +1,17 @@
 using System.Reflection;
 using Application;
 using Infrastructure;
+using WebAPI;
 using WebAPI.Middlewares;
+using WebAPI.Services.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services
         .AddApplication()
         .AddInfrastructure(builder.Configuration);
+
+    builder.Services.AddScoped<IUserService, UserService>();
 
     builder.Services.AddHTTPLogging();
 

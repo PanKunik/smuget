@@ -5,6 +5,7 @@ using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.Unit.Tests.MonthlyBillings.RemoveExpense;
 
@@ -18,7 +19,10 @@ public sealed class RemoveExpenseCommandHandlerTests
         _repository = Substitute.For<IMonthlyBillingsRepository>();
 
         _repository
-            .GetById(new(Constants.MonthlyBilling.Id))
+            .GetById(
+                new(Constants.MonthlyBilling.Id),
+                new(Constants.User.Id)
+            )
             .Returns(MonthlyBillingUtilities.CreateMonthlyBilling());
 
         _handler = new RemoveExpenseCommandHandler(_repository);
@@ -40,9 +44,8 @@ public sealed class RemoveExpenseCommandHandlerTests
         await _repository
             .Received(1)
             .GetById(
-                Arg.Is<MonthlyBillingId>(
-                    m => m.Value == removeExpense.MonthlyBillingId
-                )
+                Arg.Is<MonthlyBillingId>(m => m.Value == removeExpense.MonthlyBillingId),
+                Arg.Is<UserId>(u => u.Value == removeExpense.UserId)
             );
     }
 
@@ -53,7 +56,8 @@ public sealed class RemoveExpenseCommandHandlerTests
         var removeExpense = new RemoveExpenseCommand(
             Guid.NewGuid(),
             Constants.Plan.Id,
-            Constants.Expense.Id
+            Constants.Expense.Id,
+            Constants.User.Id
         );
 
         var removeAction = () => _handler.HandleAsync(

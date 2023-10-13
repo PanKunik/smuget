@@ -7,5 +7,6 @@ public sealed record AddIncomeCommand(
     string Name,
     decimal Amount,
     string Currency,
-    bool Include
+    bool Include,
+    Guid UserId
 ) : ICommand;

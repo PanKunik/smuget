@@ -1,5 +1,6 @@
 using Domain.MonthlyBillings;
 using Domain.Repositories;
+using Domain.Users;
 using Infrastructure.Persistance.Entities;
 using Infrastructure.Persistance.Entities.Mappings;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,11 @@ internal sealed class MonthlyBillingsRepository : IMonthlyBillingsRepository
         _dbContext = dbContext;
     }
 
-    public async Task<MonthlyBilling?> Get(Year year, Month month)
+    public async Task<MonthlyBilling?> Get(
+        Year year,
+        Month month,
+        UserId userId
+    )
     {
         var entites = await _dbContext.MonthlyBillings
             .Include(m => m.Incomes)
@@ -25,13 +30,17 @@ internal sealed class MonthlyBillingsRepository : IMonthlyBillingsRepository
             .FirstOrDefaultAsync(
                 m => m.Year == year.Value
                 && m.Month == month.Value
+                && m.UserId == userId.Value
             );
 
         return entites?
             .ToDomain();
     }
 
-    public async Task<MonthlyBilling?> GetById(MonthlyBillingId monthlyBillingId)
+    public async Task<MonthlyBilling?> GetById(
+        MonthlyBillingId monthlyBillingId,
+        UserId userId
+    )
     {
         var entity = await _dbContext.MonthlyBillings
             .Include(m => m.Incomes)
@@ -40,6 +49,7 @@ internal sealed class MonthlyBillingsRepository : IMonthlyBillingsRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(
                 m => m.Id == monthlyBillingId.Value
+                  && m.UserId == userId.Value
             );
 
         return entity?

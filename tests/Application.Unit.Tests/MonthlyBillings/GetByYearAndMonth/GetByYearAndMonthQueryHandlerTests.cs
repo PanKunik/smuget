@@ -8,6 +8,7 @@ using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.Unit.Tests.MonthlyBillings.GetByYearAndMonth;
 
@@ -23,7 +24,8 @@ public sealed class GetByYearAndMonthQueryHandlerTests
         _repository
             .Get(
                 new(Constants.MonthlyBilling.Year),
-                new(Constants.MonthlyBilling.Month)
+                new(Constants.MonthlyBilling.Month),
+                new(Constants.User.Id)
             )
             .Returns(MonthlyBillingUtilities.CreateMonthlyBilling(
                 plans: new List<Plan>() { PlansUtilities.CreatePlan(
@@ -52,7 +54,8 @@ public sealed class GetByYearAndMonthQueryHandlerTests
             .Received(1)
             .Get(
                 Arg.Is<Year>(y => y.Value == getQuery.Year),
-                Arg.Is<Month>(m => m.Value == getQuery.Month)
+                Arg.Is<Month>(m => m.Value == getQuery.Month),
+                Arg.Is<UserId>(u => u.Value == getQuery.UserId)
             );
     }
 
@@ -62,7 +65,8 @@ public sealed class GetByYearAndMonthQueryHandlerTests
         // Arrange
         var getQuery = new GetMonthlyBillingByYearAndMonthQuery(
             2020,
-            1
+            1,
+            Constants.User.Id
         );
 
         var getAction = () => _handler.HandleAsync(
@@ -93,10 +97,10 @@ public sealed class GetByYearAndMonthQueryHandlerTests
 
         result
             .Should()
-            .BeEquivalentTo(ExpectedMonthlyBillingDTO2());
+            .BeEquivalentTo(ExpectedMonthlyBillingDTO());
     }
 
-    private MonthlyBillingDTO ExpectedMonthlyBillingDTO2()
+    private MonthlyBillingDTO ExpectedMonthlyBillingDTO()
         => new MonthlyBillingDTO()
         {
             Id = Constants.MonthlyBilling.Id,

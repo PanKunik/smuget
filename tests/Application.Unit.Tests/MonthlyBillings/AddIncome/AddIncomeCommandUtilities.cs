@@ -11,6 +11,7 @@ public static class AddIncomeCommandUtilities
             Constants.Income.Name,
             Constants.Income.Amount,
             Constants.Income.Currency,
-            Constants.Income.Include
+            Constants.Income.Include,
+            Constants.User.Id
         );
 }
