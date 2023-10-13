@@ -47,9 +47,7 @@ public sealed class MonthlyBillingTests
                 new Month(3),
                 new Currency("PLN"),
                 State.Open,
-                Constants.User.Id,
-                null,
-                null
+                Constants.User.Id
             );
 
         // Act & Assert
@@ -67,9 +65,7 @@ public sealed class MonthlyBillingTests
                 null,
                 new Currency("PLN"),
                 State.Open,
-                Constants.User.Id,
-                null,
-                null
+                Constants.User.Id
             );
 
         // Act & Assert
@@ -87,8 +83,6 @@ public sealed class MonthlyBillingTests
                 new Month(3),
                 new Currency("PLN"),
                 State.Open,
-                null,
-                null,
                 null
             );
 
@@ -107,9 +101,7 @@ public sealed class MonthlyBillingTests
                 new Month(3),
                 null,
                 State.Open,
-                Constants.User.Id,
-                null,
-                null
+                Constants.User.Id
             );
 
         // Act & Assert
@@ -502,9 +494,7 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
-            Constants.User.Id,
-            null,
-            null
+            Constants.User.Id
         );
 
         var plan = new Plan(

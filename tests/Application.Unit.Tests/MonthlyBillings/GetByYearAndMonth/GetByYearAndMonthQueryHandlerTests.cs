@@ -55,7 +55,7 @@ public sealed class GetByYearAndMonthQueryHandlerTests
             .Get(
                 Arg.Is<Year>(y => y.Value == getQuery.Year),
                 Arg.Is<Month>(m => m.Value == getQuery.Month),
-                Arg.Is<UserId>(m => m.Value == getQuery.UserId)
+                Arg.Is<UserId>(u => u.Value == getQuery.UserId)
             );
     }
 

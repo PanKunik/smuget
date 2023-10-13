@@ -46,7 +46,7 @@ public sealed class RemoveIncomeCommandHandlerTests
             .Received(1)
             .GetById(
                 Arg.Is<MonthlyBillingId>(m => m.Value == command.MonthlyBillingId),
-                Arg.Is<UserId>(m => m.Value == command.UserId)
+                Arg.Is<UserId>(u => u.Value == command.UserId)
             );
     }
 

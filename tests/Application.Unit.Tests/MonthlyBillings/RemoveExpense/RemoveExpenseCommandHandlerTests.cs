@@ -45,7 +45,7 @@ public sealed class RemoveExpenseCommandHandlerTests
             .Received(1)
             .GetById(
                 Arg.Is<MonthlyBillingId>(m => m.Value == removeExpense.MonthlyBillingId),
-                Arg.Is<UserId>(m => m.Value == removeExpense.UserId)
+                Arg.Is<UserId>(u => u.Value == removeExpense.UserId)
             );
     }
 

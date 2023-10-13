@@ -46,7 +46,7 @@ public sealed class RemovePlanCommandHandlerTests
             .Received(1)
             .GetById(
                 Arg.Is<MonthlyBillingId>(m => m.Value == removePlan.MonthlyBillingId),
-                Arg.Is<UserId>(m => m.Value == removePlan.UserId)
+                Arg.Is<UserId>(u => u.Value == removePlan.UserId)
             );
     }
 

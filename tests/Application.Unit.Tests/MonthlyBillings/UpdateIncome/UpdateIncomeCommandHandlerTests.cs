@@ -45,7 +45,7 @@ public sealed class UpdateIncomeCommandHandlerTests
             .Received(1)
             .GetById(
                 Arg.Is<MonthlyBillingId>(m => m.Value == updateIncome.MonthlyBillingId),
-                Arg.Is<UserId>(m => m.Value == updateIncome.UserId)
+                Arg.Is<UserId>(u => u.Value == updateIncome.UserId)
             );
     }
 
