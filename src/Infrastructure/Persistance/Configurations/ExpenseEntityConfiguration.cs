@@ -1,4 +1,3 @@
-using Domain.MonthlyBillings;
 using Infrastructure.Persistance.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
