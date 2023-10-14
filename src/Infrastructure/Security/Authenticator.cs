@@ -1,7 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Application.Abstractions.Security;
+using Application.Users;
 using Infrastructure.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -34,7 +36,7 @@ internal sealed class Authenticator : IAuthenticator
         );
     }
 
-    public string CreateToken(Guid userId)
+    public AuthenticationDTO CreateToken(Guid userId)
     {
         var claims = new List<Claim>()
         {
@@ -56,6 +58,11 @@ internal sealed class Authenticator : IAuthenticator
         var token = new JwtSecurityTokenHandler()
             .WriteToken(jwt);
 
-        return token;
+        return new AuthenticationDTO()
+        {
+            AccessToken = token,
+            RefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(128)),
+            Expires = expires
+        };
     }
 }

@@ -1,6 +1,8 @@
+using Application.Users;
+
 namespace Application.Abstractions.Security;
 
 public interface IAuthenticator
 {
-    string CreateToken(Guid userId);
+    AuthenticationDTO CreateToken(Guid userId);
 }
