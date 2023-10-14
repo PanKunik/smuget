@@ -1,6 +1,7 @@
 using Application.Abstractions.CQRS;
 using Application.Abstractions.Security;
 using Application.Exceptions;
+using Domain.RefreshTokens;
 using Domain.Repositories;
 using Domain.Users;
 
@@ -8,22 +9,25 @@ namespace Application.Users.Login;
 
 public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
 {
-    private readonly IUsersRepository _repository;
+    private readonly IUsersRepository _usersRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IAuthenticator _authenticator;
     private readonly ITokenStorage _tokenStorage;
+    private readonly IRefreshTokensRepository _refreshTokensRepository;
 
     public LoginCommandHandler(
         IUsersRepository repository,
         IPasswordHasher passwordHasher,
         IAuthenticator authenticator,
-        ITokenStorage tokenStorage
+        ITokenStorage tokenStorage,
+        IRefreshTokensRepository refreshTokenRepository
     )
     {
-        _repository = repository;
+        _usersRepository = repository;
         _passwordHasher = passwordHasher;
         _authenticator = authenticator;
         _tokenStorage = tokenStorage;
+        _refreshTokensRepository = refreshTokenRepository;
     }
 
     public async Task HandleAsync(
@@ -32,7 +36,7 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
     )
     {
         Email email = new(command.Email);
-        var entity = await _repository.GetByEmail(email)
+        var entity = await _usersRepository.GetByEmail(email)
             ?? throw new InvalidCredentialsException();
 
         if (!_passwordHasher.Validate(command.Password, entity.SecuredPassword))
@@ -41,7 +45,15 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
         }
 
         var token = _authenticator.CreateToken(entity.Id.Value);
+
+        var refreshToken = new RefreshToken(
+            new(Guid.NewGuid()),
+            token.RefreshToken,
+            DateTime.Now.AddHours(2),
+            false,
+            entity.Id
+        );
+        await _refreshTokensRepository.Save(refreshToken);
         _tokenStorage.Store(token);
-        // TODO: Save refresh token in database
     }
 }
