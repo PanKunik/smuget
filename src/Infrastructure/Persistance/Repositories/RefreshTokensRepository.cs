@@ -1,50 +1,38 @@
+using Domain.RefreshTokens;
 using Domain.Repositories;
-using Domain.Users;
 using Infrastructure.Persistance.Entities.Mappings;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistance.Repositories;
 
-internal sealed class UsersRepository : IUsersRepository
+internal sealed class RefreshTokensRepository : IRefreshTokensRepository
 {
     private readonly SmugetDbContext _dbContext;
 
-    public UsersRepository(SmugetDbContext dbContext)
+    public RefreshTokensRepository(SmugetDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public async Task<User?> GetByEmail(Email email)
+    public async Task<RefreshToken?> Get(string token)
     {
-        var entity = await _dbContext.Users
+        var entity = await _dbContext.RefreshTokens
             .AsNoTracking()
             .FirstOrDefaultAsync(
-                u => u.Email == email.Value
+                u => u.Token == token
             );
 
         return entity?
             .ToDomain();
     }
 
-    public async Task<User?> Get(UserId userId)
+    public async Task Save(RefreshToken refreshToken)
     {
-        var entiy = await _dbContext.Users
+        var newEntity = refreshToken.ToEntity();
+        var existingEntity = await _dbContext.RefreshTokens
             .AsNoTracking()
             .FirstOrDefaultAsync(
-                u => u.Id == userId.Value
-            );
-
-        return entiy?
-            .ToDomain();
-    }
-
-    public async Task Save(User user)
-    {
-        var newEntity = user.ToEntity();
-        var existingEntity = await _dbContext.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(
-                u => u.Id == user.Id.Value
+                u => u.Id == refreshToken.Id.Value
             );
 
         if (existingEntity is null)

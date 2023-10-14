@@ -9,6 +9,7 @@ internal static class RepositoryExtensions
     {
         services.AddTransient<IMonthlyBillingsRepository, MonthlyBillingsRepository>();
         services.AddTransient<IUsersRepository, UsersRepository>();
+        services.AddTransient<IRefreshTokensRepository, RefreshTokensRepository>();
 
         return services;
     }
