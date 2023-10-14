@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Application.Abstractions.CQRS;
 using Application.Abstractions.Security;
 using Application.Users.Login;
+using Application.Users.Refresh;
 using Application.Users.Register;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -16,17 +17,20 @@ public sealed class UsersControllerTests
 
     private readonly Mock<ICommandHandler<RegisterCommand>> _mockRegister;
     private readonly Mock<ICommandHandler<LoginCommand>> _mockLogin;
+    private readonly Mock<ICommandHandler<RefreshCommand>> _mockRefresh;
     private readonly Mock<ITokenStorage> _mockTokenStorage;
 
     public UsersControllerTests()
     {
         _mockRegister = new Mock<ICommandHandler<RegisterCommand>>();
         _mockLogin = new Mock<ICommandHandler<LoginCommand>>();
+        _mockRefresh = new Mock<ICommandHandler<RefreshCommand>>();
         _mockTokenStorage = new Mock<ITokenStorage>();
 
         _cut = new UsersController(
             _mockRegister.Object,
             _mockLogin.Object,
+            _mockRefresh.Object,
             _mockTokenStorage.Object
         );
     }
@@ -218,6 +222,53 @@ public sealed class UsersControllerTests
                     ),
                     It.IsAny<CancellationToken>()
                 )
+            );
+    }
+
+    [Fact]
+    public async Task Refresh_OnSuccess_ShouldReturnOkObjectResult()
+    {
+        // Act
+        var result = await _cut.Refresh("EpN8h+GhVmOIPiY3Qdj73NEXDkUifMLTxYBB3DWArjt29VbRsu/4XaQQM/AWgx/aa6B3e1UMVHVpWgNRNQCYPBOVhm2jQMX3TSns8jgt/CoSOfEQNTsF9eVifoKSAVUU9hevr07Yv6SdTqHReoIOPsoNlfqgrwDCmZDOwjw4ABo");
+
+        // Assert
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    public async Task Refresh_OnSuccess_ShouldReturn200OkStatusCode()
+    {
+        // Act
+        var result = (OkObjectResult)await _cut.Refresh("EpN8h+GhVmOIPiY3Qdj73NEXDkUifMLTxYBB3DWArjt29VbRsu/4XaQQM/AWgx/aa6B3e1UMVHVpWgNRNQCYPBOVhm2jQMX3TSns8jgt/CoSOfEQNTsF9eVifoKSAVUU9hevr07Yv6SdTqHReoIOPsoNlfqgrwDCmZDOwjw4ABo");
+
+        // Assert
+        result.StatusCode
+            .Should()
+            .Be(200);
+    }
+
+    [Fact]
+    public async Task Refresh_WhenInvokedWithParameters_ShouldCallRefreshCommandHandlerWithParametersOnce()
+    {
+        // Act
+        await _cut.Refresh("EpN8h+GhVmOIPiY3Qdj73NEXDkUifMLTxYBB3DWArjt29VbRsu/4XaQQM/AWgx/aa6B3e1UMVHVpWgNRNQCYPBOVhm2jQMX3TSns8jgt/CoSOfEQNTsF9eVifoKSAVUU9hevr07Yv6SdTqHReoIOPsoNlfqgrwDCmZDOwjw4ABo");
+
+        // Assert
+        _mockRefresh
+            .Verify(
+                l => l.HandleAsync(
+                    It.Is<RefreshCommand>(
+                        c => c.RefreshToken == "EpN8h+GhVmOIPiY3Qdj73NEXDkUifMLTxYBB3DWArjt29VbRsu/4XaQQM/AWgx/aa6B3e1UMVHVpWgNRNQCYPBOVhm2jQMX3TSns8jgt/CoSOfEQNTsF9eVifoKSAVUU9hevr07Yv6SdTqHReoIOPsoNlfqgrwDCmZDOwjw4ABo"
+                    ),
+                    It.IsAny<CancellationToken>()
+                ),
+                Times.Once
             );
     }
 }
