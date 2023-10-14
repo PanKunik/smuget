@@ -1,4 +1,5 @@
 using Application.Abstractions.Security;
+using Application.Users;
 using Microsoft.AspNetCore.Http;
 
 internal sealed class HttpContextTokenStorage : ITokenStorage
@@ -11,14 +12,19 @@ internal sealed class HttpContextTokenStorage : ITokenStorage
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public void Store(string token)
+    public void Store(AuthenticationDTO token)
         => _httpContextAccessor.HttpContext?.Items.TryAdd(
                 TokenKey,
                 token
             );
 
-    public string Get()
-        => _httpContextAccessor.HttpContext.Items.TryGetValue(
-                TokenKey,
-                out var jwt) ? (string)jwt : null;
+    public AuthenticationDTO Get()
+    {
+        object? token = null;
+        _httpContextAccessor.HttpContext?.Items.TryGetValue(
+            TokenKey,
+            out token
+        );
+        return token as AuthenticationDTO;
+    }
 }

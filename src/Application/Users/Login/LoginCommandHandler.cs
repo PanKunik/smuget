@@ -42,5 +42,6 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
 
         var token = _authenticator.CreateToken(entity.Id.Value);
         _tokenStorage.Store(token);
+        // TODO: Save refresh token in database
     }
 }
