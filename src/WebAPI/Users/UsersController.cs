@@ -1,6 +1,7 @@
 using Application.Abstractions.CQRS;
 using Application.Abstractions.Security;
 using Application.Users.Login;
+using Application.Users.Refresh;
 using Application.Users.Register;
 using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -17,16 +18,19 @@ public sealed class UsersController : ControllerBase
 {
     private readonly ICommandHandler<RegisterCommand> _register;
     private readonly ICommandHandler<LoginCommand> _login;
+    private readonly ICommandHandler<RefreshCommand> _refresh;
     private readonly ITokenStorage _tokenStorage;
 
     public UsersController(
         ICommandHandler<RegisterCommand> register,
         ICommandHandler<LoginCommand> login,
+        ICommandHandler<RefreshCommand> refresh,
         ITokenStorage tokenStorage
     )
     {
         _register = register;
         _login = login;
+        _refresh = refresh;
         _tokenStorage = tokenStorage;
     }
 
@@ -81,7 +85,28 @@ public sealed class UsersController : ControllerBase
         return Ok(_tokenStorage.Get());
     }
 
-    // Refresh token
+    /// <summary>
+    /// Refreshes token generating new access token and refresh token for user.
+    /// </summary>
+    [HttpPost("refresh")]
+    [ProducesResponseType(typeof(NoContentResult), Status200OK)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
+    public async Task<IActionResult> Refresh(
+        [FromBody] string refreshToken,
+        CancellationToken token = default
+    )
+    {
+        await _refresh.HandleAsync(
+            new RefreshCommand(
+                refreshToken
+            ),
+            token
+        );
+
+        return Ok(_tokenStorage.Get());
+    }
+
     // Change password
     // Reset password
 }
