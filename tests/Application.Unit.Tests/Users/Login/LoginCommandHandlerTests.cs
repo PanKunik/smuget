@@ -2,7 +2,9 @@ using Application.Abstractions.Security;
 using Application.Exceptions;
 using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
+using Application.Users;
 using Application.Users.Login;
+using Domain.RefreshTokens;
 using Domain.Repositories;
 using Domain.Users;
 
@@ -12,16 +14,17 @@ public sealed class LoginCommandHandlerTests
 {
     private readonly LoginCommandHandler _cut;
 
-    private readonly IUsersRepository _repository;
+    private readonly IUsersRepository _usersRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IAuthenticator _authenticator;
     private readonly ITokenStorage _tokenStorage;
+    private readonly IRefreshTokensRepository _refreshTokenRepository;
 
     public LoginCommandHandlerTests()
     {
-        _repository = Substitute.For<IUsersRepository>();
+        _usersRepository = Substitute.For<IUsersRepository>();
 
-        _repository
+        _usersRepository
             .GetByEmail(new(Constants.User.Email))
             .Returns(UsersUtilities.CreateUser());
 
@@ -38,15 +41,23 @@ public sealed class LoginCommandHandlerTests
 
         _authenticator
             .CreateToken(Constants.User.Id)
-            .Returns("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
+            .Returns(
+                new AuthenticationDTO()
+                {
+                    AccessToken = Constants.User.AccessToken,
+                    RefreshToken = Constants.User.RefreshToken
+                }
+            );
 
         _tokenStorage = Substitute.For<ITokenStorage>();
+        _refreshTokenRepository = Substitute.For<IRefreshTokensRepository>();
 
         _cut = new LoginCommandHandler(
-            _repository,
+            _usersRepository,
             _passwordHasher,
             _authenticator,
-            _tokenStorage
+            _tokenStorage,
+            _refreshTokenRepository
         );
 
     }
@@ -64,7 +75,7 @@ public sealed class LoginCommandHandlerTests
         );
 
         // Assert
-        await _repository
+        await _usersRepository
             .Received(1)
             .GetByEmail(
                 Arg.Is<Email>(
@@ -151,6 +162,30 @@ public sealed class LoginCommandHandlerTests
     }
 
     [Fact]
+    public async Task HandleAsync_WhenTokenCreatedSuccessfully_ShouldCallSaveOnRefreshTokenRepositoryOnce()
+    {
+        // Arrange
+        var login = LoginCommandUtilities.CreateCommand();
+
+        // Act
+        await _cut.HandleAsync(
+            login,
+            default
+        );
+
+        // Assert
+        await _refreshTokenRepository
+            .Received(1)
+            .Save(
+                Arg.Is<RefreshToken>(
+                    r => r.UserId.Value == Constants.User.Id
+                      && r.Token == Constants.User.RefreshToken
+                      && r.WasUsed == false
+                )
+            );
+    }
+
+    [Fact]
     public async Task HandleAsync_WhenTokenCreatedSuccessfully_ShouldCallStoreOnTokenStorageOnce()
     {
         // Arrange
@@ -166,7 +201,10 @@ public sealed class LoginCommandHandlerTests
         _tokenStorage
             .Received(1)
             .Store(
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                Arg.Is<AuthenticationDTO>(
+                    a => a.AccessToken == Constants.User.AccessToken
+                      && a.RefreshToken == Constants.User.RefreshToken
+                )
             );
     }
 }
