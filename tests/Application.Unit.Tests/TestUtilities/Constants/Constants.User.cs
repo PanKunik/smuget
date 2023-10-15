@@ -10,6 +10,5 @@ public static partial class Constants
         public const string Password = "P@$sw0rd1";
         public const string SecuredPassword = "4a6fafec30def6bfe3ac4e8a538810ff";
         public const string AccessToken = "WTo/eWQn2xu/imQaWx1c/A==";
-        public const string RefreshToken = "3FAn5gJc/RyQ6zPwH/+mFA==";
     }
 }

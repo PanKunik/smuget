@@ -45,7 +45,7 @@ public sealed class LoginCommandHandlerTests
                 new AuthenticationDTO()
                 {
                     AccessToken = Constants.User.AccessToken,
-                    RefreshToken = Constants.User.RefreshToken
+                    RefreshToken = Constants.RefreshToken.Token
                 }
             );
 
@@ -179,7 +179,7 @@ public sealed class LoginCommandHandlerTests
             .Save(
                 Arg.Is<RefreshToken>(
                     r => r.UserId.Value == Constants.User.Id
-                      && r.Token == Constants.User.RefreshToken
+                      && r.Token == Constants.RefreshToken.Token
                       && r.WasUsed == false
                 )
             );
@@ -203,7 +203,7 @@ public sealed class LoginCommandHandlerTests
             .Store(
                 Arg.Is<AuthenticationDTO>(
                     a => a.AccessToken == Constants.User.AccessToken
-                      && a.RefreshToken == Constants.User.RefreshToken
+                      && a.RefreshToken == Constants.RefreshToken.Token
                 )
             );
     }
