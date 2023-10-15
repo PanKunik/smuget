@@ -14,7 +14,8 @@ public sealed class RefreshTokenTests
             Constants.RefreshToken.Id,
             Constants.RefreshToken.Token,
             Constants.RefreshToken.Expires,
-            Constants.RefreshToken.WasUsed
+            Constants.RefreshToken.WasUsed,
+            Constants.User.Id
         );
 
         // Assert
@@ -37,7 +38,8 @@ public sealed class RefreshTokenTests
             null,
             Constants.RefreshToken.Token,
             Constants.RefreshToken.Expires,
-            Constants.RefreshToken.WasUsed
+            Constants.RefreshToken.WasUsed,
+            Constants.User.Id
         );
 
         // Act & Assert
@@ -55,10 +57,27 @@ public sealed class RefreshTokenTests
             Constants.RefreshToken.Id,
             value,
             Constants.RefreshToken.Expires,
-            Constants.RefreshToken.WasUsed
+            Constants.RefreshToken.WasUsed,
+            Constants.User.Id
         );
 
         // Act & Assert
         Assert.Throws<InvalidTokenException>(cut);
+    }
+
+    [Fact]
+    public void RefreshToken_WhenPassedNullUserId_ShouldThrowUserIdIsNullException()
+    {
+        // Arrange
+        var cut = () => new RefreshToken(
+            Constants.RefreshToken.Id,
+            Constants.RefreshToken.Token,
+            Constants.RefreshToken.Expires,
+            Constants.RefreshToken.WasUsed,
+            null
+        );
+
+        // Act & Assert
+        Assert.Throws<UserIdIsNullException>(cut);
     }
 }

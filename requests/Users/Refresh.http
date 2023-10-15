@@ -1,0 +1,7 @@
+# zFxRi8ZRyh4JkBEhLOLN/FdMkPsidl48SAiYRfDD/01ymVfK9Ge2paBYqzLCsj7N1YNA1QmJhrEydzi7tkp/iAuvb+HzTp6gub/PkKkhk4MzpZ5um8FvEANTYuDHyeJZ5tyq6h1o6PymgCI03y/hGkonBLGGg74QyxJmQ3TUzzU=
+@host = https://localhost:7188
+
+POST {{host}}/api/users/refresh
+Content-Type: application/json
+
+"zFxRi8ZRyh4JkBEhLOLN/FdMkPsidl48SAiYRfDD/01ymVfK9Ge2paBYqzLCsj7N1YNA1QmJhrEydzi7tkp/iAuvb+HzTp6gub/PkKkhk4MzpZ5um8FvEANTYuDHyeJZ5tyq6h1o6PymgCI03y/hGkonBLGGg74QyxJmQ3TUzzU="
