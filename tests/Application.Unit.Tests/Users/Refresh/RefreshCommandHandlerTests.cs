@@ -23,7 +23,7 @@ public sealed class RefreshCommandHandlerTests
         _refreshTokensRepository = Substitute.For<IRefreshTokensRepository>();
 
         _refreshTokensRepository
-            .Get(Constants.User.RefreshToken)
+            .Get(Constants.RefreshToken.Token)
             .Returns(RefreshTokensUtilities.CreateRefreshToken());
 
         _refreshTokensRepository
@@ -52,7 +52,7 @@ public sealed class RefreshCommandHandlerTests
                 new AuthenticationDTO()
                 {
                     AccessToken = Constants.User.AccessToken,
-                    RefreshToken = Constants.User.RefreshToken
+                    RefreshToken = Constants.RefreshToken.Token
                 }
             );
 
@@ -81,7 +81,7 @@ public sealed class RefreshCommandHandlerTests
         // Assert
         await _refreshTokensRepository
             .Received(1)
-            .Get(Arg.Is<string>(a => a == Constants.User.RefreshToken));
+            .Get(Arg.Is<string>(a => a == Constants.RefreshToken.Token));
     }
 
     [Fact]
@@ -190,7 +190,7 @@ public sealed class RefreshCommandHandlerTests
             .Save(
                 Arg.Is<RefreshToken>(
                     r => r.UserId.Value == Constants.User.Id
-                      && r.Token == Constants.User.RefreshToken
+                      && r.Token == Constants.RefreshToken.Token
                       && r.WasUsed == false
                 )
             );
@@ -214,7 +214,7 @@ public sealed class RefreshCommandHandlerTests
             .Store(
                 Arg.Is<AuthenticationDTO>(
                     a => a.AccessToken == Constants.User.AccessToken
-                      && a.RefreshToken == Constants.User.RefreshToken
+                      && a.RefreshToken == Constants.RefreshToken.Token
                 )
             );
     }

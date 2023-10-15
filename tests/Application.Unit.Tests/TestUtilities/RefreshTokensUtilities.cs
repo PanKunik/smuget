@@ -36,7 +36,7 @@ public static class RefreshTokensUtilities
             new(Constants.Constants.RefreshToken.Id),
             Constants.Constants.RefreshToken.Token,
             Constants.Constants.RefreshToken.Expires,
-            true,
+            Constants.Constants.RefreshToken.WasUsed,
             new(new Guid(21, 12, 5, new byte[] { 0, 9, 1, 3, 2, 5, 32, 22 }))
         );
 }

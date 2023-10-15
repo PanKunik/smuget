@@ -7,6 +7,6 @@ public static class RefreshCommandUtilities
 {
     public static RefreshCommand CreateCommand()
         => new(
-            Constants.User.RefreshToken
+            Constants.RefreshToken.Token
         );
 }
