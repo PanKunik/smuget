@@ -8,7 +8,7 @@ public sealed class RefreshToken
     public RefreshTokenId Id { get; }
     public string Token { get; }
     public DateTime Expires { get; }
-    public bool WasUsed { get; }
+    public bool WasUsed { get; private set; }
     public UserId UserId { get; }
 
     public RefreshToken(
@@ -29,6 +29,9 @@ public sealed class RefreshToken
         WasUsed = wasUsed;
         UserId = userId;
     }
+
+    public void Use()
+        => WasUsed = true;
 
     private void ThrowIfRefreshTokenIdIsNull(RefreshTokenId refreshTokenId)
     {

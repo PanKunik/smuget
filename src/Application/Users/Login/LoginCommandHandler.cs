@@ -49,7 +49,7 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
         var refreshToken = new RefreshToken(
             new(Guid.NewGuid()),
             token.RefreshToken,
-            DateTime.Now.AddHours(2),
+            DateTime.UtcNow.AddHours(2),
             false,
             entity.Id
         );
