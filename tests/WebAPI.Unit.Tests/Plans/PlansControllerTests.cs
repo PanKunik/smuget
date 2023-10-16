@@ -6,7 +6,7 @@ using Application.MonthlyBillings.AddPlan;
 using Application.MonthlyBillings.RemovePlan;
 using Application.MonthlyBillings.UpdatePlan;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
+using NSubstitute;
 using WebAPI.Plans;
 using WebAPI.Services.Users;
 
@@ -16,27 +16,27 @@ public sealed class PlansControllerTests
 {
     private readonly PlansController _cut;
 
-    private readonly Mock<ICommandHandler<AddPlanCommand>> _mockAddPlanCommandHandler;
-    private readonly Mock<ICommandHandler<RemovePlanCommand>> _mockRemovePlanCommandHandler;
-    private readonly Mock<ICommandHandler<UpdatePlanCommand>> _mockUpdatePlanCommandHandler;
-    private readonly Mock<IUserService> _mockUserService;
+    private readonly ICommandHandler<AddPlanCommand> _mockAddPlanCommandHandler;
+    private readonly ICommandHandler<RemovePlanCommand> _mockRemovePlanCommandHandler;
+    private readonly ICommandHandler<UpdatePlanCommand> _mockUpdatePlanCommandHandler;
+    private readonly IUserService _mockUserService;
 
     public PlansControllerTests()
     {
-        _mockAddPlanCommandHandler = new Mock<ICommandHandler<AddPlanCommand>>();
-        _mockRemovePlanCommandHandler = new Mock<ICommandHandler<RemovePlanCommand>>();
-        _mockUpdatePlanCommandHandler = new Mock<ICommandHandler<UpdatePlanCommand>>();
-        _mockUserService = new Mock<IUserService>();
+        _mockAddPlanCommandHandler = Substitute.For<ICommandHandler<AddPlanCommand>>();
+        _mockRemovePlanCommandHandler = Substitute.For<ICommandHandler<RemovePlanCommand>>();
+        _mockUpdatePlanCommandHandler = Substitute.For<ICommandHandler<UpdatePlanCommand>>();
+        _mockUserService = Substitute.For<IUserService>();
 
         _mockUserService
-            .Setup(m => m.UserId)
+            .UserId
             .Returns(Guid.NewGuid());
 
         _cut = new PlansController(
-            _mockAddPlanCommandHandler.Object,
-            _mockUpdatePlanCommandHandler.Object,
-            _mockRemovePlanCommandHandler.Object,
-            _mockUserService.Object
+            _mockAddPlanCommandHandler,
+            _mockUpdatePlanCommandHandler,
+            _mockRemovePlanCommandHandler,
+            _mockUserService
         );
     }
 
@@ -101,10 +101,12 @@ public sealed class PlansControllerTests
         );
 
         // Assert
-        _mockAddPlanCommandHandler.Verify(m => m.HandleAsync(
-            It.IsAny<AddPlanCommand>(),
-            default), Times.Once
-        );
+        await _mockAddPlanCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<AddPlanCommand>(),
+                Arg.Any<CancellationToken>()
+            );
     }
 
     [Fact]
@@ -125,16 +127,17 @@ public sealed class PlansControllerTests
         );
 
         // Assert
-        _mockAddPlanCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.Is<AddPlanCommand>(
+        await _mockAddPlanCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Is<AddPlanCommand>(
                     c => c.Category == "Fuel"
-                    && c.MoneyAmount == 87.96M
-                    && c.Currency == "PLN"
-                    && c.SortOrder == 5
+                      && c.MoneyAmount == 87.96M
+                      && c.Currency == "PLN"
+                      && c.SortOrder == 5
                 ),
-                default
-            ), Times.Once);
+                Arg.Any<CancellationToken>()
+            );
     }
 
     [Fact]
@@ -199,11 +202,12 @@ public sealed class PlansControllerTests
         );
 
         // Assert
-        _mockUpdatePlanCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<UpdatePlanCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        await _mockUpdatePlanCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<UpdatePlanCommand>(),
+                Arg.Any<CancellationToken>()
+            );
     }
 
     [Fact]
@@ -250,11 +254,12 @@ public sealed class PlansControllerTests
         );
 
         // Assert
-        _mockRemovePlanCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<RemovePlanCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        await _mockRemovePlanCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<RemovePlanCommand>(),
+                Arg.Any<CancellationToken>()
+            );
     }
 
 }

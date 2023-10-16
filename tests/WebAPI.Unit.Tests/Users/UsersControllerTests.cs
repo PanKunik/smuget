@@ -6,7 +6,7 @@ using Application.Users.Login;
 using Application.Users.Refresh;
 using Application.Users.Register;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
+using NSubstitute;
 using WebAPI.Users;
 
 namespace WebAPI.Unit.Tests.Users;
@@ -15,23 +15,23 @@ public sealed class UsersControllerTests
 {
     private readonly UsersController _cut;
 
-    private readonly Mock<ICommandHandler<RegisterCommand>> _mockRegister;
-    private readonly Mock<ICommandHandler<LoginCommand>> _mockLogin;
-    private readonly Mock<ICommandHandler<RefreshCommand>> _mockRefresh;
-    private readonly Mock<ITokenStorage> _mockTokenStorage;
+    private readonly ICommandHandler<RegisterCommand> _mockRegister;
+    private readonly ICommandHandler<LoginCommand> _mockLogin;
+    private readonly ICommandHandler<RefreshCommand> _mockRefresh;
+    private readonly ITokenStorage _mockTokenStorage;
 
     public UsersControllerTests()
     {
-        _mockRegister = new Mock<ICommandHandler<RegisterCommand>>();
-        _mockLogin = new Mock<ICommandHandler<LoginCommand>>();
-        _mockRefresh = new Mock<ICommandHandler<RefreshCommand>>();
-        _mockTokenStorage = new Mock<ITokenStorage>();
+        _mockRegister = Substitute.For<ICommandHandler<RegisterCommand>>();
+        _mockLogin = Substitute.For<ICommandHandler<LoginCommand>>();
+        _mockRefresh = Substitute.For<ICommandHandler<RefreshCommand>>();
+        _mockTokenStorage = Substitute.For<ITokenStorage>();
 
         _cut = new UsersController(
-            _mockRegister.Object,
-            _mockLogin.Object,
-            _mockRefresh.Object,
-            _mockTokenStorage.Object
+            _mockRegister,
+            _mockLogin,
+            _mockRefresh,
+            _mockTokenStorage
         );
     }
 
@@ -95,12 +95,12 @@ public sealed class UsersControllerTests
         await _cut.Register(registerRequest);
 
         // Assert
-        _mockRegister
-            .Verify(r => r.HandleAsync(
-                It.IsAny<RegisterCommand>(),
-                It.IsAny<CancellationToken>()
-            ),
-            Times.Once);
+        await _mockRegister
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<RegisterCommand>(),
+                Arg.Any<CancellationToken>()
+            );
     }
 
     [Theory]
@@ -123,17 +123,15 @@ public sealed class UsersControllerTests
         await _cut.Register(registerRequest);
 
         // Assert
-        _mockRegister
-            .Verify(
-                r => r.HandleAsync(
-                    It.Is<RegisterCommand>(
-                        c => c.Email == emailValue
-                          && c.FirstName == firstNameValue
-                          && c.Password == passwordValue
-                    ),
-                    It.IsAny<CancellationToken>()
+        await _mockRegister
+            .Received(1)
+            .HandleAsync(
+                Arg.Is<RegisterCommand>(
+                    c => c.Email == emailValue
+                      && c.FirstName == firstNameValue
+                      && c.Password == passwordValue
                 ),
-                Times.Once
+                Arg.Any<CancellationToken>()
             );
     }
 
@@ -190,13 +188,11 @@ public sealed class UsersControllerTests
         await _cut.Login(request);
 
         // Assert
-        _mockLogin
-            .Verify(
-                l => l.HandleAsync(
-                    It.IsAny<LoginCommand>(),
-                    It.IsAny<CancellationToken>()
-                ),
-                Times.Once
+        await _mockLogin
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<LoginCommand>(),
+                Arg.Any<CancellationToken>()
             );
     }
 
@@ -213,15 +209,14 @@ public sealed class UsersControllerTests
         await _cut.Login(request);
 
         // Assert
-        _mockLogin
-            .Verify(
-                l => l.HandleAsync(
-                    It.Is<LoginCommand>(
-                        c => c.Email == request.Email
-                          && c.Password == request.Password
-                    ),
-                    It.IsAny<CancellationToken>()
-                )
+        await _mockLogin
+            .Received(1)
+            .HandleAsync(
+                Arg.Is<LoginCommand>(
+                    c => c.Email == request.Email
+                      && c.Password == request.Password
+                ),
+                Arg.Any<CancellationToken>()
             );
     }
 
@@ -260,15 +255,13 @@ public sealed class UsersControllerTests
         await _cut.Refresh("EpN8h+GhVmOIPiY3Qdj73NEXDkUifMLTxYBB3DWArjt29VbRsu/4XaQQM/AWgx/aa6B3e1UMVHVpWgNRNQCYPBOVhm2jQMX3TSns8jgt/CoSOfEQNTsF9eVifoKSAVUU9hevr07Yv6SdTqHReoIOPsoNlfqgrwDCmZDOwjw4ABo");
 
         // Assert
-        _mockRefresh
-            .Verify(
-                l => l.HandleAsync(
-                    It.Is<RefreshCommand>(
-                        c => c.RefreshToken == "EpN8h+GhVmOIPiY3Qdj73NEXDkUifMLTxYBB3DWArjt29VbRsu/4XaQQM/AWgx/aa6B3e1UMVHVpWgNRNQCYPBOVhm2jQMX3TSns8jgt/CoSOfEQNTsF9eVifoKSAVUU9hevr07Yv6SdTqHReoIOPsoNlfqgrwDCmZDOwjw4ABo"
-                    ),
-                    It.IsAny<CancellationToken>()
+        await _mockRefresh
+            .Received(1)
+            .HandleAsync(
+                Arg.Is<RefreshCommand>(
+                    c => c.RefreshToken == "EpN8h+GhVmOIPiY3Qdj73NEXDkUifMLTxYBB3DWArjt29VbRsu/4XaQQM/AWgx/aa6B3e1UMVHVpWgNRNQCYPBOVhm2jQMX3TSns8jgt/CoSOfEQNTsF9eVifoKSAVUU9hevr07Yv6SdTqHReoIOPsoNlfqgrwDCmZDOwjw4ABo"
                 ),
-                Times.Once
+                Arg.Any<CancellationToken>()
             );
     }
 }

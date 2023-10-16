@@ -7,10 +7,10 @@ using Application.MonthlyBillings.ReopenMonthlyBilling;
 using Application.MonthlyBillings;
 using Application.MonthlyBillings.GetByYearAndMonth;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
 using WebAPI.MonthlyBillings;
 using System;
 using WebAPI.Services.Users;
+using NSubstitute;
 
 namespace WebAPI.Unit.Tests.MonthlyBillings;
 
@@ -18,40 +18,40 @@ public sealed class MonthlyBillingsControllerTests
 {
     private readonly MonthlyBillingsController _cut;
 
-    private readonly Mock<ICommandHandler<OpenMonthlyBillingCommand>> _mockOpenMonthlyBillingCommandHandler;
-    private readonly Mock<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>> _mockGetMonthlyBillingQueryHandler;
-    private readonly Mock<ICommandHandler<CloseMonthlyBillingCommand>> _mockCloseMonthlyBillingCommandHandler;
-    private readonly Mock<ICommandHandler<ReopenMonthlyBillingCommand>> _mockReopenMonthlyBillingCommandHandler;
-    private readonly Mock<IUserService> _mockUserService;
+    private readonly ICommandHandler<OpenMonthlyBillingCommand> _mockOpenMonthlyBillingCommandHandler;
+    private readonly IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO> _mockGetMonthlyBillingQueryHandler;
+    private readonly ICommandHandler<CloseMonthlyBillingCommand> _mockCloseMonthlyBillingCommandHandler;
+    private readonly ICommandHandler<ReopenMonthlyBillingCommand> _mockReopenMonthlyBillingCommandHandler;
+    private readonly IUserService _mockUserService;
 
     public MonthlyBillingsControllerTests()
     {
-        _mockOpenMonthlyBillingCommandHandler = new Mock<ICommandHandler<OpenMonthlyBillingCommand>>();
-        _mockGetMonthlyBillingQueryHandler = new Mock<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>>();
-        _mockCloseMonthlyBillingCommandHandler = new Mock<ICommandHandler<CloseMonthlyBillingCommand>>();
-        _mockReopenMonthlyBillingCommandHandler = new Mock<ICommandHandler<ReopenMonthlyBillingCommand>>();
-        _mockUserService = new Mock<IUserService>();
+        _mockOpenMonthlyBillingCommandHandler = Substitute.For<ICommandHandler<OpenMonthlyBillingCommand>>();
+        _mockGetMonthlyBillingQueryHandler = Substitute.For<IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO>>();
+        _mockCloseMonthlyBillingCommandHandler = Substitute.For<ICommandHandler<CloseMonthlyBillingCommand>>();
+        _mockReopenMonthlyBillingCommandHandler = Substitute.For<ICommandHandler<ReopenMonthlyBillingCommand>>();
+        _mockUserService = Substitute.For<IUserService>();
 
         _mockUserService
-            .Setup(m => m.UserId)
+            .UserId
             .Returns(Guid.NewGuid());
 
         _mockGetMonthlyBillingQueryHandler
-            .Setup(m => m.HandleAsync(
-                It.Is<GetMonthlyBillingByYearAndMonthQuery>(
+            .HandleAsync(
+                Arg.Is<GetMonthlyBillingByYearAndMonthQuery>(
                     g => g.Year == 2023
-                    && g.Month == 1
+                      && g.Month == 1
                 ),
-                It.IsAny<CancellationToken>()
-            ))
-            .ReturnsAsync(new MonthlyBillingDTO());
+                Arg.Any<CancellationToken>()
+            )
+            .Returns(new MonthlyBillingDTO());
 
         _cut = new MonthlyBillingsController(
-            _mockOpenMonthlyBillingCommandHandler.Object,
-            _mockGetMonthlyBillingQueryHandler.Object,
-            _mockCloseMonthlyBillingCommandHandler.Object,
-            _mockReopenMonthlyBillingCommandHandler.Object,
-            _mockUserService.Object
+            _mockOpenMonthlyBillingCommandHandler,
+            _mockGetMonthlyBillingQueryHandler,
+            _mockCloseMonthlyBillingCommandHandler,
+            _mockReopenMonthlyBillingCommandHandler,
+            _mockUserService
         );
     }
 
@@ -90,11 +90,12 @@ public sealed class MonthlyBillingsControllerTests
         await _cut.Open(new(2020, 1, "PLN"));
 
         // Assert
-        _mockOpenMonthlyBillingCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<OpenMonthlyBillingCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        await _mockOpenMonthlyBillingCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<OpenMonthlyBillingCommand>(),
+                Arg.Any<CancellationToken>()
+            );
     }
 
     [Theory]
@@ -114,13 +115,15 @@ public sealed class MonthlyBillingsControllerTests
         await _cut.Open(new(year, month, currency));
 
         // Assert
-        _mockOpenMonthlyBillingCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.Is<OpenMonthlyBillingCommand>(
+        await _mockOpenMonthlyBillingCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Is<OpenMonthlyBillingCommand>(
                     c => c.Year == year
-                      && c.Month == month),
-                token),
-            Times.Once);
+                      && c.Month == month
+                    ),
+                token
+            );
     }
 
     [Fact]
@@ -161,16 +164,15 @@ public sealed class MonthlyBillingsControllerTests
         await _cut.Get(year, month);
 
         // Assert
-        _mockGetMonthlyBillingQueryHandler.Verify(
-            m => m.HandleAsync(
-                It.Is<GetMonthlyBillingByYearAndMonthQuery>(
+        await _mockGetMonthlyBillingQueryHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Is<GetMonthlyBillingByYearAndMonthQuery>(
                     g => g.Year == year
-                    && g.Month == month
+                      && g.Month == month
                 ),
-                It.IsAny<CancellationToken>()
-            ),
-            Times.Once()
-        );
+                Arg.Any<CancellationToken>()
+            );
     }
 
     [Fact]
@@ -224,11 +226,12 @@ public sealed class MonthlyBillingsControllerTests
         await _cut.Close(2020, 1);
 
         // Assert
-        _mockCloseMonthlyBillingCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<CloseMonthlyBillingCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        await _mockCloseMonthlyBillingCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<CloseMonthlyBillingCommand>(),
+                Arg.Any<CancellationToken>()
+            );
     }
 
     [Theory]
@@ -247,13 +250,14 @@ public sealed class MonthlyBillingsControllerTests
         await _cut.Close(year, month);
 
         // Assert
-        _mockCloseMonthlyBillingCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.Is<CloseMonthlyBillingCommand>(
+        await _mockCloseMonthlyBillingCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Is<CloseMonthlyBillingCommand>(
                     c => c.Year == year
-                      && c.Month == month),
-                token),
-            Times.Once);
+                      && c.Month == month
+                )
+            );
     }
 
     [Fact]
@@ -291,11 +295,12 @@ public sealed class MonthlyBillingsControllerTests
         await _cut.Reopen(2020, 1);
 
         // Assert
-        _mockReopenMonthlyBillingCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<ReopenMonthlyBillingCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        await _mockReopenMonthlyBillingCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<ReopenMonthlyBillingCommand>(),
+                Arg.Any<CancellationToken>()
+            );
     }
 
     [Theory]
@@ -314,12 +319,13 @@ public sealed class MonthlyBillingsControllerTests
         await _cut.Reopen(year, month);
 
         // Assert
-        _mockReopenMonthlyBillingCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.Is<ReopenMonthlyBillingCommand>(
+        await _mockReopenMonthlyBillingCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Is<ReopenMonthlyBillingCommand>(
                     c => c.Year == year
-                      && c.Month == month),
-                token),
-            Times.Once);
+                      && c.Month == month
+                )
+            );
     }
 }

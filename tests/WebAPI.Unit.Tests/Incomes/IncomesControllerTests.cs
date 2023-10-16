@@ -6,7 +6,7 @@ using Application.MonthlyBillings.AddIncome;
 using Application.MonthlyBillings.RemoveIncome;
 using Application.MonthlyBillings.UpdateIncome;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
+using NSubstitute;
 using WebAPI.Incomes;
 using WebAPI.Services.Users;
 
@@ -16,27 +16,27 @@ public sealed class IncomesControllerTests
 {
     private readonly IncomesController _cut;
 
-    private readonly Mock<ICommandHandler<AddIncomeCommand>> _mockAddIncomeCommandHandler;
-    private readonly Mock<ICommandHandler<UpdateIncomeCommand>> _mockUpdateIncomeCommandHandler;
-    private readonly Mock<ICommandHandler<RemoveIncomeCommand>> _mockRemoveIncomeCommandHandler;
-    private readonly Mock<IUserService> _mockUserService;
+    private readonly ICommandHandler<AddIncomeCommand> _mockAddIncomeCommandHandler;
+    private readonly ICommandHandler<UpdateIncomeCommand> _mockUpdateIncomeCommandHandler;
+    private readonly ICommandHandler<RemoveIncomeCommand> _mockRemoveIncomeCommandHandler;
+    private readonly IUserService _mockUserService;
 
     public IncomesControllerTests()
     {
-        _mockAddIncomeCommandHandler = new Mock<ICommandHandler<AddIncomeCommand>>();
-        _mockUpdateIncomeCommandHandler = new Mock<ICommandHandler<UpdateIncomeCommand>>();
-        _mockRemoveIncomeCommandHandler = new Mock<ICommandHandler<RemoveIncomeCommand>>();
-        _mockUserService = new Mock<IUserService>();
+        _mockAddIncomeCommandHandler = Substitute.For<ICommandHandler<AddIncomeCommand>>();
+        _mockUpdateIncomeCommandHandler = Substitute.For<ICommandHandler<UpdateIncomeCommand>>();
+        _mockRemoveIncomeCommandHandler = Substitute.For<ICommandHandler<RemoveIncomeCommand>>();
+        _mockUserService = Substitute.For<IUserService>();
 
         _mockUserService
-            .Setup(m => m.UserId)
+            .UserId
             .Returns(Guid.NewGuid());
 
         _cut = new IncomesController(
-            _mockAddIncomeCommandHandler.Object,
-            _mockUpdateIncomeCommandHandler.Object,
-            _mockRemoveIncomeCommandHandler.Object,
-            _mockUserService.Object
+            _mockAddIncomeCommandHandler,
+            _mockUpdateIncomeCommandHandler,
+            _mockRemoveIncomeCommandHandler,
+            _mockUserService
         );
     }
 
@@ -95,12 +95,12 @@ public sealed class IncomesControllerTests
         await _cut.AddIncome(Guid.NewGuid(), request);
 
         // Assert
-        _mockAddIncomeCommandHandler.Verify(
-            a => a.HandleAsync(
-                It.IsAny<AddIncomeCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once
-        );
+        await _mockAddIncomeCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<AddIncomeCommand>(),
+                Arg.Any<CancellationToken>()
+            );
     }
 
     [Theory]
@@ -112,28 +112,29 @@ public sealed class IncomesControllerTests
             name,
             amount,
             currency,
-            include);
-
-        var token = new CancellationToken();
+            include
+        );
 
         // Act
         await _cut.AddIncome(
             monthlyBillingId,
             request,
-            token);
+            default
+        );
 
         // Assert
-        _mockAddIncomeCommandHandler.Verify(
-            a => a.HandleAsync(
-                It.Is<AddIncomeCommand>(
+        await _mockAddIncomeCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Is<AddIncomeCommand>(
                     a => a.MonthlyBillingId == monthlyBillingId
-                    && a.Name == name
-                    && a.Amount == amount
-                    && a.Currency == currency
-                    && a.Include == include
+                      && a.Name == name
+                      && a.Amount == amount
+                      && a.Currency == currency
+                      && a.Include == include
                 ),
-                token),
-            Times.Once);
+                Arg.Any<CancellationToken>()
+            );
     }
 
     [Fact]
@@ -198,11 +199,12 @@ public sealed class IncomesControllerTests
         );
 
         // Assert
-        _mockUpdateIncomeCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<UpdateIncomeCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        await _mockUpdateIncomeCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<UpdateIncomeCommand>(),
+                Arg.Any<CancellationToken>()
+            );
     }
 
     [Fact]
@@ -249,10 +251,11 @@ public sealed class IncomesControllerTests
         );
 
         // Assert
-        _mockRemoveIncomeCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<RemoveIncomeCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        await _mockRemoveIncomeCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<RemoveIncomeCommand>(),
+                Arg.Any<CancellationToken>()
+            );
     }
 }

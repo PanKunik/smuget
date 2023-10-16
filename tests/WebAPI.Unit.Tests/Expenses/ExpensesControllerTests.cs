@@ -6,7 +6,7 @@ using Application.MonthlyBillings.AddExpense;
 using Application.MonthlyBillings.RemoveExpense;
 using Application.MonthlyBillings.UpdateExpense;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
+using NSubstitute;
 using WebAPI.Expenses;
 using WebAPI.Services.Users;
 
@@ -16,27 +16,27 @@ public sealed class ExpensesControllerTests
 {
     private readonly ExpensesController _cut;
 
-    private readonly Mock<ICommandHandler<AddExpenseCommand>> _mockAddExpenseCommandHandler;
-    private readonly Mock<ICommandHandler<UpdateExpenseCommand>> _mockUpdateExpenseCommandHandler;
-    private readonly Mock<ICommandHandler<RemoveExpenseCommand>> _mockRemoveExpenseCommandHandler;
-    private readonly Mock<IUserService> _mockUserService;
+    private readonly ICommandHandler<AddExpenseCommand> _mockAddExpenseCommandHandler;
+    private readonly ICommandHandler<UpdateExpenseCommand> _mockUpdateExpenseCommandHandler;
+    private readonly ICommandHandler<RemoveExpenseCommand> _mockRemoveExpenseCommandHandler;
+    private readonly IUserService _mockUserService;
 
     public ExpensesControllerTests()
     {
-        _mockAddExpenseCommandHandler = new Mock<ICommandHandler<AddExpenseCommand>>();
-        _mockUpdateExpenseCommandHandler = new Mock<ICommandHandler<UpdateExpenseCommand>>();
-        _mockRemoveExpenseCommandHandler = new Mock<ICommandHandler<RemoveExpenseCommand>>();
-        _mockUserService = new Mock<IUserService>();
+        _mockAddExpenseCommandHandler = Substitute.For<ICommandHandler<AddExpenseCommand>>();
+        _mockUpdateExpenseCommandHandler = Substitute.For<ICommandHandler<UpdateExpenseCommand>>();
+        _mockRemoveExpenseCommandHandler = Substitute.For<ICommandHandler<RemoveExpenseCommand>>();
+        _mockUserService = Substitute.For<IUserService>();
 
         _mockUserService
-            .Setup(m => m.UserId)
+            .UserId
             .Returns(Guid.NewGuid());
 
         _cut = new ExpensesController(
-            _mockAddExpenseCommandHandler.Object,
-            _mockRemoveExpenseCommandHandler.Object,
-            _mockUpdateExpenseCommandHandler.Object,
-            _mockUserService.Object
+            _mockAddExpenseCommandHandler,
+            _mockRemoveExpenseCommandHandler,
+            _mockUpdateExpenseCommandHandler,
+            _mockUserService
         );
     }
 
@@ -111,12 +111,12 @@ public sealed class ExpensesControllerTests
         );
 
         // Assert
-        _mockAddExpenseCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<AddExpenseCommand>(),
-                It.IsAny<CancellationToken>()
-            ),
-            Times.Once());
+        await _mockAddExpenseCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<AddExpenseCommand>(),
+                Arg.Any<CancellationToken>()
+            );
     }
 
     [Fact]
@@ -141,19 +141,19 @@ public sealed class ExpensesControllerTests
         );
 
         // Assert
-        _mockAddExpenseCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.Is<AddExpenseCommand>(
+        await _mockAddExpenseCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Is<AddExpenseCommand>(
                     c => c.MonthlyBillingId == monthlyBillingId
-                    && c.PlanId == planId
-                    && c.Money == 125.04M
-                    && c.Currency == "PLN"
-                    && c.ExpenseDate == new DateTimeOffset(new DateTime(2023, 5, 1))
-                    && c.Description == "TEST"
+                      && c.PlanId == planId
+                      && c.Money == 125.04M
+                      && c.Currency == "PLN"
+                      && c.ExpenseDate == new DateTimeOffset(new DateTime(2023, 5, 1))
+                      && c.Description == "TEST"
                 ),
-                It.IsAny<CancellationToken>()
-            ),
-            Times.Once());
+                Arg.Any<CancellationToken>()
+            );
     }
 
     [Fact]
@@ -221,11 +221,12 @@ public sealed class ExpensesControllerTests
         );
 
         // Assert
-        _mockUpdateExpenseCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<UpdateExpenseCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        await _mockUpdateExpenseCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<UpdateExpenseCommand>(),
+                Arg.Any<CancellationToken>()
+            );
     }
 
     [Fact]
@@ -275,10 +276,11 @@ public sealed class ExpensesControllerTests
         );
 
         // Assert
-        _mockRemoveExpenseCommandHandler.Verify(
-            m => m.HandleAsync(
-                It.IsAny<RemoveExpenseCommand>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        await _mockRemoveExpenseCommandHandler
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<RemoveExpenseCommand>(),
+                Arg.Any<CancellationToken>()
+            );
     }
 }
