@@ -1,6 +1,6 @@
 @host = https://localhost:7188
 
-POST {{host}}/api/users/register
+POST {{host}}/api/identity/register
 Content-Type: application/json
 
 {

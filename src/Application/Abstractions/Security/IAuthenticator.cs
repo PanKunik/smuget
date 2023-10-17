@@ -1,4 +1,4 @@
-using Application.Users;
+using Application.Identity;
 
 namespace Application.Abstractions.Security;
 

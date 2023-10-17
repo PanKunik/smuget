@@ -1,6 +1,6 @@
 using Application.Abstractions.CQRS;
 
-namespace Application.Users.Register;
+namespace Application.Identity.Register;
 
 public sealed record RegisterCommand(
     string Email,

@@ -2,12 +2,12 @@ using Application.Abstractions.Security;
 using Application.Exceptions;
 using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
-using Application.Users;
-using Application.Users.Refresh;
+using Application.Identity;
+using Application.Identity.Refresh;
 using Domain.RefreshTokens;
 using Domain.Repositories;
 
-namespace Application.Unit.Tests.Users.Refresh;
+namespace Application.Unit.Tests.Identity.Refresh;
 
 public sealed class RefreshCommandHandlerTests
 {

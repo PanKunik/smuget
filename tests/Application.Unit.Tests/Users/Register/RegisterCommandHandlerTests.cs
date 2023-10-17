@@ -2,11 +2,11 @@ using Application.Abstractions.Security;
 using Application.Exceptions;
 using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
-using Application.Users.Register;
+using Application.Identity.Register;
 using Domain.Repositories;
 using Domain.Users;
 
-namespace Application.Unit.Tests.Users.Register;
+namespace Application.Unit.Tests.Identity.Register;
 
 public sealed class RegisterCommandHandlerTests
 {

@@ -2,13 +2,13 @@ using Application.Abstractions.Security;
 using Application.Exceptions;
 using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
-using Application.Users;
-using Application.Users.Login;
+using Application.Identity;
+using Application.Identity.Login;
 using Domain.RefreshTokens;
 using Domain.Repositories;
 using Domain.Users;
 
-namespace Application.Unit.Tests.Users.Login;
+namespace Application.Unit.Tests.Identity.Login;
 
 public sealed class LoginCommandHandlerTests
 {

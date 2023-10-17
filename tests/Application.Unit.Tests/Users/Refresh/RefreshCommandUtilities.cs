@@ -1,7 +1,7 @@
 using Application.Unit.Tests.TestUtilities.Constants;
-using Application.Users.Refresh;
+using Application.Identity.Refresh;
 
-namespace Application.Unit.Tests.Users.Refresh;
+namespace Application.Unit.Tests.Identity.Refresh;
 
 public static class RefreshCommandUtilities
 {

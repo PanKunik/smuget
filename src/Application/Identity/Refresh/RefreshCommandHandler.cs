@@ -4,7 +4,7 @@ using Application.Exceptions;
 using Domain.RefreshTokens;
 using Domain.Repositories;
 
-namespace Application.Users.Refresh;
+namespace Application.Identity.Refresh;
 
 public sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand>
 {

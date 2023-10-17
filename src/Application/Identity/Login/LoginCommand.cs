@@ -1,6 +1,6 @@
 using Application.Abstractions.CQRS;
 
-namespace Application.Users.Login;
+namespace Application.Identity.Login;
 
 public sealed record LoginCommand(
     string Email,

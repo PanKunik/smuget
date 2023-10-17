@@ -2,32 +2,32 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Abstractions.CQRS;
 using Application.Abstractions.Security;
-using Application.Users.Login;
-using Application.Users.Refresh;
-using Application.Users.Register;
+using Application.Identity.Login;
+using Application.Identity.Refresh;
+using Application.Identity.Register;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
-using WebAPI.Users;
+using WebAPI.Identity;
 
-namespace WebAPI.Unit.Tests.Users;
+namespace WebAPI.Unit.Tests.Identity;
 
-public sealed class UsersControllerTests
+public sealed class IdentityControllerTests
 {
-    private readonly UsersController _cut;
+    private readonly IdentityController _cut;
 
     private readonly ICommandHandler<RegisterCommand> _mockRegister;
     private readonly ICommandHandler<LoginCommand> _mockLogin;
     private readonly ICommandHandler<RefreshCommand> _mockRefresh;
     private readonly ITokenStorage _mockTokenStorage;
 
-    public UsersControllerTests()
+    public IdentityControllerTests()
     {
         _mockRegister = Substitute.For<ICommandHandler<RegisterCommand>>();
         _mockLogin = Substitute.For<ICommandHandler<LoginCommand>>();
         _mockRefresh = Substitute.For<ICommandHandler<RefreshCommand>>();
         _mockTokenStorage = Substitute.For<ITokenStorage>();
 
-        _cut = new UsersController(
+        _cut = new IdentityController(
             _mockRegister,
             _mockLogin,
             _mockRefresh,

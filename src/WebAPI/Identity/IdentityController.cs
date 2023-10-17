@@ -1,27 +1,26 @@
 using Application.Abstractions.CQRS;
 using Application.Abstractions.Security;
-using Application.Users.Login;
-using Application.Users.Refresh;
-using Application.Users.Register;
+using Application.Identity.Login;
+using Application.Identity.Refresh;
+using Application.Identity.Register;
 using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Mvc;
-using WebAPI.Users;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
-namespace WebAPI.Unit.Tests.Users;
+namespace WebAPI.Identity;
 
 [ApiController]
-[Route("api/users")]
+[Route("api/identity")]
 [Consumes("application/json")]
 [Produces("application/json")]
-public sealed class UsersController : ControllerBase
+public sealed class IdentityController : ControllerBase
 {
     private readonly ICommandHandler<RegisterCommand> _register;
     private readonly ICommandHandler<LoginCommand> _login;
     private readonly ICommandHandler<RefreshCommand> _refresh;
     private readonly ITokenStorage _tokenStorage;
 
-    public UsersController(
+    public IdentityController(
         ICommandHandler<RegisterCommand> register,
         ICommandHandler<LoginCommand> login,
         ICommandHandler<RefreshCommand> refresh,

@@ -1,7 +1,7 @@
-namespace WebAPI.Users;
+namespace WebAPI.Identity;
 
 /// <summary>
-/// USers credentials for login.
+/// Users credentials for login.
 /// </summary>
 /// <param name="Email">Email address for login.</param>
 /// <param name="Password">Users password.</param>

@@ -1,4 +1,4 @@
-namespace WebAPI.Users;
+namespace WebAPI.Identity;
 
 /// <summary>
 /// Informations about new user.

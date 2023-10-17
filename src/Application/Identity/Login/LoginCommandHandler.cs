@@ -5,7 +5,7 @@ using Domain.RefreshTokens;
 using Domain.Repositories;
 using Domain.Users;
 
-namespace Application.Users.Login;
+namespace Application.Identity.Login;
 
 public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
 {

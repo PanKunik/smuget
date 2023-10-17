@@ -1,5 +1,5 @@
 using Application.Abstractions.Security;
-using Application.Users;
+using Application.Identity;
 using Microsoft.AspNetCore.Http;
 
 internal sealed class HttpContextTokenStorage : ITokenStorage

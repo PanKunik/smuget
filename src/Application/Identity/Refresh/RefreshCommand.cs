@@ -1,6 +1,6 @@
 using Application.Abstractions.CQRS;
 
-namespace Application.Users.Refresh;
+namespace Application.Identity.Refresh;
 
 public sealed record RefreshCommand(
     string RefreshToken

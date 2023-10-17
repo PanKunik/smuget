@@ -1,7 +1,7 @@
 using Application.Unit.Tests.TestUtilities.Constants;
-using Application.Users.Register;
+using Application.Identity.Register;
 
-namespace Application.Unit.Tests.Users.Register;
+namespace Application.Unit.Tests.Identity.Register;
 
 public static class RegisterCommandUtilities
 {

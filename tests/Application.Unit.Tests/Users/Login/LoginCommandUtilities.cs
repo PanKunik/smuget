@@ -1,7 +1,7 @@
 using Application.Unit.Tests.TestUtilities.Constants;
-using Application.Users.Login;
+using Application.Identity.Login;
 
-namespace Application.Unit.Tests.Users.Login;
+namespace Application.Unit.Tests.Identity.Login;
 
 public static class LoginCommandUtilities
 {

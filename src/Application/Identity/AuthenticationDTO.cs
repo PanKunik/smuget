@@ -1,4 +1,4 @@
-namespace Application.Users;
+namespace Application.Identity;
 
 public sealed class AuthenticationDTO
 {

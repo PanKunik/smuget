@@ -4,7 +4,7 @@ using Application.Exceptions;
 using Domain.Repositories;
 using Domain.Users;
 
-namespace Application.Users.Register;
+namespace Application.Identity.Register;
 
 public sealed class RegisterCommandHandler : ICommandHandler<RegisterCommand>
 {
