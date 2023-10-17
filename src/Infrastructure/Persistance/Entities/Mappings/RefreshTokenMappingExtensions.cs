@@ -14,6 +14,7 @@ internal static class RefreshTokenMappingExtensions
         return new RefreshToken(
             new(entity.Id),
             entity.Token,
+            entity.JwtId,
             entity.CreationDateTime,
             entity.ExpirationDateTime,
             entity.Used,
@@ -28,6 +29,7 @@ internal static class RefreshTokenMappingExtensions
         {
             Id = domain.Id.Value,
             Token = domain.Token,
+            JwtId = domain.JwtId,
             CreationDateTime = domain.CreationDateTime,
             ExpirationDateTime = domain.ExpirationDateTime,
             Used = domain.Used,

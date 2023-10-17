@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Application.Abstractions.Security;
 using Application.Identity;
+using Domain.Repositories;
 using Domain.Users;
 using Infrastructure.Authentication;
 using Microsoft.Extensions.Options;
@@ -18,9 +19,13 @@ internal sealed class Authenticator : IAuthenticator
     private readonly string _audience;
     private readonly TimeSpan _expiry;
     private readonly SigningCredentials _signingCredentials;
+    private readonly TokenValidationParameters _tokenValidationParameters;
+    private readonly IRefreshTokensRepository _repository;
 
     public Authenticator(
-        IOptions<AuthenticationOptions> authenticationOptions
+        IOptions<AuthenticationOptions> authenticationOptions,
+        TokenValidationParameters tokenValidationParameters,
+        IRefreshTokensRepository repository
     )
     {
         _issuer = authenticationOptions.Value.Issuer;
@@ -36,6 +41,8 @@ internal sealed class Authenticator : IAuthenticator
             ),
             SecurityAlgorithms.HmacSha256
         );
+        _tokenValidationParameters = tokenValidationParameters;
+        _repository = repository;
     }
 
     public AuthenticationDTO CreateToken(User user)
@@ -50,7 +57,7 @@ internal sealed class Authenticator : IAuthenticator
             new Claim("id", user.Id.Value.ToString())
         };
 
-        var now = DateTime.UtcNow;
+        var now = DateTime.Now;
         var expires = now.Add(_expiry);
 
         var jwt = new JwtSecurityToken(
@@ -72,5 +79,88 @@ internal sealed class Authenticator : IAuthenticator
             CreationDateTime = now,
             ExpirationDateTime = expires
         };
+    }
+
+    public async Task<AuthenticationDTO> RefreshToken(
+        User user,
+        string accessToken,
+        string refreshToken
+    )
+    {
+        var validatedToken = GetPrincipalFromToken(accessToken);
+
+        if (validatedToken is null)
+        {
+            throw new Exception();
+        }
+
+        var expiryDateUnix = long.Parse(
+            validatedToken.Claims.Single(c => c.Type == JwtRegisteredClaimNames.Exp).Value
+        );
+
+        var expiryDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Local)
+            .AddSeconds(expiryDateUnix);
+
+        if (expiryDateTime > DateTime.Now)
+        {
+            throw new Exception();
+        }
+
+        var jti = validatedToken.Claims.Single(c => c.Type == JwtRegisteredClaimNames.Jti).Value;
+        var storedRefreshToken = await _repository.Get(refreshToken)
+            ?? throw new Exception();
+
+        if (DateTime.Now > storedRefreshToken.ExpirationDateTime)
+        {
+            throw new Exception();
+        }
+
+        if (storedRefreshToken.Used || storedRefreshToken.Invalidated)
+        {
+            throw new Exception();
+        }
+
+        if (storedRefreshToken.JwtId != Guid.Parse(jti))
+        {
+            throw new Exception();
+        }
+
+        storedRefreshToken.Use();
+        await _repository.Save(storedRefreshToken);
+        return CreateToken(user);
+    }
+
+    private ClaimsPrincipal GetPrincipalFromToken(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+
+        try
+        {
+            var principal = tokenHandler.ValidateToken(
+                token,
+                _tokenValidationParameters,
+                out var validatedToken
+            );
+
+            if (!IsJwtWithValidSecurityAlgorithm(validatedToken))
+            {
+                return null;
+            }
+
+            return principal;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+
+    private bool IsJwtWithValidSecurityAlgorithm(SecurityToken validatedToken)
+    {
+        return (validatedToken is JwtSecurityToken jwtSecurityToken)
+            && jwtSecurityToken.Header.Alg.Equals(
+                SecurityAlgorithms.HmacSha256,
+                StringComparison.InvariantCultureIgnoreCase
+            );
     }
 }

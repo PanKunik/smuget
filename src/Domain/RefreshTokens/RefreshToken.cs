@@ -7,6 +7,7 @@ public sealed class RefreshToken
 {
     public RefreshTokenId Id { get; }
     public string Token { get; }
+    public Guid JwtId { get; }
     public DateTime CreationDateTime { get; }
     public DateTime ExpirationDateTime { get; }
     public bool Used { get; private set; }
@@ -16,6 +17,7 @@ public sealed class RefreshToken
     public RefreshToken(
         RefreshTokenId refreshTokenId,
         string token,
+        Guid jwtId,
         DateTime creationDateTime,
         DateTime expirationDateTime,
         bool used,
@@ -29,6 +31,7 @@ public sealed class RefreshToken
 
         Id = refreshTokenId;
         Token = token;
+        JwtId = jwtId;
         CreationDateTime = creationDateTime;
         ExpirationDateTime = expirationDateTime;
         Used = used;

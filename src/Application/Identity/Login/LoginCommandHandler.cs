@@ -35,6 +35,7 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
         CancellationToken cancellationToken = default
     )
     {
+        // TODO: Check if user has valid refresh token - if yes, reject login (or force logout?)
         Email email = new(command.Email);
         var entity = await _usersRepository.GetByEmail(email)
             ?? throw new InvalidCredentialsException();
@@ -49,6 +50,7 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
         var refreshToken = new RefreshToken(
             new(Guid.NewGuid()),
             token.RefreshToken,
+            token.Id,
             token.CreationDateTime,
             token.ExpirationDateTime,
             false,

@@ -11,6 +11,7 @@ internal static class RepositoryExtensions
         services.AddTransient<IUsersRepository, UsersRepository>();
         services.AddTransient<IRefreshTokensRepository, RefreshTokensRepository>();
 
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         return services;
     }
 }

@@ -30,7 +30,8 @@ internal static class AuthenticationExtensions
                 o =>
                 {
                     o.IncludeErrorDetails = true;
-                    o.TokenValidationParameters = new TokenValidationParameters
+
+                    var tokenValidationParameters = new TokenValidationParameters
                     {
                         ValidAudience = options.Audience,
                         ValidateAudience = true,
@@ -38,8 +39,12 @@ internal static class AuthenticationExtensions
                         ValidateIssuer = true,
                         ValidateLifetime = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SigningKey)),
-                        ValidateIssuerSigningKey = true
+                        ValidateIssuerSigningKey = true,
+                        ClockSkew = TimeSpan.Zero
                     };
+                    o.TokenValidationParameters = tokenValidationParameters;
+
+                    services.AddSingleton(tokenValidationParameters);
                 }
             );
 

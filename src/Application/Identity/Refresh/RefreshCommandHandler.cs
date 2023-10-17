@@ -40,7 +40,7 @@ public sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand>
             throw new RefreshTokenUsedException();
         }
 
-        if (entity.ExpirationDateTime < DateTime.UtcNow)
+        if (entity.ExpirationDateTime < DateTime.Now)
         {
             throw new RefreshTokenExpiredException();
         }
@@ -48,19 +48,23 @@ public sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand>
         var userEntity = await _usersRepository.Get(entity.UserId)
             ?? throw new UserNotFoundException();
 
-        var token = _authenticator.CreateToken(userEntity);
+        var token = await _authenticator.RefreshToken(
+            userEntity,
+            command.AccessToken,
+            command.RefreshToken
+        );
 
         var refreshToken = new RefreshToken(
-            new(token.Id),
+            new(Guid.NewGuid()),
             token.RefreshToken,
+            token.Id,
             token.CreationDateTime,
             token.ExpirationDateTime,
             false,
             false,
             userEntity.Id
         );
-
-        entity.Use();
+        
         await _refreshTokensRepository.Save(refreshToken);
         _tokenStorage.Store(token);
     }

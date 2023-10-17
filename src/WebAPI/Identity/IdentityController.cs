@@ -96,12 +96,15 @@ public sealed class IdentityController : ControllerBase
     [ProducesResponseType(typeof(Error), Status400BadRequest)]
     [ProducesResponseType(typeof(Error), Status500InternalServerError)]
     public async Task<IActionResult> Refresh(
-        [FromBody] string refreshToken,
+        [FromBody] RefreshRequest request,
         CancellationToken token = default
     )
     {
+        var (accessToken, refreshToken) = request;
+
         await _refresh.HandleAsync(
             new RefreshCommand(
+                accessToken,
                 refreshToken
             ),
             token
