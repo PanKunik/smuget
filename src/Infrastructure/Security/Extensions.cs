@@ -2,9 +2,6 @@ using Application.Abstractions.Security;
 using Domain.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace Infrastructure.Security;
 

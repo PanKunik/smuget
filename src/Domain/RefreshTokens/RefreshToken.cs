@@ -7,15 +7,19 @@ public sealed class RefreshToken
 {
     public RefreshTokenId Id { get; }
     public string Token { get; }
-    public DateTime Expires { get; }
-    public bool WasUsed { get; private set; }
+    public DateTime CreationDateTime { get; }
+    public DateTime ExpirationDateTime { get; }
+    public bool Used { get; private set; }
+    public bool Invalidated { get; private set; }
     public UserId UserId { get; }
 
     public RefreshToken(
         RefreshTokenId refreshTokenId,
         string token,
-        DateTime expires,
-        bool wasUsed,
+        DateTime creationDateTime,
+        DateTime expirationDateTime,
+        bool used,
+        bool invalidated,
         UserId userId
     )
     {
@@ -25,13 +29,18 @@ public sealed class RefreshToken
 
         Id = refreshTokenId;
         Token = token;
-        Expires = expires;
-        WasUsed = wasUsed;
+        CreationDateTime = creationDateTime;
+        ExpirationDateTime = expirationDateTime;
+        Used = used;
+        Invalidated = invalidated;
         UserId = userId;
     }
 
     public void Use()
-        => WasUsed = true;
+        => Used = true;
+
+    public void Invalidate()
+        => Invalidated = true;
 
     private void ThrowIfRefreshTokenIdIsNull(RefreshTokenId refreshTokenId)
     {

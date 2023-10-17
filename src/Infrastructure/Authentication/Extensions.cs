@@ -29,13 +29,16 @@ internal static class AuthenticationExtensions
             .AddJwtBearer(
                 o =>
                 {
-                    o.Audience = options.Audience;
                     o.IncludeErrorDetails = true;
                     o.TokenValidationParameters = new TokenValidationParameters
                     {
+                        ValidAudience = options.Audience,
+                        ValidateAudience = true,
                         ValidIssuer = options.Issuer,
-                        ClockSkew = TimeSpan.Zero,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SigningKey))
+                        ValidateIssuer = true,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SigningKey)),
+                        ValidateIssuerSigningKey = true
                     };
                 }
             );

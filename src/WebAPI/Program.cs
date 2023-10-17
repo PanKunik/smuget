@@ -1,7 +1,6 @@
 using System.Reflection;
 using Application;
 using Infrastructure;
-using WebAPI;
 using WebAPI.Middlewares;
 using WebAPI.Services.Users;
 

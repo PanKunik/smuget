@@ -44,12 +44,14 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
             throw new InvalidCredentialsException();
         }
 
-        var token = _authenticator.CreateToken(entity.Id.Value);
+        var token = _authenticator.CreateToken(entity);
 
         var refreshToken = new RefreshToken(
             new(Guid.NewGuid()),
             token.RefreshToken,
-            DateTime.UtcNow.AddHours(2),
+            token.CreationDateTime,
+            token.ExpirationDateTime,
+            false,
             false,
             entity.Id
         );

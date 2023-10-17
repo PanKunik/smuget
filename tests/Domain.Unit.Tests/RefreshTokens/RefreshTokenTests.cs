@@ -13,8 +13,10 @@ public sealed class RefreshTokenTests
         var cut = new RefreshToken(
             Constants.RefreshToken.Id,
             Constants.RefreshToken.Token,
-            Constants.RefreshToken.Expires,
-            Constants.RefreshToken.WasUsed,
+            Constants.RefreshToken.CreationDateTime,
+            Constants.RefreshToken.ExpirationDateTime,
+            Constants.RefreshToken.Used,
+            Constants.RefreshToken.Invalidated,
             Constants.User.Id
         );
 
@@ -37,8 +39,10 @@ public sealed class RefreshTokenTests
         var cut = () => new RefreshToken(
             null,
             Constants.RefreshToken.Token,
-            Constants.RefreshToken.Expires,
-            Constants.RefreshToken.WasUsed,
+            Constants.RefreshToken.CreationDateTime,
+            Constants.RefreshToken.ExpirationDateTime,
+            Constants.RefreshToken.Used,
+            Constants.RefreshToken.Invalidated,
             Constants.User.Id
         );
 
@@ -56,8 +60,10 @@ public sealed class RefreshTokenTests
         var cut = () => new RefreshToken(
             Constants.RefreshToken.Id,
             value,
-            Constants.RefreshToken.Expires,
-            Constants.RefreshToken.WasUsed,
+            Constants.RefreshToken.CreationDateTime,
+            Constants.RefreshToken.ExpirationDateTime,
+            Constants.RefreshToken.Used,
+            Constants.RefreshToken.Invalidated,
             Constants.User.Id
         );
 
@@ -72,8 +78,10 @@ public sealed class RefreshTokenTests
         var cut = () => new RefreshToken(
             Constants.RefreshToken.Id,
             Constants.RefreshToken.Token,
-            Constants.RefreshToken.Expires,
-            Constants.RefreshToken.WasUsed,
+            Constants.RefreshToken.CreationDateTime,
+            Constants.RefreshToken.ExpirationDateTime,
+            Constants.RefreshToken.Used,
+            Constants.RefreshToken.Invalidated,
             null
         );
 

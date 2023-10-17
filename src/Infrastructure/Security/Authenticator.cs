@@ -1,9 +1,11 @@
+using System.Data.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Application.Abstractions.Security;
 using Application.Identity;
+using Domain.Users;
 using Infrastructure.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -36,22 +38,26 @@ internal sealed class Authenticator : IAuthenticator
         );
     }
 
-    public AuthenticationDTO CreateToken(Guid userId)
+    public AuthenticationDTO CreateToken(User user)
     {
+        var jti = Guid.NewGuid();
+
         var claims = new List<Claim>()
         {
-            new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-            new Claim(JwtRegisteredClaimNames.UniqueName, userId.ToString())
+            new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.Value.ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, jti.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email.Value),
+            new Claim("id", user.Id.Value.ToString())
         };
 
-        var now = DateTime.Now;
+        var now = DateTime.UtcNow;
         var expires = now.Add(_expiry);
 
         var jwt = new JwtSecurityToken(
             _issuer,
             _audience,
             claims,
-            DateTime.Now,
+            now,
             expires,
             _signingCredentials
         );
@@ -60,9 +66,11 @@ internal sealed class Authenticator : IAuthenticator
 
         return new AuthenticationDTO()
         {
+            Id = jti,
             AccessToken = token,
-            RefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(128)),
-            Expires = expires
+            RefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            CreationDateTime = now,
+            ExpirationDateTime = expires
         };
     }
 }

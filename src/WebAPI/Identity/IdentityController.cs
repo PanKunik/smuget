@@ -81,7 +81,11 @@ public sealed class IdentityController : ControllerBase
             token
         );
 
-        return Ok(_tokenStorage.Get());
+        var jwtToken = _tokenStorage.Get();
+        return Ok(new AuthenticationResponse(
+            jwtToken.AccessToken,
+            jwtToken.RefreshToken
+        ));
     }
 
     /// <summary>
@@ -103,7 +107,11 @@ public sealed class IdentityController : ControllerBase
             token
         );
 
-        return Ok(_tokenStorage.Get());
+        var jwtToken = _tokenStorage.Get();
+        return Ok(new AuthenticationResponse(
+            jwtToken.AccessToken,
+            jwtToken.RefreshToken
+        ));
     }
 
     // Change password

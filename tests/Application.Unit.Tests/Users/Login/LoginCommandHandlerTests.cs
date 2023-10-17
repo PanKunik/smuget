@@ -40,7 +40,7 @@ public sealed class LoginCommandHandlerTests
         _authenticator = Substitute.For<IAuthenticator>();
 
         _authenticator
-            .CreateToken(Constants.User.Id)
+            .CreateToken(UsersUtilities.CreateUser())
             .Returns(
                 new AuthenticationDTO()
                 {
@@ -157,7 +157,9 @@ public sealed class LoginCommandHandlerTests
         _authenticator
             .Received(1)
             .CreateToken(
-                Arg.Is(Constants.User.Id)
+                Arg.Is<User>(
+                    u => u.Id.Value == Constants.User.Id
+                )
             );
     }
 
@@ -180,7 +182,7 @@ public sealed class LoginCommandHandlerTests
                 Arg.Is<RefreshToken>(
                     r => r.UserId.Value == Constants.User.Id
                       && r.Token == Constants.RefreshToken.Token
-                      && r.WasUsed == false
+                      && r.Used == false
                 )
             );
     }

@@ -14,8 +14,10 @@ internal static class RefreshTokenMappingExtensions
         return new RefreshToken(
             new(entity.Id),
             entity.Token,
-            entity.Expires,
-            entity.WasUsed,
+            entity.CreationDateTime,
+            entity.ExpirationDateTime,
+            entity.Used,
+            entity.Invalidated,
             new(entity.UserId)
         );
     }
@@ -26,8 +28,10 @@ internal static class RefreshTokenMappingExtensions
         {
             Id = domain.Id.Value,
             Token = domain.Token,
-            Expires = domain.Expires,
-            WasUsed = domain.WasUsed,
+            CreationDateTime = domain.CreationDateTime,
+            ExpirationDateTime = domain.ExpirationDateTime,
+            Used = domain.Used,
+            Invalidated = domain.Invalidated,
             UserId = domain.UserId.Value
         };
     }

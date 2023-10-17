@@ -6,6 +6,7 @@ using Application.Identity;
 using Application.Identity.Refresh;
 using Domain.RefreshTokens;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.Unit.Tests.Identity.Refresh;
 
@@ -47,7 +48,7 @@ public sealed class RefreshCommandHandlerTests
         _authenticator = Substitute.For<IAuthenticator>();
 
         _authenticator
-            .CreateToken(Constants.User.Id)
+            .CreateToken(UsersUtilities.CreateUser())
             .Returns(
                 new AuthenticationDTO()
                 {
@@ -168,7 +169,9 @@ public sealed class RefreshCommandHandlerTests
         _authenticator
             .Received(1)
             .CreateToken(
-                Arg.Is(Constants.User.Id)
+                Arg.Is<User>(
+                    u => u.Id.Value == Constants.User.Id
+                )
             );
     }
 
@@ -191,7 +194,7 @@ public sealed class RefreshCommandHandlerTests
                 Arg.Is<RefreshToken>(
                     r => r.UserId.Value == Constants.User.Id
                       && r.Token == Constants.RefreshToken.Token
-                      && r.WasUsed == false
+                      && r.Used == false
                 )
             );
     }

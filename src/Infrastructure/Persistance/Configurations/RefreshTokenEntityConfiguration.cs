@@ -23,11 +23,19 @@ internal sealed class RefreshTokenEntityConfiguration : IEntityTypeConfiguration
             .IsRequired();
 
         builder
-            .Property(e => e.Expires)
+            .Property(e => e.CreationDateTime)
             .IsRequired();
 
         builder
-            .Property(e => e.WasUsed)
+            .Property(e => e.ExpirationDateTime)
+            .IsRequired();
+
+        builder
+            .Property(e => e.Used)
+            .IsRequired();
+
+        builder
+            .Property(e => e.Invalidated)
             .IsRequired();
 
         builder
