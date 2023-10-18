@@ -32,6 +32,13 @@ internal sealed class ExceptionMiddleware : IMiddleware
     {
         var (statusCode, error) = exception switch
         {
+            IdentityException => (401,
+                new Error(
+                    exception.Message,
+                    exception.GetType().Name?.Replace("Exception", "") ?? "Invalid identity",
+                    context.Request.Path
+                )
+            ),
             SmugetException => (StatusCodes.Status400BadRequest,
                 new Error(
                     exception.Message,

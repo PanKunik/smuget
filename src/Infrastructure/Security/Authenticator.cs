@@ -8,6 +8,7 @@ using Application.Identity;
 using Domain.Repositories;
 using Domain.Users;
 using Infrastructure.Authentication;
+using Infrastructure.Exceptions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -17,11 +18,13 @@ internal sealed class Authenticator : IAuthenticator
 {
     private readonly string _issuer;
     private readonly string _audience;
-    private readonly TimeSpan _expiry;
+    private readonly TimeSpan _tokenExpiry;
+    private readonly TimeSpan _refreshTokenExpiry;
     private readonly SigningCredentials _signingCredentials;
     private readonly TokenValidationParameters _tokenValidationParameters;
     private readonly IRefreshTokensRepository _repository;
 
+    // TODO: Extract Identity service (for handling logic of using Authenticator and saving tokens to DB)
     public Authenticator(
         IOptions<AuthenticationOptions> authenticationOptions,
         TokenValidationParameters tokenValidationParameters,
@@ -30,8 +33,10 @@ internal sealed class Authenticator : IAuthenticator
     {
         _issuer = authenticationOptions.Value.Issuer;
         _audience = authenticationOptions.Value.Audience;
-        _expiry = authenticationOptions.Value.Expiry
-            ?? TimeSpan.FromHours(1);
+        _tokenExpiry = authenticationOptions.Value.TokenLifetime
+            ?? TimeSpan.FromMinutes(2);
+        _refreshTokenExpiry = authenticationOptions.Value.RefreshTokenLifetime
+            ?? TimeSpan.FromDays(1);
 
         _signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(
@@ -58,7 +63,8 @@ internal sealed class Authenticator : IAuthenticator
         };
 
         var now = DateTime.Now;
-        var expires = now.Add(_expiry);
+        var expires = now.Add(_tokenExpiry);
+        var refreshTokenExpires = now.Add(_refreshTokenExpiry);
 
         var jwt = new JwtSecurityToken(
             _issuer,
@@ -77,7 +83,7 @@ internal sealed class Authenticator : IAuthenticator
             AccessToken = token,
             RefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
             CreationDateTime = now,
-            ExpirationDateTime = expires
+            ExpirationDateTime = refreshTokenExpires
         };
     }
 
@@ -91,38 +97,38 @@ internal sealed class Authenticator : IAuthenticator
 
         if (validatedToken is null)
         {
-            throw new Exception();
+            throw new InvalidAccessTokenException();
         }
 
         var expiryDateUnix = long.Parse(
             validatedToken.Claims.Single(c => c.Type == JwtRegisteredClaimNames.Exp).Value
         );
 
-        var expiryDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Local)
+        var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
             .AddSeconds(expiryDateUnix);
 
-        if (expiryDateTime > DateTime.Now)
+        if (expiryDateTimeUtc > DateTime.UtcNow)
         {
-            throw new Exception();
+            throw new InvalidAccessTokenException();
         }
 
         var jti = validatedToken.Claims.Single(c => c.Type == JwtRegisteredClaimNames.Jti).Value;
         var storedRefreshToken = await _repository.Get(refreshToken)
-            ?? throw new Exception();
+            ?? throw new InvalidRefreshTokenException();
 
         if (DateTime.Now > storedRefreshToken.ExpirationDateTime)
         {
-            throw new Exception();
+            throw new InvalidRefreshTokenException();
         }
 
         if (storedRefreshToken.Used || storedRefreshToken.Invalidated)
         {
-            throw new Exception();
+            throw new InvalidRefreshTokenException();
         }
 
         if (storedRefreshToken.JwtId != Guid.Parse(jti))
         {
-            throw new Exception();
+            throw new InvalidRefreshTokenException();
         }
 
         storedRefreshToken.Use();
@@ -133,12 +139,14 @@ internal sealed class Authenticator : IAuthenticator
     private ClaimsPrincipal GetPrincipalFromToken(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
+        var tokenValidationParameters = _tokenValidationParameters.Clone();
+        tokenValidationParameters.ValidateLifetime = false;
 
         try
         {
             var principal = tokenHandler.ValidateToken(
                 token,
-                _tokenValidationParameters,
+                tokenValidationParameters,
                 out var validatedToken
             );
 

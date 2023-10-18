@@ -11,7 +11,7 @@ internal static class SecurityExtensions
     {
         services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
-        services.AddSingleton<IAuthenticator, Authenticator>();
+        services.AddScoped<IAuthenticator, Authenticator>();
         services.AddSingleton<ITokenStorage, HttpContextTokenStorage>();
 
         return services;

@@ -18,6 +18,20 @@ internal static class AuthenticationExtensions
         var options = configuration.GetOptions<AuthenticationOptions>(OptionsSectionName);
         services.Configure<AuthenticationOptions>(configuration.GetRequiredSection(OptionsSectionName));
 
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidAudience = options.Audience,
+            ValidateAudience = true,
+            ValidIssuer = options.Issuer,
+            ValidateIssuer = true,
+            ValidateLifetime = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SigningKey)),
+            ValidateIssuerSigningKey = true,
+            ClockSkew = TimeSpan.Zero
+        };
+
+        services.AddSingleton(tokenValidationParameters);
+
         services
             .AddAuthentication(
                 o =>
@@ -30,21 +44,7 @@ internal static class AuthenticationExtensions
                 o =>
                 {
                     o.IncludeErrorDetails = true;
-
-                    var tokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidAudience = options.Audience,
-                        ValidateAudience = true,
-                        ValidIssuer = options.Issuer,
-                        ValidateIssuer = true,
-                        ValidateLifetime = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SigningKey)),
-                        ValidateIssuerSigningKey = true,
-                        ClockSkew = TimeSpan.Zero
-                    };
                     o.TokenValidationParameters = tokenValidationParameters;
-
-                    services.AddSingleton(tokenValidationParameters);
                 }
             );
 

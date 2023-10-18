@@ -35,16 +35,6 @@ public sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand>
             command.RefreshToken
         ) ?? throw new RefreshTokenNotFoundException();
 
-        if (entity.Used)
-        {
-            throw new RefreshTokenUsedException();
-        }
-
-        if (entity.ExpirationDateTime < DateTime.Now)
-        {
-            throw new RefreshTokenExpiredException();
-        }
-
         var userEntity = await _usersRepository.Get(entity.UserId)
             ?? throw new UserNotFoundException();
 

@@ -17,9 +17,9 @@ public static class InfrastructureExtensions
     )
     {
         services.AddDbContext(configuration);
-        services.AddRepositories();        
         services.AddHttpContextAccessor();
         services.AddAuthenticationWithJwt(configuration);
+        services.AddRepositories();        
         services.AddSecurity();
 
         services.AddSingleton<ExceptionMiddleware>();
