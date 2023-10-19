@@ -1,7 +1,9 @@
+using Application.Exceptions;
+
 namespace Infrastructure.Exceptions;
 
 public sealed class InvalidAccessTokenException : IdentityException
 {
-    public InvalidAccessTokenException()
-        : base("Invalid access token.") { }
+    public InvalidAccessTokenException(string message)
+        : base(message) { }
 }

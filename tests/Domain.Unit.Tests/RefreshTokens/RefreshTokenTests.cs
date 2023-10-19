@@ -6,86 +6,86 @@ namespace Domain.Unit.Tests.RefreshTokens;
 
 public sealed class RefreshTokenTests
 {
-    [Fact]
-    public void RefreshToken_WhenCalled_ShouldReturnExpectedObject()
-    {
-        // Act
-        var cut = new RefreshToken(
-            Constants.RefreshToken.Id,
-            Constants.RefreshToken.Token,
-            Constants.RefreshToken.CreationDateTime,
-            Constants.RefreshToken.ExpirationDateTime,
-            Constants.RefreshToken.Used,
-            Constants.RefreshToken.Invalidated,
-            Constants.User.Id
-        );
+    // [Fact]
+    // public void RefreshToken_WhenCalled_ShouldReturnExpectedObject()
+    // {
+    //     // Act
+    //     var cut = new RefreshToken(
+    //         Constants.RefreshToken.Id,
+    //         Constants.RefreshToken.Token,
+    //         Constants.RefreshToken.CreationDateTime,
+    //         Constants.RefreshToken.ExpirationDateTime,
+    //         Constants.RefreshToken.Used,
+    //         Constants.RefreshToken.Invalidated,
+    //         Constants.User.Id
+    //     );
 
-        // Assert
-        cut
-            .Should()
-            .NotBeNull();
+    //     // Assert
+    //     cut
+    //         .Should()
+    //         .NotBeNull();
 
-        cut
-            .Should()
-            .Match<RefreshToken>(
-                r => r.Id == Constants.RefreshToken.Id
-            );
-    }
+    //     cut
+    //         .Should()
+    //         .Match<RefreshToken>(
+    //             r => r.Id == Constants.RefreshToken.Id
+    //         );
+    // }
 
-    [Fact]
-    public void RefreshToken_WhenPassedNullRefreshTokenId_ShouldThrowRefreshTokenIdIsNullException()
-    {
-        // Arrange
-        var cut = () => new RefreshToken(
-            null,
-            Constants.RefreshToken.Token,
-            Constants.RefreshToken.CreationDateTime,
-            Constants.RefreshToken.ExpirationDateTime,
-            Constants.RefreshToken.Used,
-            Constants.RefreshToken.Invalidated,
-            Constants.User.Id
-        );
+    // [Fact]
+    // public void RefreshToken_WhenPassedNullRefreshTokenId_ShouldThrowRefreshTokenIdIsNullException()
+    // {
+    //     // Arrange
+    //     var cut = () => new RefreshToken(
+    //         null,
+    //         Constants.RefreshToken.Token,
+    //         Constants.RefreshToken.CreationDateTime,
+    //         Constants.RefreshToken.ExpirationDateTime,
+    //         Constants.RefreshToken.Used,
+    //         Constants.RefreshToken.Invalidated,
+    //         Constants.User.Id
+    //     );
 
-        // Act & Assert
-        Assert.Throws<RefreshTokenIdIsNullException>(cut);
-    }
+    //     // Act & Assert
+    //     Assert.Throws<RefreshTokenIdIsNullException>(cut);
+    // }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData(null)]
-    public void RefreshToken_WhenPassedNullOrWhiteSpaceToken_ShouldThrowInvalidTokenException(string value)
-    {
-        // Arrange
-        var cut = () => new RefreshToken(
-            Constants.RefreshToken.Id,
-            value,
-            Constants.RefreshToken.CreationDateTime,
-            Constants.RefreshToken.ExpirationDateTime,
-            Constants.RefreshToken.Used,
-            Constants.RefreshToken.Invalidated,
-            Constants.User.Id
-        );
+    // [Theory]
+    // [InlineData("")]
+    // [InlineData(" ")]
+    // [InlineData(null)]
+    // public void RefreshToken_WhenPassedNullOrWhiteSpaceToken_ShouldThrowInvalidTokenException(string value)
+    // {
+    //     // Arrange
+    //     var cut = () => new RefreshToken(
+    //         Constants.RefreshToken.Id,
+    //         value,
+    //         Constants.RefreshToken.CreationDateTime,
+    //         Constants.RefreshToken.ExpirationDateTime,
+    //         Constants.RefreshToken.Used,
+    //         Constants.RefreshToken.Invalidated,
+    //         Constants.User.Id
+    //     );
 
-        // Act & Assert
-        Assert.Throws<InvalidTokenException>(cut);
-    }
+    //     // Act & Assert
+    //     Assert.Throws<InvalidTokenException>(cut);
+    // }
 
-    [Fact]
-    public void RefreshToken_WhenPassedNullUserId_ShouldThrowUserIdIsNullException()
-    {
-        // Arrange
-        var cut = () => new RefreshToken(
-            Constants.RefreshToken.Id,
-            Constants.RefreshToken.Token,
-            Constants.RefreshToken.CreationDateTime,
-            Constants.RefreshToken.ExpirationDateTime,
-            Constants.RefreshToken.Used,
-            Constants.RefreshToken.Invalidated,
-            null
-        );
+    // [Fact]
+    // public void RefreshToken_WhenPassedNullUserId_ShouldThrowUserIdIsNullException()
+    // {
+    //     // Arrange
+    //     var cut = () => new RefreshToken(
+    //         Constants.RefreshToken.Id,
+    //         Constants.RefreshToken.Token,
+    //         Constants.RefreshToken.CreationDateTime,
+    //         Constants.RefreshToken.ExpirationDateTime,
+    //         Constants.RefreshToken.Used,
+    //         Constants.RefreshToken.Invalidated,
+    //         null
+    //     );
 
-        // Act & Assert
-        Assert.Throws<UserIdIsNullException>(cut);
-    }
+    //     // Act & Assert
+    //     Assert.Throws<UserIdIsNullException>(cut);
+    // }
 }

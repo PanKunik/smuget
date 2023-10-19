@@ -1,27 +1,29 @@
+using Application.Abstractions.Authentication;
 using Application.Abstractions.CQRS;
 using Application.Abstractions.Security;
 using Application.Exceptions;
 using Domain.RefreshTokens;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.Identity.Refresh;
 
 public sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand>
 {
-    private readonly IRefreshTokensRepository _refreshTokensRepository;
     private readonly IUsersRepository _usersRepository;
+    private readonly IRefreshTokensRepository _refreshTokensRepository;
     private readonly IAuthenticator _authenticator;
     private readonly ITokenStorage _tokenStorage;
 
     public RefreshCommandHandler(
-        IRefreshTokensRepository repository,
-        IUsersRepository usersRepository,
+        IUsersRepository repository,
+        IRefreshTokensRepository refreshTokensRepository,
         IAuthenticator authenticator,
         ITokenStorage tokenStorage
     )
     {
-        _refreshTokensRepository = repository;
-        _usersRepository = usersRepository;
+        _usersRepository = repository;
+        _refreshTokensRepository = refreshTokensRepository;
         _authenticator = authenticator;
         _tokenStorage = tokenStorage;
     }
@@ -31,20 +33,35 @@ public sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand>
         CancellationToken cancellationToken = default
     )
     {
-        var entity = await _refreshTokensRepository.Get(
+        var existingRefreshToken = await _refreshTokensRepository.Get(
             command.RefreshToken
-        ) ?? throw new RefreshTokenNotFoundException();
+        ) ?? throw new InvalidRefreshTokenException("Refresh token wasn't found.");
 
-        var userEntity = await _usersRepository.Get(entity.UserId)
+        var user = await _usersRepository.Get(existingRefreshToken.UserId)
             ?? throw new UserNotFoundException();
 
-        var token = await _authenticator.RefreshToken(
-            userEntity,
+        if (user.Id != existingRefreshToken.UserId)
+        {
+            throw new InvalidRefreshTokenException("Refresh token doesn't belong to the user.");
+        }
+
+        if (existingRefreshToken.Used || existingRefreshToken.Invalidated)
+        {
+            throw new InvalidRefreshTokenException("Rfresh token was used or invalidated.");
+        }
+
+        if (DateTime.Now > existingRefreshToken.ExpirationDateTime)
+        {
+            throw new InvalidRefreshTokenException("Refresh token has expired.");
+        }
+
+        var token = _authenticator.RefreshToken(
+            user,
             command.AccessToken,
-            command.RefreshToken
+            existingRefreshToken.JwtId
         );
 
-        var refreshToken = new RefreshToken(
+        var refreshTokenEntity = new RefreshToken(
             new(Guid.NewGuid()),
             token.RefreshToken,
             token.Id,
@@ -52,10 +69,12 @@ public sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand>
             token.ExpirationDateTime,
             false,
             false,
-            userEntity.Id
+            user.Id
         );
-        
-        await _refreshTokensRepository.Save(refreshToken);
+
+        existingRefreshToken.Use();
+        await _refreshTokensRepository.Save(existingRefreshToken);
+        await _refreshTokensRepository.Save(refreshTokenEntity);
         _tokenStorage.Store(token);
     }
 }

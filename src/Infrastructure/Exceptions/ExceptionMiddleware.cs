@@ -1,3 +1,4 @@
+using Application.Exceptions;
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -32,6 +33,20 @@ internal sealed class ExceptionMiddleware : IMiddleware
     {
         var (statusCode, error) = exception switch
         {
+            InvalidRefreshTokenException => (401,
+                new Error(
+                    "Invalid refresh token.",
+                    "InvalidRefreshToken",
+                    context.Request.Path
+                )
+            ),
+            InvalidAccessTokenException => (401,
+                new Error(
+                    "Invalid access token.",
+                    "InvalidAccessToken",
+                    context.Request.Path
+                )
+            ),
             IdentityException => (401,
                 new Error(
                     exception.Message,

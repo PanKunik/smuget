@@ -1,6 +1,6 @@
 using Domain.Exceptions;
 
-namespace Infrastructure.Exceptions;
+namespace Application.Exceptions;
 
 public abstract class IdentityException : SmugetException
 {

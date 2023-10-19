@@ -1,3 +1,4 @@
+using Application.Abstractions.Authentication;
 using Application.Abstractions.CQRS;
 using Application.Abstractions.Security;
 using Application.Exceptions;
@@ -11,23 +12,23 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
 {
     private readonly IUsersRepository _usersRepository;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly IRefreshTokensRepository _refreshTokensRepository;
     private readonly IAuthenticator _authenticator;
     private readonly ITokenStorage _tokenStorage;
-    private readonly IRefreshTokensRepository _refreshTokensRepository;
 
     public LoginCommandHandler(
         IUsersRepository repository,
         IPasswordHasher passwordHasher,
+        IRefreshTokensRepository refreshTokensRepository,
         IAuthenticator authenticator,
-        ITokenStorage tokenStorage,
-        IRefreshTokensRepository refreshTokenRepository
+        ITokenStorage tokenStorage
     )
     {
         _usersRepository = repository;
         _passwordHasher = passwordHasher;
+        _refreshTokensRepository = refreshTokensRepository;
         _authenticator = authenticator;
         _tokenStorage = tokenStorage;
-        _refreshTokensRepository = refreshTokenRepository;
     }
 
     public async Task HandleAsync(
@@ -35,7 +36,6 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
         CancellationToken cancellationToken = default
     )
     {
-        // TODO: Check if user has valid refresh token - if yes, reject login (or force logout?)
         Email email = new(command.Email);
         var entity = await _usersRepository.GetByEmail(email)
             ?? throw new InvalidCredentialsException();
@@ -45,9 +45,20 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
             throw new InvalidCredentialsException();
         }
 
-        var token = _authenticator.CreateToken(entity);
+        var existingRefreshToken = await _refreshTokensRepository.GetActiveByUserId(
+            entity.Id.Value
+        );
 
-        var refreshToken = new RefreshToken(
+        if (existingRefreshToken is not null)
+        {
+            throw new UserAlreadyLoggedInException();
+        }
+
+        var token = _authenticator.CreateToken(
+            entity
+        );
+
+        var refreshTokenEntity = new RefreshToken(
             new(Guid.NewGuid()),
             token.RefreshToken,
             token.Id,
@@ -57,7 +68,8 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
             false,
             entity.Id
         );
-        await _refreshTokensRepository.Save(refreshToken);
+
+        await _refreshTokensRepository.Save(refreshTokenEntity);
         _tokenStorage.Store(token);
     }
 }

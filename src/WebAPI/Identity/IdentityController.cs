@@ -4,7 +4,9 @@ using Application.Identity.Login;
 using Application.Identity.Refresh;
 using Application.Identity.Register;
 using Infrastructure.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Services.Users;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebAPI.Identity;
@@ -19,18 +21,22 @@ public sealed class IdentityController : ControllerBase
     private readonly ICommandHandler<LoginCommand> _login;
     private readonly ICommandHandler<RefreshCommand> _refresh;
     private readonly ITokenStorage _tokenStorage;
+    private readonly IUserService _userService;
+
 
     public IdentityController(
         ICommandHandler<RegisterCommand> register,
         ICommandHandler<LoginCommand> login,
         ICommandHandler<RefreshCommand> refresh,
-        ITokenStorage tokenStorage
+        ITokenStorage tokenStorage,
+        IUserService userService
     )
     {
         _register = register;
         _login = login;
         _refresh = refresh;
         _tokenStorage = tokenStorage;
+        _userService = userService;
     }
 
     /// <summary>

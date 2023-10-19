@@ -1,11 +1,10 @@
-using System.Data.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Application.Abstractions.Security;
+using Application.Abstractions.Authentication;
+using Application.Exceptions;
 using Application.Identity;
-using Domain.Repositories;
 using Domain.Users;
 using Infrastructure.Authentication;
 using Infrastructure.Exceptions;
@@ -22,19 +21,16 @@ internal sealed class Authenticator : IAuthenticator
     private readonly TimeSpan _refreshTokenExpiry;
     private readonly SigningCredentials _signingCredentials;
     private readonly TokenValidationParameters _tokenValidationParameters;
-    private readonly IRefreshTokensRepository _repository;
 
-    // TODO: Extract Identity service (for handling logic of using Authenticator and saving tokens to DB)
     public Authenticator(
         IOptions<AuthenticationOptions> authenticationOptions,
-        TokenValidationParameters tokenValidationParameters,
-        IRefreshTokensRepository repository
+        TokenValidationParameters tokenValidationParameters
     )
     {
         _issuer = authenticationOptions.Value.Issuer;
         _audience = authenticationOptions.Value.Audience;
         _tokenExpiry = authenticationOptions.Value.TokenLifetime
-            ?? TimeSpan.FromMinutes(2);
+            ?? TimeSpan.FromMinutes(1);
         _refreshTokenExpiry = authenticationOptions.Value.RefreshTokenLifetime
             ?? TimeSpan.FromDays(1);
 
@@ -47,7 +43,6 @@ internal sealed class Authenticator : IAuthenticator
             SecurityAlgorithms.HmacSha256
         );
         _tokenValidationParameters = tokenValidationParameters;
-        _repository = repository;
     }
 
     public AuthenticationDTO CreateToken(User user)
@@ -64,7 +59,6 @@ internal sealed class Authenticator : IAuthenticator
 
         var now = DateTime.Now;
         var expires = now.Add(_tokenExpiry);
-        var refreshTokenExpires = now.Add(_refreshTokenExpiry);
 
         var jwt = new JwtSecurityToken(
             _issuer,
@@ -77,6 +71,7 @@ internal sealed class Authenticator : IAuthenticator
         var token = new JwtSecurityTokenHandler()
             .WriteToken(jwt);
 
+        var refreshTokenExpires = now.Add(_refreshTokenExpiry);
         return new AuthenticationDTO()
         {
             Id = jti,
@@ -87,18 +82,13 @@ internal sealed class Authenticator : IAuthenticator
         };
     }
 
-    public async Task<AuthenticationDTO> RefreshToken(
+    public AuthenticationDTO RefreshToken(
         User user,
         string accessToken,
-        string refreshToken
+        Guid refreshTokenJwtId
     )
     {
         var validatedToken = GetPrincipalFromToken(accessToken);
-
-        if (validatedToken is null)
-        {
-            throw new InvalidAccessTokenException();
-        }
 
         var expiryDateUnix = long.Parse(
             validatedToken.Claims.Single(c => c.Type == JwtRegisteredClaimNames.Exp).Value
@@ -109,30 +99,15 @@ internal sealed class Authenticator : IAuthenticator
 
         if (expiryDateTimeUtc > DateTime.UtcNow)
         {
-            throw new InvalidAccessTokenException();
+            throw new InvalidAccessTokenException("Access token hasn't expired yet.");
         }
 
         var jti = validatedToken.Claims.Single(c => c.Type == JwtRegisteredClaimNames.Jti).Value;
-        var storedRefreshToken = await _repository.Get(refreshToken)
-            ?? throw new InvalidRefreshTokenException();
-
-        if (DateTime.Now > storedRefreshToken.ExpirationDateTime)
+        if (refreshTokenJwtId != Guid.Parse(jti))
         {
-            throw new InvalidRefreshTokenException();
+            throw new InvalidRefreshTokenException("Refresh token isn't for passed access token.");
         }
 
-        if (storedRefreshToken.Used || storedRefreshToken.Invalidated)
-        {
-            throw new InvalidRefreshTokenException();
-        }
-
-        if (storedRefreshToken.JwtId != Guid.Parse(jti))
-        {
-            throw new InvalidRefreshTokenException();
-        }
-
-        storedRefreshToken.Use();
-        await _repository.Save(storedRefreshToken);
         return CreateToken(user);
     }
 
@@ -142,25 +117,29 @@ internal sealed class Authenticator : IAuthenticator
         var tokenValidationParameters = _tokenValidationParameters.Clone();
         tokenValidationParameters.ValidateLifetime = false;
 
+        ClaimsPrincipal principal;
+        SecurityToken validatedToken;
+
         try
         {
-            var principal = tokenHandler.ValidateToken(
+            principal = tokenHandler.ValidateToken(
                 token,
                 tokenValidationParameters,
-                out var validatedToken
+                out validatedToken
             );
-
-            if (!IsJwtWithValidSecurityAlgorithm(validatedToken))
-            {
-                return null;
-            }
-
-            return principal;
         }
-        catch (Exception ex)
+        catch
         {
-            return null;
+            throw new InvalidAccessTokenException("Access token is invalid.");
         }
+
+        if (!IsJwtWithValidSecurityAlgorithm(validatedToken))
+        {
+            throw new InvalidAccessTokenException("Access token is invalid.");
+        }
+
+        return principal
+            ?? throw new InvalidAccessTokenException("Access token is invalid.");
     }
 
     private bool IsJwtWithValidSecurityAlgorithm(SecurityToken validatedToken)

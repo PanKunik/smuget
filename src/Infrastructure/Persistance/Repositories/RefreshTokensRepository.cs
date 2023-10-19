@@ -26,12 +26,15 @@ internal sealed class RefreshTokensRepository : IRefreshTokensRepository
             .ToDomain();
     }
 
-    public async Task<RefreshToken?> GetByJwtId(Guid jwtId)
+    public async Task<RefreshToken?> GetActiveByUserId(Guid userId)
     {
         var entity = await _dbContext.RefreshTokens
             .AsNoTracking()
             .FirstOrDefaultAsync(
-                u => u.JwtId == jwtId
+                r => r.UserId == userId
+                  && !r.Used
+                  && !r.Invalidated
+                  && DateTime.Now < r.ExpirationDateTime
             );
 
         return entity?

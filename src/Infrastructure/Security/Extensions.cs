@@ -2,6 +2,7 @@ using Application.Abstractions.Security;
 using Domain.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
+using Application.Abstractions.Authentication;
 
 namespace Infrastructure.Security;
 
