@@ -1,6 +1,7 @@
 using Application.Abstractions.CQRS;
 using Application.Abstractions.Security;
 using Application.Identity.Login;
+using Application.Identity.Logout;
 using Application.Identity.Refresh;
 using Application.Identity.Register;
 using Infrastructure.Exceptions;
@@ -20,6 +21,7 @@ public sealed class IdentityController : ControllerBase
     private readonly ICommandHandler<RegisterCommand> _register;
     private readonly ICommandHandler<LoginCommand> _login;
     private readonly ICommandHandler<RefreshCommand> _refresh;
+    private readonly ICommandHandler<LogoutCommand> _logout;
     private readonly ITokenStorage _tokenStorage;
     private readonly IUserService _userService;
 
@@ -28,6 +30,7 @@ public sealed class IdentityController : ControllerBase
         ICommandHandler<RegisterCommand> register,
         ICommandHandler<LoginCommand> login,
         ICommandHandler<RefreshCommand> refresh,
+        ICommandHandler<LogoutCommand> logout,
         ITokenStorage tokenStorage,
         IUserService userService
     )
@@ -35,6 +38,7 @@ public sealed class IdentityController : ControllerBase
         _register = register;
         _login = login;
         _refresh = refresh;
+        _logout = logout;
         _tokenStorage = tokenStorage;
         _userService = userService;
     }
@@ -121,6 +125,32 @@ public sealed class IdentityController : ControllerBase
             jwtToken.AccessToken,
             jwtToken.RefreshToken
         ));
+    }
+
+    /// <summary>
+    /// Logs out the currently logged user.
+    /// </summary>
+    [Authorize]
+    [HttpPost("logout")]
+    [ProducesResponseType(typeof(NoContentResult), Status200OK)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
+    public async Task<IActionResult> Logout(
+        [FromBody] LogoutRequest request,
+        CancellationToken token = default
+    )
+    {
+        var userId = _userService.UserId;
+
+        await _logout.HandleAsync(
+            new LogoutCommand(
+                request.RefreshToken,
+                userId
+            ),
+            token
+        );
+
+        return Ok();
     }
 
     // Change password

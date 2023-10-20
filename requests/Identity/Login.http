@@ -4,6 +4,6 @@ POST {{host}}/api/identity/login
 Content-Type: application/json
 
 {
-    "Email": "pankunik@pankunik.pl",
+    "Email": "pankunik2@pankunik.pl",
     "Password": "Pas$w0rd1"
 }

@@ -1,0 +1,9 @@
+@host = https://localhost:7188
+
+POST {{host}}/api/identity/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjM0NDY0MDU2LWUzYWQtNDZjZi04N2RkLWNhOWVkY2VmM2VlZSIsImp0aSI6IjRiYjkxNDc5LTVlYzYtNGYxYi1iZmUwLWI0MzlkYTdkNGQxZSIsImVtYWlsIjoicGFua3VuaWtAcGFua3VuaWsucGwiLCJpZCI6IjM0NDY0MDU2LWUzYWQtNDZjZi04N2RkLWNhOWVkY2VmM2VlZSIsIm5iZiI6MTY5Nzc0NjE5MCwiZXhwIjoxNjk3NzQ2NDkwLCJpc3MiOiJzbXVnZXQtaXNzdWVyIiwiYXVkIjoic211Z2V0LWF1ZGllbmNlIn0.4DYClUTBCS_pqRNKfknYX2s7p9WJg0JgDR4N2BhsBmM
+Content-Type: application/json
+
+{
+    "RefreshToken": "fEKz74CY5sZFNEcGMX92JPwlYihiZwJlkGblriQgs0TjN5sdecG3wI5yE8pHK/UYEMq/KQCpcmkBi60aqDavXQ=="
+}

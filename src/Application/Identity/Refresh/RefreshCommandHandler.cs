@@ -4,7 +4,6 @@ using Application.Abstractions.Security;
 using Application.Exceptions;
 using Domain.RefreshTokens;
 using Domain.Repositories;
-using Domain.Users;
 
 namespace Application.Identity.Refresh;
 
@@ -39,11 +38,6 @@ public sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand>
 
         var user = await _usersRepository.Get(existingRefreshToken.UserId)
             ?? throw new UserNotFoundException();
-
-        if (user.Id != existingRefreshToken.UserId)
-        {
-            throw new InvalidRefreshTokenException("Refresh token doesn't belong to the user.");
-        }
 
         if (existingRefreshToken.Used || existingRefreshToken.Invalidated)
         {
