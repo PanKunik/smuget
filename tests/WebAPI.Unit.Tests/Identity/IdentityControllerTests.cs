@@ -380,4 +380,96 @@ public sealed class IdentityControllerTests
             .Received(1)
             .Get();
     }
+
+    [Fact]
+    public async Task Logout_OnSuccess_ShouldReturnOkResult()
+    {
+        // Arrange
+        var request = new LogoutRequest(
+            "M9XY-+1NXY=="
+        );
+
+        // Act
+        var result = await _cut.Logout(
+            request
+        );
+
+        // Assert
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .BeOfType<OkResult>();
+    }
+
+    [Fact]
+    public async Task Logout_OnSuccess_ShouldReturn200OkStatusCode()
+    {
+        // Arrange
+        var request = new LogoutRequest(
+            "M9XY-+1NXY=="
+        );
+
+        // Act
+        var result = (OkResult)await _cut.Logout(
+            request
+        );
+
+        // Assert
+        result.StatusCode
+            .Should()
+            .Be(200);
+    }
+
+    [Fact]
+    public async Task Logout_WhenInvoked_ShouldCallHandleAsyncOnCommandHandlerOnce()
+    {
+        // Arrange
+        var request = new LogoutRequest(
+            "M9XY-+1NXY=="
+        );
+
+        // Act
+        await _cut.Logout(
+            request
+        );
+
+        // Assert
+        await _mockLogout
+            .Received(1)
+            .HandleAsync(
+                Arg.Any<LogoutCommand>(),
+                Arg.Any<CancellationToken>()
+            );
+    }
+
+    [Theory]
+    [InlineData("M9XY-+1NXY==")]
+    [InlineData("M8Xy+-==")]
+    public async Task Logout_WhenInvokedWithParameters_ShouldPassThemToCommand(
+        string refreshToken
+    )
+    {
+        // Arrange
+        var request = new LogoutRequest(
+            refreshToken
+        );
+
+        // Act
+        await _cut.Logout(
+            request
+        );
+
+        // Assert
+        await _mockLogout
+            .Received(1)
+            .HandleAsync(
+                Arg.Is<LogoutCommand>(
+                    c => c.RefreshToken == refreshToken
+                ),
+                Arg.Any<CancellationToken>()
+            );
+    }
 }
