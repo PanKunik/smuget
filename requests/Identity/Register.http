@@ -4,7 +4,7 @@ POST {{host}}/api/identity/register
 Content-Type: application/json
 
 {
-    "Email": "pankunik@pankunik.pl",
-    "FirstName": "PanKunik",
+    "Email": "pankunik2@pankunik.pl",
+    "FirstName": "PanKunik2",
     "Password": "Pas$w0rd1"
 }
