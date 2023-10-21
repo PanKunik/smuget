@@ -16,27 +16,41 @@ public static class RefreshTokensUtilities
             new(Constants.Constants.User.Id)
         );
 
-    // public static RefreshToken CreateExpiredRefreshToken()
-    //     => new(
-    //         new(Constants.Constants.RefreshToken.Id),
-    //         Constants.Constants.RefreshToken.Token,
-    //         Constants.Constants.RefreshToken.CreationDateTime,
-    //         DateTime.Now.AddDays(-1),
-    //         Constants.Constants.RefreshToken.Used,
-    //         Constants.Constants.RefreshToken.Invalidated,
-    //         new(Constants.Constants.User.Id)
-    //     );
+    public static RefreshToken CreateExpiredRefreshToken()
+        => new(
+            new(Constants.Constants.RefreshToken.Id),
+            Constants.Constants.RefreshToken.Token,
+            Constants.Constants.RefreshToken.JwtId,
+            Constants.Constants.RefreshToken.CreationDateTime,
+            DateTime.Now.AddDays(-1),
+            Constants.Constants.RefreshToken.Used,
+            Constants.Constants.RefreshToken.Invalidated,
+            new(Constants.Constants.User.Id)
+        );
 
-    // public static RefreshToken CreateUsedRefreshToken()
-    //     => new(
-    //         new(Constants.Constants.RefreshToken.Id),
-    //         Constants.Constants.RefreshToken.Token,
-    //         Constants.Constants.RefreshToken.CreationDateTime,
-    //         Constants.Constants.RefreshToken.ExpirationDateTime,
-    //         true,
-    //         Constants.Constants.RefreshToken.Invalidated,
-    //         new(Constants.Constants.User.Id)
-    //     );
+    public static RefreshToken CreateUsedRefreshToken()
+        => new(
+            new(Constants.Constants.RefreshToken.Id),
+            Constants.Constants.RefreshToken.Token,
+            Constants.Constants.RefreshToken.JwtId,
+            Constants.Constants.RefreshToken.CreationDateTime,
+            Constants.Constants.RefreshToken.ExpirationDateTime,
+            true,
+            Constants.Constants.RefreshToken.Invalidated,
+            new(Constants.Constants.User.Id)
+        );
+
+    public static RefreshToken CreateInvalidatedRefreshToken()
+        => new(
+            new(Constants.Constants.RefreshToken.Id),
+            Constants.Constants.RefreshToken.Token,
+            Constants.Constants.RefreshToken.JwtId,
+            Constants.Constants.RefreshToken.CreationDateTime,
+            Constants.Constants.RefreshToken.ExpirationDateTime,
+            Constants.Constants.RefreshToken.Used,
+            true,
+            new(Constants.Constants.User.Id)
+        );
 
     public static RefreshToken CreateForeignRefreshToken()
     => new(

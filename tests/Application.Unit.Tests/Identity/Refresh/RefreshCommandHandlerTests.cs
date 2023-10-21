@@ -28,13 +28,17 @@ public sealed class RefreshCommandHandlerTests
             .Get(Constants.RefreshToken.Token)
             .Returns(RefreshTokensUtilities.CreateRefreshToken());
 
-        // _refreshTokensRepository
-        //     .Get("expired-token")
-        //     .Returns(RefreshTokensUtilities.CreateExpiredRefreshToken());
+        _refreshTokensRepository
+            .Get("expired-token")
+            .Returns(RefreshTokensUtilities.CreateExpiredRefreshToken());
 
-        // _refreshTokensRepository
-        //     .Get("used-token")
-        //     .Returns(RefreshTokensUtilities.CreateUsedRefreshToken());
+        _refreshTokensRepository
+            .Get("used-token")
+            .Returns(RefreshTokensUtilities.CreateUsedRefreshToken());
+
+        _refreshTokensRepository
+            .Get("invalidated-token")
+            .Returns(RefreshTokensUtilities.CreateInvalidatedRefreshToken());
 
         _refreshTokensRepository
             .Get("token-for-other-user")
@@ -157,123 +161,140 @@ public sealed class RefreshCommandHandlerTests
         await Assert.ThrowsAsync<UserNotFoundException>(commandAction);
     }
 
-    // [Fact]
-    // public async Task HandleAsync_WhenTokenWasUsedBefore_ShouldThrowRefreshTokenUsedException()
-    // {
-    //     // Arrange
-    //     var command = new RefreshCommand(
-    //         "used-token"
-    //     );
+    [Fact]
+    public async Task HandleAsync_WhenTokenWasUsedBefore_ShouldThrowInvalidRefreshTokenException()
+    {
+        // Arrange
+        var command = new RefreshCommand(
+            Constants.User.AccessToken,
+            "used-token"
+        );
 
-    //     var commandAction = () => _cut.HandleAsync(
-    //         command,
-    //         default
-    //     );
+        var commandAction = () => _cut.HandleAsync(
+            command,
+            default
+        );
 
-    //     // Act & Assert
-    //     await Assert.ThrowsAsync<RefreshTokenUsedException>(commandAction);
-    // }
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidRefreshTokenException>(commandAction);
+    }
 
-    // [Fact]
-    // public async Task HandleAsync_WhenTokenHasExpired_ShouldThrowRefreshTokenExpiredException()
-    // {
-    //     // Arrange
-    //     var command = new RefreshCommand(
-    //         "expired-token"
-    //     );
+    [Fact]
+    public async Task HandleAsync_WhenTokenWasInvalidatedBefore_ShouldThrowInvalidRefreshTokenException()
+    {
+        // Arrange
+        var command = new RefreshCommand(
+            Constants.User.AccessToken,
+            "invalidated-token"
+        );
 
-    //     var commandAction = () => _cut.HandleAsync(
-    //         command,
-    //         default
-    //     );
+        var commandAction = () => _cut.HandleAsync(
+            command,
+            default
+        );
 
-    //     // Act & Assert
-    //     await Assert.ThrowsAsync<RefreshTokenExpiredException>(commandAction);
-    // }
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidRefreshTokenException>(commandAction);
+    }
 
-    // [Fact]
-    // public async Task HandleAsync_WhenUserDOesntExist_ShouldThrowUserNotFoundException()
-    // {
-    //     // Arrange
-    //     var command = new RefreshCommand(
-    //         "token-for-other-user"
-    //     );
+    [Fact]
+    public async Task HandleAsync_WhenTokenHasExpired_ShouldThrowInvalidRefreshTokenException()
+    {
+        // Arrange
+        var command = new RefreshCommand(
+            Constants.User.AccessToken,
+            "expired-token"
+        );
 
-    //     var commandAction = () => _cut.HandleAsync(
-    //         command,
-    //         default
-    //     );
+        var commandAction = () => _cut.HandleAsync(
+            command,
+            default
+        );
 
-    //     // Act & Assert
-    //     await Assert.ThrowsAsync<UserNotFoundException>(commandAction);
-    // }
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidRefreshTokenException>(commandAction);
+    }
 
-    // [Fact]
-    // public async Task HandleAsync_WhenTokenAndUserWasFound_ShouldCallCreateTokenOnAuthenticatorOnce()
-    // {
-    //     // Arrange
-    //     var login = RefreshCommandUtilities.CreateCommand();
+    [Fact]
+    public async Task HandleAsync_WhenRefreshTokenIsValid_ShouldCallRefreshTokenOnAuthenticatorOnce()
+    {
+        // Arrange
+        var command = RefreshCommandUtilities.CreateCommand();
 
-    //     // Act
-    //     await _cut.HandleAsync(
-    //         login,
-    //         default
-    //     );
+        // Act
+        await _cut.HandleAsync(
+            command,
+            default
+        );
 
-    //     // Assert
-    //     _authenticator
-    //         .Received(1)
-    //         .CreateToken(
-    //             Arg.Is<User>(
-    //                 u => u.Id.Value == Constants.User.Id
-    //             )
-    //         );
-    // }
+        // Assert
+        _authenticator
+            .Received(1)
+            .RefreshToken(
+                Arg.Is<User>(
+                    u => u.Id.Value == Constants.User.Id
+                ),
+                command.AccessToken,
+                Arg.Any<Guid>()
+            );
+    }
 
-    // [Fact]
-    // public async Task HandleAsync_WhenTokenCreatedSuccessfully_ShouldCallSaveOnRefreshTokenRepositoryOnce()
-    // {
-    //     // Arrange
-    //     var login = RefreshCommandUtilities.CreateCommand();
+    [Fact]
+    public async Task HandleAsync_WhenTokenCreatedSuccessfully_ShouldCallSaveOnRefreshTokenRepositoryTwice()
+    {
+        // Arrange
+        var command = RefreshCommandUtilities.CreateCommand();
 
-    //     // Act
-    //     await _cut.HandleAsync(
-    //         login,
-    //         default
-    //     );
+        // Act
+        await _cut.HandleAsync(
+            command,
+            default
+        );
 
-    //     // Assert
-    //     await _refreshTokensRepository
-    //         .Received(1)
-    //         .Save(
-    //             Arg.Is<RefreshToken>(
-    //                 r => r.UserId.Value == Constants.User.Id
-    //                   && r.Token == Constants.RefreshToken.Token
-    //                   && r.Used == false
-    //             )
-    //         );
-    // }
+        // Assert
+        await _refreshTokensRepository
+            .Received(2)
+            .Save(
+                Arg.Any<RefreshToken>()
+            );
+            
+        await _refreshTokensRepository
+            .Received(1)
+            .Save(
+                Arg.Is<RefreshToken>(
+                    c => c.Used == true
+                )
+            );
+            
+        await _refreshTokensRepository
+            .Received(1)
+            .Save(
+                Arg.Is<RefreshToken>(
+                    c => c.Used == false
+                )
+            );
+    }
 
-    // [Fact]
-    // public async Task HandleAsync_WhenTokenCreatedSuccessfully_ShouldCallStoreOnTokenStorageOnce()
-    // {
-    //     // Arrange
-    //     var login = RefreshCommandUtilities.CreateCommand();
+    [Fact]
+    public async Task HandleAsync_WhenTokenCreatedSuccessfully_ShouldCallStoreOnTokenStorageOnce()
+    {
+        // Arrange
+        var command = RefreshCommandUtilities.CreateCommand();
 
-    //     // Act
-    //     await _cut.HandleAsync(
-    //         login,
-    //         default
-    //     );
+        // Act
+        await _cut.HandleAsync(
+            command,
+            default
+        );
 
-    //     // Assert
-    //     _tokenStorage
-    //         .Received(1)
-    //         .Store(
-    //             Arg.Is<AuthenticationDTO>(
-    //                 a => a.AccessToken == Constants.User.AccessToken
-    //                   && a.RefreshToken == Constants.RefreshToken.Token
-    //             )
-    //         );
-    // }
+        // Assert
+        _tokenStorage
+            .Received(1)
+            .Store(
+                Arg.Is<AuthenticationDTO>(
+                    a => a.AccessToken == Constants.User.AccessToken
+                      && a.RefreshToken == Constants.RefreshToken.Token
+                )
+            );
+    }
 }
