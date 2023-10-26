@@ -1,14 +1,14 @@
 @host = https://localhost:7188
 
-@id = 5ef03521-3296-4866-bbaf-369f6c117fee
+@id = 61c7288b-2c3a-4d11-9f42-53cb374bd54f
 
 POST {{host}}/api/monthlyBillings/{{id}}/plans
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1N2E5YjNlYi0xNzk2LTRlMGQtYTZiNC1mYzEwYmQzZjkzYjIiLCJ1bmlxdWVfbmFtZSI6IjU3YTliM2ViLTE3OTYtNGUwZC1hNmI0LWZjMTBiZDNmOTNiMiIsIm5iZiI6MTY5NzE0MjQ0NiwiZXhwIjoxNjk3MTQzNjQ2LCJpc3MiOiJzbXVnZXQtaXNzdWVyIiwiYXVkIjoic211Z2V0LWF1ZGllbmNlIn0.KRKiFKHdfnHARjn7QbLZelx4lRukhCXXpYVTHd0TZhQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImNhMjI5Mzk3LThkMzgtNDQ5MS05NmI2LWU3YmJjMjM5YTc5YyIsImp0aSI6IjdlOGIyMDBhLTM0ODktNGYwOC04YjFiLTI2YWJjZDI2ZjI3YiIsImVtYWlsIjoicGFua3VuaWsyQHBhbmt1bmlrLnBsIiwiaWQiOiJjYTIyOTM5Ny04ZDM4LTQ0OTEtOTZiNi1lN2JiYzIzOWE3OWMiLCJuYmYiOjE2OTgyOTQ1NDQsImV4cCI6MTY5ODI5NDg0NCwiaXNzIjoic211Z2V0LWlzc3VlciIsImF1ZCI6InNtdWdldC1hdWRpZW5jZSJ9.LwLC8LD1YbWvc1Hd4Rw6wFmj1xB153p2oB3-SbJU5WE
 Content-Type: application/json
 
 {
-    "category": "Leki",
-    "money": 250,
+    "category": "Groceries",
+    "money": 450,
     "currency": "PLN",
-    "sortOrder": 3
+    "sortOrder": 1
 }

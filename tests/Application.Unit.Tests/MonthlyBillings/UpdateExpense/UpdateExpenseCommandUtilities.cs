@@ -12,7 +12,7 @@ public static class UpdateExpenseCommandUtilities
             Constants.Expense.Id,
             456.42m,
             "USD",
-            new DateTimeOffset(new DateTime(2023, 9, 11, 13, 43, 22)),
+            new DateOnly(2023, 9, 11),
             "Updated description",
             Constants.User.Id
         );

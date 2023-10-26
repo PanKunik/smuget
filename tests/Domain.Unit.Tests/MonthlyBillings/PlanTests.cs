@@ -99,7 +99,7 @@ public sealed class PlanTest
         var expense = new Expense(
             new ExpenseId(Guid.NewGuid()),
             new Money(150M, new Currency("PLN")),
-            new DateTimeOffset(new DateTime(2020, 3, 4)),
+            new DateOnly(2020, 3, 4),
             "Farmer's market"
         );
 
@@ -117,7 +117,7 @@ public sealed class PlanTest
             .Should()
             .Match<Expense>(
                 e => e.Money == new Money(150M, new Currency("PLN"))
-                && e.ExpenseDate == new DateTimeOffset(new DateTime(2020, 3, 4))
+                && e.ExpenseDate == new DateOnly(2020, 3, 4)
                 && e.Description == "Farmer's market"
             );
     }
@@ -148,7 +148,7 @@ public sealed class PlanTest
                 987.43m,
                 new Currency("EUR")
             ),
-            new DateTimeOffset(new DateTime(2023, 9, 1, 15, 4, 32)),
+            new DateOnly(2023, 9, 1),
             "Updated description"
         );
 
@@ -182,7 +182,7 @@ public sealed class PlanTest
                 987.43m,
                 new Currency("EUR")
             ),
-            new DateTimeOffset(new DateTime(2023, 9, 1, 15, 4, 32)),
+            new DateOnly(2023, 9, 1),
             "Updated description"
         );
 
@@ -217,7 +217,7 @@ public sealed class PlanTest
                 987.43m,
                 new Currency("EUR")
             ),
-            new DateTimeOffset(new DateTime(2023, 9, 1, 15, 4, 32)),
+            new DateOnly(2023, 9, 1),
             "Updated description"
         );
 
@@ -228,7 +228,7 @@ public sealed class PlanTest
             .Match<Expense>(
                 e => e.Money.Amount == 987.43m
                   && e.Money.Currency.Value == "EUR"
-                  && e.ExpenseDate == new DateTimeOffset(new DateTime(2023, 9, 1, 15, 4, 32))
+                  && e.ExpenseDate == new DateOnly(2023, 9, 1)
                   && e.Description == "Updated description"
             );
     }

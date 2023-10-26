@@ -1,16 +1,16 @@
 @host = https://localhost:7188
 
-@monthlyBillingId = 5ef03521-3296-4866-bbaf-369f6c117fee
-@planId = 176ab79c-22f8-4868-88ac-c567d1c26208
-@expenseId = f1e8ffc1-ac67-464f-8736-fa1aa85986ac
+@monthlyBillingId = 61c7288b-2c3a-4d11-9f42-53cb374bd54f
+@planId = c31c3430-80ed-49c8-bae7-765a15acea54
+@expenseId = 61de764f-0d62-4c25-838a-2e08a1df8601
 
 PUT {{host}}/api/monthlyBillings/{{monthlyBillingId}}/plans/{{planId}}/expenses/{{expenseId}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1N2E5YjNlYi0xNzk2LTRlMGQtYTZiNC1mYzEwYmQzZjkzYjIiLCJ1bmlxdWVfbmFtZSI6IjU3YTliM2ViLTE3OTYtNGUwZC1hNmI0LWZjMTBiZDNmOTNiMiIsIm5iZiI6MTY5NzE0NDExMSwiZXhwIjoxNjk3MTQ1MzExLCJpc3MiOiJzbXVnZXQtaXNzdWVyIiwiYXVkIjoic211Z2V0LWF1ZGllbmNlIn0.GkZ_Y73COw8Vt9P51JvLquLBUxdsEQCm_bpefZ2ziDo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImNhMjI5Mzk3LThkMzgtNDQ5MS05NmI2LWU3YmJjMjM5YTc5YyIsImp0aSI6IjdlOGIyMDBhLTM0ODktNGYwOC04YjFiLTI2YWJjZDI2ZjI3YiIsImVtYWlsIjoicGFua3VuaWsyQHBhbmt1bmlrLnBsIiwiaWQiOiJjYTIyOTM5Ny04ZDM4LTQ0OTEtOTZiNi1lN2JiYzIzOWE3OWMiLCJuYmYiOjE2OTgyOTQ1NDQsImV4cCI6MTY5ODI5NDg0NCwiaXNzIjoic211Z2V0LWlzc3VlciIsImF1ZCI6InNtdWdldC1hdWRpZW5jZSJ9.LwLC8LD1YbWvc1Hd4Rw6wFmj1xB153p2oB3-SbJU5WE
 Content-Type: application/json
 
 {
     "moneyAmount": 85.45,
     "currency": "PLN",
-    "expenseDate": "2023-10-15T16:54:11+00:00",
-    "description": "Lidl"
+    "expenseDate": "2023-11-04",
+    "description": "Walmart"
 }

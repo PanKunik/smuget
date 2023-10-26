@@ -926,7 +926,7 @@ public sealed class MonthlyBillingTests
         Expense expense = new Expense(
             new ExpenseId(Guid.NewGuid()),
             new Money(125.0M, new Currency("PLN")),
-            new DateTimeOffset(new DateTime(2023, 3, 6)),
+            new DateOnly(2023, 3, 6),
             "eBay"
         );
 
@@ -1006,7 +1006,7 @@ public sealed class MonthlyBillingTests
                 12376.23m,
                 new Currency("PLN")
             ),
-            new DateTimeOffset(new DateTime(2023, 5, 13, 23, 33, 21)),
+            new DateOnly(2023, 5, 13),
             "Updated description"
         );
 
@@ -1031,7 +1031,7 @@ public sealed class MonthlyBillingTests
                 12376.23m,
                 new Currency("PLN")
             ),
-            new DateTimeOffset(new DateTime(2023, 5, 13, 23, 33, 21)),
+            new DateOnly(2023, 5, 13),
             "Updated description"
         );
 

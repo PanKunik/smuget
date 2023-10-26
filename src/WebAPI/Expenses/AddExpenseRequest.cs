@@ -16,7 +16,7 @@ namespace WebAPI.Expenses;
 public sealed record AddExpenseRequest(
     decimal Money,
     string Currency,
-    DateTimeOffset ExpenseDate,
+    DateOnly ExpenseDate,
     string Description
 );
 
@@ -28,7 +28,7 @@ public class AddExpenseRequestFilter : ISchemaFilter
         {
             ["Money"] = new OpenApiDouble(256.97),
             ["Currency"] = new OpenApiString("PLN"),
-            ["ExpenseDate"] = new OpenApiDateTime(new DateTimeOffset(new DateTime(2023, 09, 13, 15, 34, 11))),
+            ["ExpenseDate"] = new OpenApiDate(new DateTime(2023, 09, 13)),
             ["Description"] = new OpenApiString("Medicines")
         };
     }

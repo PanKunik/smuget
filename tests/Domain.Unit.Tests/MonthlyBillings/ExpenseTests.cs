@@ -14,7 +14,7 @@ public sealed class ExpenseTests
         var createExpense = () => new Expense(
             new ExpenseId(Guid.NewGuid()),
             new Money(172.04M, new Currency("EUR")),
-            new DateTimeOffset(new DateTime(2020, 9, 21)),
+            new DateOnly(2020, 9, 21),
             "Breaks"
         );
 
@@ -30,7 +30,7 @@ public sealed class ExpenseTests
             .Should()
             .Match<Expense>(
                 e => e.Description == "Breaks"
-                && e.ExpenseDate == new DateTimeOffset(new DateTime(2020, 9, 21))
+                && e.ExpenseDate == new DateOnly(2020, 9, 21)
                 && e.Money == new Money(172.04M, new Currency("EUR"))
             );
     }
@@ -45,7 +45,7 @@ public sealed class ExpenseTests
                 123.32M,
                 new Currency("USD")
             ),
-            new DateTimeOffset(),
+            new DateOnly(),
             "TEST DESCRIPTION"
         );
 
@@ -60,7 +60,7 @@ public sealed class ExpenseTests
         var createExpense = () => new Expense(
             new ExpenseId(Guid.NewGuid()),
             null,
-            new DateTimeOffset(new DateTime(2023, 1, 1)),
+            new DateOnly(2023, 1, 1),
             "Marketplace"
         );
 
@@ -81,7 +81,7 @@ public sealed class ExpenseTests
 
         var updateExpense = () => cut.Update(
             null,
-            new DateTimeOffset(new DateTime(2023, 9, 2, 15, 0, 9)),
+            new DateOnly(2023, 9, 2),
             "Updated description of a expense"
         );
 
@@ -106,7 +106,7 @@ public sealed class ExpenseTests
                 1234.56m,
                 new Currency("USD")
             ),
-            new DateTimeOffset(new DateTime(2023, 9, 2, 15, 0, 9)),
+            new DateOnly(2023, 9, 2),
             "Updated description of a expense"
         );
 
@@ -117,7 +117,7 @@ public sealed class ExpenseTests
                 e => e.Id == Constants.Expense.Id
                   && e.Money.Amount == 1234.56m
                   && e.Money.Currency.Value == "USD"
-                  && e.ExpenseDate == new DateTimeOffset(new DateTime(2023, 9, 2, 15, 0, 9))
+                  && e.ExpenseDate == new DateOnly(2023, 9, 2)
                   && e.Description == "Updated description of a expense"
             );
     }

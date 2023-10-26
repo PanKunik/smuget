@@ -7,7 +7,7 @@ public sealed record AddExpenseCommand(
     Guid PlanId,
     decimal Money,
     string Currency,
-    DateTimeOffset ExpenseDate,
+    DateOnly ExpenseDate,
     string Description,
     Guid UserId
 ) : ICommand;

@@ -72,7 +72,7 @@ public sealed class Plan
     internal void UpdateExpense(
         ExpenseId expenseId,
         Money money,
-        DateTimeOffset expenseDate,
+        DateOnly expenseDate,
         string description
     )
     {

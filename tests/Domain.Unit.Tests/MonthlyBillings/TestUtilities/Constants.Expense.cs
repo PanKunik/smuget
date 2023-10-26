@@ -8,7 +8,7 @@ public static partial class Constants
     public static class Expense
     {
         public static readonly ExpenseId Id = new(Guid.NewGuid());
-        public static readonly DateTimeOffset ExpenseDate = new(new DateTime(2023, 6, 15));
+        public static readonly DateOnly ExpenseDate = new DateOnly(2023, 6, 15);
         public static readonly Money Money = new(45.67M, new Currency("PLN"));
         public const string Descripiton = "Description";
 
@@ -18,7 +18,7 @@ public static partial class Constants
                 Money.Currency
             );
 
-        public static DateTimeOffset ExpenseDateFromIndex(int index)
+        public static DateOnly ExpenseDateFromIndex(int index)
             => ExpenseDate.AddDays(index);
 
         public static string DescripitonFromIndex(int index)
