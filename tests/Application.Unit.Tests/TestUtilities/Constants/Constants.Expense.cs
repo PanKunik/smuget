@@ -9,7 +9,7 @@ public static partial class Constants
         public static readonly Guid Id = new Guid(0, 0, 0, new byte[8] { 0, 0, 0, 0, 0, 0, 0, 1 });
         public const decimal Money = 928.54m;
         public const string Currency = "PLN";
-        public static readonly DateTimeOffset ExpenseDate = new DateTimeOffset(new DateTime(2023, 9, 15), new TimeSpan(1, 0, 0));
+        public static readonly DateOnly ExpenseDate = new DateOnly(2023, 9, 15);
         public const string Description = "A short description about the expense";
 
         public static ExpenseId IdFromIndex(byte index)
@@ -21,7 +21,7 @@ public static partial class Constants
                 new(Currency)
             );
 
-        public static DateTimeOffset ExpenseDateFromIndex(byte index)
+        public static DateOnly ExpenseDateFromIndex(byte index)
             => ExpenseDate.AddDays(index + 1);
 
         public static string DescriptionFromIndex(byte index)

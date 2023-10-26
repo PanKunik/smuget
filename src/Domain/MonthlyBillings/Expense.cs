@@ -6,14 +6,14 @@ public sealed class Expense
 {
     public ExpenseId Id { get; } = new ExpenseId(Guid.NewGuid());
     public Money Money { get; private set; }
-    public DateTimeOffset ExpenseDate { get; private set; }
+    public DateOnly ExpenseDate { get; private set; }
     public string Description { get; private set; }
     public bool Active { get; private set; } = true;
 
     public Expense(
         ExpenseId expenseId,
         Money money,
-        DateTimeOffset expenseDate,
+        DateOnly expenseDate,
         string description
     )
     {
@@ -44,7 +44,7 @@ public sealed class Expense
 
     internal void Update(
         Money money,
-        DateTimeOffset expenseDate,
+        DateOnly expenseDate,
         string description
     )
     {

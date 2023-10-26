@@ -10,6 +10,6 @@ namespace WebAPI.Expenses;
 public sealed record UpdateExpenseRequest(
     decimal MoneyAmount,
     string Currency,
-    DateTimeOffset ExpenseDate,
+    DateOnly ExpenseDate,
     string Description
 );

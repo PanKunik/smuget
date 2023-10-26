@@ -47,7 +47,7 @@ public sealed class ExpensesControllerTests
         var request = new AddExpenseRequest(
             154.09M,
             "USD",
-            new DateTimeOffset(new DateTime(2023, 4, 1)),
+            new DateOnly(2023, 4, 1),
             "Description"
         );
 
@@ -75,7 +75,7 @@ public sealed class ExpensesControllerTests
         var request = new AddExpenseRequest(
             154.09M,
             "USD",
-            new DateTimeOffset(new DateTime(2023, 4, 1)),
+            new DateOnly(2023, 4, 1),
             "Description"
         );
 
@@ -99,7 +99,7 @@ public sealed class ExpensesControllerTests
         var request = new AddExpenseRequest(
             154.09M,
             "USD",
-            new DateTimeOffset(new DateTime(2023, 4, 1)),
+            new DateOnly(2023, 4, 1),
             "Description"
         );
 
@@ -126,7 +126,7 @@ public sealed class ExpensesControllerTests
         var request = new AddExpenseRequest(
             125.04M,
             "PLN",
-            new DateTimeOffset(new DateTime(2023, 5, 1)),
+            new DateOnly(2023, 5, 1),
             "TEST"
         );
 
@@ -149,7 +149,7 @@ public sealed class ExpensesControllerTests
                       && c.PlanId == planId
                       && c.Money == 125.04M
                       && c.Currency == "PLN"
-                      && c.ExpenseDate == new DateTimeOffset(new DateTime(2023, 5, 1))
+                      && c.ExpenseDate == new DateOnly(2023, 5, 1)
                       && c.Description == "TEST"
                 ),
                 Arg.Any<CancellationToken>()
@@ -167,7 +167,7 @@ public sealed class ExpensesControllerTests
             new(
                 11.24m,
                 "USD",
-                new DateTimeOffset(DateTime.Now),
+                new DateOnly(),
                 "Updated description"
             )
         );
@@ -193,7 +193,7 @@ public sealed class ExpensesControllerTests
             new(
                 11.24m,
                 "USD",
-                new DateTimeOffset(DateTime.Now),
+                new DateOnly(),
                 "Updated description"
             )
         );
@@ -215,7 +215,7 @@ public sealed class ExpensesControllerTests
             new(
                 11.24m,
                 "USD",
-                new DateTimeOffset(DateTime.Now),
+                new DateOnly(),
                 "Updated description"
             )
         );

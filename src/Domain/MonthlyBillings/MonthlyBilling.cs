@@ -289,7 +289,7 @@ public sealed class MonthlyBilling
         PlanId planId,
         ExpenseId expenseId,
         Money money,
-        DateTimeOffset expenseDate,
+        DateOnly expenseDate,
         string description
     )
     {
