@@ -6,12 +6,11 @@ using Application.Abstractions.Authentication;
 using Application.Exceptions;
 using Application.Identity;
 using Domain.Users;
-using Infrastructure.Authentication;
 using Infrastructure.Exceptions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Infrastructure.Security;
+namespace Infrastructure.Authentication;
 
 internal sealed class Authenticator : IAuthenticator
 {
@@ -144,7 +143,7 @@ internal sealed class Authenticator : IAuthenticator
 
     private bool IsJwtWithValidSecurityAlgorithm(SecurityToken validatedToken)
     {
-        return (validatedToken is JwtSecurityToken jwtSecurityToken)
+        return validatedToken is JwtSecurityToken jwtSecurityToken
             && jwtSecurityToken.Header.Alg.Equals(
                 SecurityAlgorithms.HmacSha256,
                 StringComparison.InvariantCultureIgnoreCase

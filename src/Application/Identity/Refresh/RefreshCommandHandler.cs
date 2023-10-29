@@ -1,6 +1,5 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.CQRS;
-using Application.Abstractions.Security;
 using Application.Exceptions;
 using Domain.RefreshTokens;
 using Domain.Repositories;

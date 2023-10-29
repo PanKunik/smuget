@@ -1,4 +1,3 @@
-using Application.Abstractions.Security;
 using Application.Exceptions;
 using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;

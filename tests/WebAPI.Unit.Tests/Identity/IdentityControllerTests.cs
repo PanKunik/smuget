@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Abstractions.Authentication;
 using Application.Abstractions.CQRS;
-using Application.Abstractions.Security;
 using Application.Identity;
 using Application.Identity.Login;
 using Application.Identity.Logout;

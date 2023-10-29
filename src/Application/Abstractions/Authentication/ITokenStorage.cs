@@ -1,6 +1,6 @@
 using Application.Identity;
 
-namespace Application.Abstractions.Security;
+namespace Application.Abstractions.Authentication;
 
 public interface ITokenStorage
 {

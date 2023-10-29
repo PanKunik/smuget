@@ -3,6 +3,7 @@ using Domain.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using Application.Abstractions.Authentication;
+using Infrastructure.Authentication;
 
 namespace Infrastructure.Security;
 
