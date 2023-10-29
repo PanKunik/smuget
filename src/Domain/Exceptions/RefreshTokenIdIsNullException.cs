@@ -1,7 +1,10 @@
+using Domain.RefreshTokens;
+
 namespace Domain.Exceptions;
 
-public sealed class RefreshTokenIdIsNullException : SmugetException
+public sealed class RefreshTokenIdIsNullException
+    : RequiredFieldException
 {
     public RefreshTokenIdIsNullException()
-        : base("Refresh token id cannot be null.") { }
+        : base(nameof(RefreshTokenId)) { }
 }

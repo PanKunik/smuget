@@ -33,24 +33,38 @@ internal sealed class ExceptionMiddleware : IMiddleware
     {
         var (statusCode, error) = exception switch
         {
-            InvalidRefreshTokenException => (401,
+            ForbiddenException => (StatusCodes.Status403Forbidden,
                 new Error(
-                    "Invalid refresh token.",
-                    "InvalidRefreshToken",
+                    "Permission denied",
+                    "Forbidden",
                     context.Request.Path
                 )
             ),
-            InvalidAccessTokenException => (401,
+            IdentityException => (StatusCodes.Status401Unauthorized,
                 new Error(
-                    "Invalid access token.",
-                    "InvalidAccessToken",
+                    "Not authorized",
+                    "Identity",
                     context.Request.Path
                 )
             ),
-            IdentityException => (401,
+            ValidationException => (StatusCodes.Status422UnprocessableEntity,
                 new Error(
                     exception.Message,
-                    exception.GetType().Name?.Replace("Exception", "") ?? "Invalid identity",
+                    exception.GetType().Name?.Replace("Exception", "") ?? "UnprocessableEntity",
+                    context.Request.Path
+                )
+            ),
+            ConflictException => (StatusCodes.Status409Conflict,
+                new Error(
+                    exception.Message,
+                    exception.GetType().Name?.Replace("Exception", "") ?? "Conflict",
+                    context.Request.Path
+                )
+            ),
+            NotFoundException => (StatusCodes.Status404NotFound,
+                new Error(
+                    exception.Message,
+                    exception.GetType().Name?.Replace("Exception", "") ?? "NotFound",
                     context.Request.Path
                 )
             ),

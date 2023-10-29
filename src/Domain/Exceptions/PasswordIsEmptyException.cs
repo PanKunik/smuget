@@ -1,7 +1,10 @@
+using Domain.Users;
+
 namespace Domain.Exceptions;
 
-public sealed class PasswordIsEmptyException : SmugetException
+public sealed class PasswordIsEmptyException
+    : RequiredFieldException
 {
     public PasswordIsEmptyException()
-        : base("Password cannot be null or empty.") { }
+        : base(nameof(Password)) { }
 }

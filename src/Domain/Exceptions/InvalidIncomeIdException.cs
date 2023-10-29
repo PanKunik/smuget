@@ -1,7 +1,10 @@
+using Domain.MonthlyBillings;
+
 namespace Domain.Exceptions;
 
-public sealed class InvalidIncomeIdException : SmugetException
+public sealed class InvalidIncomeIdException
+    : RequiredFieldException
 {
     public InvalidIncomeIdException()
-        : base("Income id cannot be empty.") { }
+        : base(nameof(IncomeId)) { }
 }

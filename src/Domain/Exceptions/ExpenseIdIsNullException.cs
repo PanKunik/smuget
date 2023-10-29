@@ -1,7 +1,10 @@
+using Domain.MonthlyBillings;
+
 namespace Domain.Exceptions;
 
-public sealed class ExpenseIdIsNullException : SmugetException
+public sealed class ExpenseIdIsNullException
+    : RequiredFieldException
 {
     public ExpenseIdIsNullException()
-        : base("ExpenseId cannot be null.") { }
+        : base(nameof(ExpenseId)) { }
 }

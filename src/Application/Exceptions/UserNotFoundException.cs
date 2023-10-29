@@ -1,9 +1,17 @@
 using Domain.Exceptions;
+using Domain.Users;
 
 namespace Application.Exceptions;
 
-public sealed class UserNotFoundException : SmugetException
+public sealed class UserNotFoundException
+    : NotFoundException
 {
-    public UserNotFoundException()
-        : base("User with found id doesn't exist.") { }
+    public UserNotFoundException(
+        UserId userId
+    )
+        : base(
+            nameof(User),
+            nameof(UserId),
+            userId.Value.ToString()
+        ) { }
 }

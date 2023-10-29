@@ -1,7 +1,10 @@
+using Domain.Users;
+
 namespace Domain.Exceptions;
 
-public sealed class FirstNameIsNullException : SmugetException
+public sealed class FirstNameIsNullException
+    : RequiredFieldException
 {
     public FirstNameIsNullException()
-        : base("First name is cannot be null or empty.") { }
+        : base(nameof(FirstName)) { }
 }

@@ -1,7 +1,10 @@
+using Domain.MonthlyBillings;
+
 namespace Domain.Exceptions;
 
-public sealed class InvalidPlanIdException : SmugetException
+public sealed class InvalidPlanIdException
+    : RequiredFieldException
 {
     public InvalidPlanIdException()
-        : base("Plan id cannot be empty.") { }
+        : base(nameof(PlanId)) { }
 }

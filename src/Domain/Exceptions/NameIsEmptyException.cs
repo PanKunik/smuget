@@ -1,7 +1,10 @@
+using Domain.MonthlyBillings;
+
 namespace Domain.Exceptions;
 
-public sealed class NameIsEmptyException : SmugetException
+public sealed class NameIsEmptyException
+    : RequiredFieldException
 {
     public NameIsEmptyException()
-        : base("Name of the income cannot be null or empty.") { }
+        : base(nameof(Name)) { }
 }

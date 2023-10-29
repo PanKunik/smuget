@@ -1,7 +1,10 @@
+using Domain.MonthlyBillings;
+
 namespace Domain.Exceptions;
 
-public sealed class CurrencyIsNullException : SmugetException
+public sealed class CurrencyIsNullException
+    : RequiredFieldException
 {
     public CurrencyIsNullException()
-        : base("Currency cannot be null or empty.") { }
+        : base(nameof(Currency)) { }
 }

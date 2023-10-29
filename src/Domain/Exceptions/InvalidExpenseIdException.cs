@@ -1,7 +1,10 @@
+using Domain.MonthlyBillings;
+
 namespace Domain.Exceptions;
 
-public sealed class InvalidExpenseIdException : SmugetException
+public sealed class InvalidExpenseIdException
+    : RequiredFieldException
 {
     public InvalidExpenseIdException()
-        : base("Expense id cannot be empty.") { }
+        : base(nameof(ExpenseId)) { }
 }

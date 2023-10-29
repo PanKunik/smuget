@@ -141,7 +141,10 @@ public sealed class MonthlyBilling
     {
         if (_incomes.Any(i => i.Name.Equals(income.Name)))
         {
-            throw new IncomeNameNotUniqueException(income.Name.Value);
+            throw new IncomeNameNotUniqueException(
+                nameof(income.Name),
+                income.Name.Value
+            );
         }
     }
 
@@ -164,7 +167,7 @@ public sealed class MonthlyBilling
         ThrowIfMonthlyBillingIsClosed();
 
         var incomeToUpdate = _incomes?.Find(i => i.Id == incomeId && i.Active)
-            ?? throw new IncomeNotFoundException();
+            ?? throw new IncomeNotFoundException(incomeId);
 
         incomeToUpdate.Update(
             name,
@@ -189,7 +192,7 @@ public sealed class MonthlyBilling
         ThrowIfIncomeIdIsNull(incomeId);
 
         var incomeToRemove = _incomes?.Find(i => i.Id == incomeId && i.Active)
-            ?? throw new IncomeNotFoundException();
+            ?? throw new IncomeNotFoundException(incomeId);
 
         incomeToRemove.Remove();
     }
@@ -216,7 +219,10 @@ public sealed class MonthlyBilling
     {
         if (_plans.Any(p => p.Category.Equals(plan.Category)))
         {
-            throw new PlanCategoryNotUniqueException(plan.Category.Value);
+            throw new PlanCategoryNotUniqueException(
+                nameof(plan.Category),
+                plan.Category.Value
+            );
         }
     }
 
@@ -231,7 +237,7 @@ public sealed class MonthlyBilling
         ThrowIfPlanIdIsNull(planId);
 
         var planToUpdate = _plans?.Find(p => p.Id == planId && p.Active)
-            ?? throw new PlanNotFoundException();
+            ?? throw new PlanNotFoundException(planId);
 
         planToUpdate.Update(
             category,
@@ -256,7 +262,7 @@ public sealed class MonthlyBilling
         ThrowIfPlanIdIsNull(planId);
 
         var planToRemove = _plans?.Find(i => i.Id == planId && i.Active)
-            ?? throw new PlanNotFoundException();
+            ?? throw new PlanNotFoundException(planId);
 
         planToRemove.Remove();
     }
@@ -272,7 +278,7 @@ public sealed class MonthlyBilling
         ThrowIfCurrencyMismatched(expense.Money.Currency);
 
         var plan = _plans?.Find(p => p.Id == planId && p.Active)
-            ?? throw new PlanNotFoundException();
+            ?? throw new PlanNotFoundException(planId);
 
         plan.AddExpense(expense);
     }
@@ -296,7 +302,7 @@ public sealed class MonthlyBilling
         ThrowIfPlanIdIsNull(planId);
 
         var planToUpdateExpense = _plans?.Find(p => p.Id == planId && p.Active)
-            ?? throw new PlanNotFoundException();
+            ?? throw new PlanNotFoundException(planId);
 
         planToUpdateExpense.UpdateExpense(
             expenseId,
@@ -315,7 +321,7 @@ public sealed class MonthlyBilling
         ThrowIfPlanIdIsNull(planId);
 
         var planToRemoveExpense = _plans?.Find(p => p.Id == planId && p.Active)
-            ?? throw new PlanNotFoundException();
+            ?? throw new PlanNotFoundException(planId);
 
         planToRemoveExpense.RemoveExpense(expenseId);
     }

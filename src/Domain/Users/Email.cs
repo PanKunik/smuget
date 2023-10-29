@@ -37,7 +37,6 @@ public sealed record Email
         if (value.Length > MaximumLengthOfEmail)
         {
             throw new EmailIsTooLongException(
-                value.Length,
                 MaximumLengthOfEmail
             );
         }

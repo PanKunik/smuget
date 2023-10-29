@@ -1,7 +1,10 @@
+using Domain.MonthlyBillings;
+
 namespace Domain.Exceptions;
 
-public sealed class MonthlyBillingIdIsNullException : SmugetException
+public sealed class MonthlyBillingIdIsNullException
+    : RequiredFieldException
 {
     public MonthlyBillingIdIsNullException()
-        : base("Monthly billing id cannot be null or empty.") { }
+        : base(nameof(MonthlyBillingId)) { }
 }

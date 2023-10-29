@@ -27,7 +27,6 @@ public sealed record Password
         if (value.Length > MaximumPasswordLength)
         {
             throw new PasswordIsTooLongException(
-                value.Length,
                 MaximumPasswordLength
             );
         }
@@ -37,7 +36,10 @@ public sealed record Password
     {
         if (value.Length < MinimumPasswordLength)
         {
-            throw new PasswordIsTooShortException();
+            throw new PasswordIsTooShortException(
+                MinimumPasswordLength,
+                MaximumPasswordLength
+            );
         }
     }
 

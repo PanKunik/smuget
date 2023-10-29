@@ -1,12 +1,16 @@
 namespace Domain.Exceptions;
 
-public sealed class InvalidYearException : SmugetException
+public sealed class InvalidYearException
+    : ValidationException
 {
-    public int Value { get; }
+    public int Year { get; }
 
-    public InvalidYearException(int value)
-        : base($"Year must be an integer number greater than 1900. Passed: {value}.")
+    public InvalidYearException(int year)
+        : base(
+            $"Year must be an integer number greater than 1900. Passed: {year}.",
+            nameof(Year)
+        )
     {
-        Value = value;
+        Year = year;
     }
 }

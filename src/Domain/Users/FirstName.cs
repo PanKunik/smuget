@@ -30,7 +30,6 @@ public sealed record FirstName
         if (value.Length > MaximumLengthOfFirstName)
         {
             throw new FirstNameIsTooLongException(
-                value.Length,
                 MaximumLengthOfFirstName
             );
         }

@@ -1,5 +1,6 @@
 using Application.Abstractions.CQRS;
 using Application.Exceptions;
+using Domain.MonthlyBillings;
 using Domain.Repositories;
 
 namespace Application.MonthlyBillings.UpdateExpense;
@@ -20,10 +21,14 @@ public sealed class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseC
         CancellationToken cancellationToken = default
     )
     {
+        MonthlyBillingId monthlyBillingId = new(command.MonthlyBillingId);
+
         var entity = await _repository.GetById(
-            new(command.MonthlyBillingId),
+            monthlyBillingId,
             new(command.UserId)
-        ) ?? throw new MonthlyBillingNotFoundException();
+        ) ?? throw new MonthlyBillingNotFoundException(
+            monthlyBillingId
+        );
 
         entity.UpdateExpense(
             new(command.PlanId),

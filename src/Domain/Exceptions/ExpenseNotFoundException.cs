@@ -1,8 +1,14 @@
+using Domain.MonthlyBillings;
+
 namespace Domain.Exceptions;
 
 public sealed class ExpenseNotFoundException
-    : SmugetException
+    : NotFoundException
 {
-    public ExpenseNotFoundException()
-        : base("Expense with passed id doesn't exist in monthly billing.") { }
+    public ExpenseNotFoundException(ExpenseId expenseId)
+        : base(
+            nameof(Expense),
+            nameof(ExpenseId),
+            expenseId.Value.ToString()
+        ) { }
 }

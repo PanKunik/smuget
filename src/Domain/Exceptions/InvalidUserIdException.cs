@@ -1,7 +1,10 @@
+using Domain.Users;
+
 namespace Domain.Exceptions;
 
-public sealed class InvalidUserIdException : SmugetException
+public sealed class InvalidUserIdException
+    : RequiredFieldException
 {
     public InvalidUserIdException()
-        : base("User id cannot be empty.") { }
+        : base(nameof(UserId)) { }
 }

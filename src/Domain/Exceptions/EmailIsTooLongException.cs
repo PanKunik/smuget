@@ -1,7 +1,13 @@
+using Domain.Users;
+
 namespace Domain.Exceptions;
 
-public sealed class EmailIsTooLongException : SmugetException
+public sealed class EmailIsTooLongException
+    : InvalidFieldLengthException
 {
-    public EmailIsTooLongException(int passedLength, int maxLength)
-        : base($"Email can have maximum of {maxLength} characters. Passed value has {passedLength}.") { }
+    public EmailIsTooLongException(int maxLength)
+        : base(
+            nameof(Email),
+            maxLength
+        ) { }
 }

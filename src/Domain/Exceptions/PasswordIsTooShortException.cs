@@ -1,7 +1,17 @@
+using Domain.Users;
+
 namespace Domain.Exceptions;
 
-public sealed class PasswordIsTooShortException : SmugetException
+public sealed class PasswordIsTooShortException
+    : InvalidFieldLengthException
 {
-    public PasswordIsTooShortException()
-        : base("Password should be at lease 8 characters long.") { }
+    public PasswordIsTooShortException(
+        int minLength,
+        int maxLength
+    )
+        : base(
+            nameof(Password),
+            minLength,
+            maxLength
+        ) { }
 }

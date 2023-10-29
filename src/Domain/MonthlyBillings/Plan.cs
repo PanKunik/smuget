@@ -79,7 +79,9 @@ public sealed class Plan
         ThrowIfExpenseIdIsNull(expenseId);
 
         var expenseToUpdate = _expenses?.Find(e => e.Id == expenseId && e.Active)
-            ?? throw new ExpenseNotFoundException();
+            ?? throw new ExpenseNotFoundException(
+                expenseId
+            );
 
         expenseToUpdate.Update(
             money,
@@ -93,7 +95,7 @@ public sealed class Plan
         ThrowIfExpenseIdIsNull(expenseId);
 
         var expenseToRemove = _expenses?.Find(e => e.Id == expenseId && e.Active)
-            ?? throw new ExpenseNotFoundException();
+            ?? throw new ExpenseNotFoundException(expenseId);
 
         expenseToRemove.Remove();
     }

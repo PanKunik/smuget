@@ -1,8 +1,7 @@
-using Domain.Exceptions;
-
 namespace Application.Exceptions;
 
-public sealed class InvalidCredentialsException : SmugetException
+public sealed class InvalidCredentialsException
+    : IdentityException
 {
     public InvalidCredentialsException()
         : base("Invalid credentials.") { }

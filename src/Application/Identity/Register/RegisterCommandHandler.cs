@@ -33,7 +33,9 @@ public sealed class RegisterCommandHandler : ICommandHandler<RegisterCommand>
 
         if (entity is not null)
         {
-            throw new UserWithSameEmailAlreadyExistsException();
+            throw new UserWithSameEmailAlreadyExistsException(
+                email
+            );
         }
 
         var securedPassword = _passwordHasher.Secure(password.Value);

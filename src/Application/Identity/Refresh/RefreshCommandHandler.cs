@@ -36,7 +36,9 @@ public sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand>
         ) ?? throw new InvalidRefreshTokenException("Refresh token wasn't found.");
 
         var user = await _usersRepository.Get(existingRefreshToken.UserId)
-            ?? throw new UserNotFoundException();
+            ?? throw new UserNotFoundException(
+                existingRefreshToken.UserId
+            );
 
         if (existingRefreshToken.Used || existingRefreshToken.Invalidated)
         {

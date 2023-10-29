@@ -1,7 +1,13 @@
+using Domain.MonthlyBillings;
+
 namespace Domain.Exceptions;
 
-public sealed class NameIsToLongException : SmugetException
+public sealed class NameIsToLongException
+    : InvalidFieldLengthException
 {
-    public NameIsToLongException(int length, byte maxLength)
-        : base($"Name is too long. It can contains max. {maxLength} characters. You passed: {length} characters.") { }
+    public NameIsToLongException(byte maxLength)
+        : base(
+            nameof(Name),
+            maxLength
+        ) { }
 }

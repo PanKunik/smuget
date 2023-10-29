@@ -1,7 +1,14 @@
+using Domain.MonthlyBillings;
+
 namespace Domain.Exceptions;
 
-public sealed class IncomeNotFoundException : SmugetException
+public sealed class IncomeNotFoundException
+    : NotFoundException
 {
-    public IncomeNotFoundException()
-        : base("Income with passed id doesn't exist in monthly billing.") { }
+    public IncomeNotFoundException(IncomeId incomeId)
+        : base(
+            nameof(Income),
+            nameof(IncomeId),
+            incomeId.Value.ToString()
+        ) { }
 }

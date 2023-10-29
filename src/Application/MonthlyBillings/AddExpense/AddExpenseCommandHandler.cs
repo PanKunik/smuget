@@ -21,10 +21,14 @@ public sealed class AddExpenseCommandHandler : ICommandHandler<AddExpenseCommand
         CancellationToken cancellationToken = default
     )
     {
+        MonthlyBillingId monthlyBillingId = new(command.MonthlyBillingId);
+
         var entity = await _repository.GetById(
-            new(command.MonthlyBillingId),
+            monthlyBillingId,
             new(command.UserId)
-        ) ?? throw new MonthlyBillingNotFoundException();
+        ) ?? throw new MonthlyBillingNotFoundException(
+            monthlyBillingId
+        );
 
         var expense = new Expense(
             new(Guid.NewGuid()),

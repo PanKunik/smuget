@@ -21,10 +21,14 @@ public sealed class AddIncomeCommandHandler : ICommandHandler<AddIncomeCommand>
         CancellationToken cancellationToken = default
     )
     {
+        MonthlyBillingId monthlyBillingId = new(command.MonthlyBillingId);
+
         var entity = await _repository.GetById(
-            new(command.MonthlyBillingId),
+            monthlyBillingId,
             new(command.UserId)
-        ) ?? throw new MonthlyBillingNotFoundException();
+        ) ?? throw new MonthlyBillingNotFoundException(
+            monthlyBillingId
+        );
 
         var income = new Income(
             new(Guid.NewGuid()),

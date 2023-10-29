@@ -1,7 +1,10 @@
+using Domain.Users;
+
 namespace Domain.Exceptions;
 
-public sealed class EmailIsEmptyException : SmugetException
+public sealed class EmailIsEmptyException
+    : RequiredFieldException
 {
     public EmailIsEmptyException()
-        : base("Email cannot be null or empty.") { }
+        : base(nameof(Email)) { }
 }

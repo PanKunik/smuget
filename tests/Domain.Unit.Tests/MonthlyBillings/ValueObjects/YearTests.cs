@@ -37,7 +37,7 @@ public sealed class YearTests
 
         // Act & Assert
         var exception = Assert.Throws<InvalidYearException>(createYear);
-        exception.Value
+        exception.Year
             .Should()
             .Be(value);
     }

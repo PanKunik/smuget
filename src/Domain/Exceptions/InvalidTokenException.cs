@@ -1,7 +1,8 @@
 namespace Domain.Exceptions;
 
-public sealed class InvalidTokenException : SmugetException
+public sealed class InvalidTokenException
+    : RequiredFieldException
 {
     public InvalidTokenException()
-        : base("Token cannot be null or empty.") { }
+        : base("token") { }
 }

@@ -1,15 +1,19 @@
+using Domain.MonthlyBillings;
+
 namespace Domain.Exceptions;
 
-public sealed class PlanCategoryNotUniqueException : SmugetException
+public sealed class PlanCategoryNotUniqueException
+    : ConflictException
 {
-    public string Category { get; }
 
     public PlanCategoryNotUniqueException(
-        string category
+        string key,
+        string keyValue
     )
-        : base($"Plan's category `{category}` already exists in monthly billing.")
-    {
-        Category = category;
-    }
+        : base(
+            nameof(Plan),
+            key,
+            keyValue
+        ) { }
 
 }
