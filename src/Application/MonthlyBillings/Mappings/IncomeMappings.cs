@@ -4,11 +4,11 @@ namespace Application.MonthlyBillings.Mappings;
 
 public static class IncomeMappings
 {
-    public static IncomeDTO ToDTO(this Income domain)
+    public static IncomeDTO? ToDTO(this Income domain)
     {
         if (domain is null)
         {
-            return null;
+            return null; //TODO: Throw?
         }
 
         return new IncomeDTO()

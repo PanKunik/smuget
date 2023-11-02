@@ -5,7 +5,8 @@ using Domain.Repositories;
 
 namespace Application.MonthlyBillings.RemoveIncome;
 
-public sealed class RemoveIncomeCommandHandler : ICommandHandler<RemoveIncomeCommand>
+public sealed class RemoveIncomeCommandHandler
+    : ICommandHandler<RemoveIncomeCommand>
 {
     private readonly IMonthlyBillingsRepository _repository;
 
@@ -13,7 +14,8 @@ public sealed class RemoveIncomeCommandHandler : ICommandHandler<RemoveIncomeCom
         IMonthlyBillingsRepository repository
     )
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _repository = repository
+            ?? throw new ArgumentNullException(nameof(repository));
     }
 
     public async Task HandleAsync(
@@ -24,11 +26,10 @@ public sealed class RemoveIncomeCommandHandler : ICommandHandler<RemoveIncomeCom
         MonthlyBillingId monthlyBillingId = new(command.MonthlyBillingId);
 
         var entity = await _repository.GetById(
-            monthlyBillingId,
-            new(command.UserId)
-        ) ?? throw new MonthlyBillingNotFoundException(
-            monthlyBillingId
-        );
+                monthlyBillingId,
+                new(command.UserId)
+            )
+            ?? throw new MonthlyBillingNotFoundException(monthlyBillingId);
 
         entity.RemoveIncome(new(command.IncomeId));
         await _repository.Save(entity);

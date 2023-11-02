@@ -10,9 +10,7 @@ public sealed record Password
 
     public string Value { get; }
 
-    public Password(
-        string value
-    )
+    public Password(string value)
     {
         ThrowIfPasswordIsTooLong(value);
         ThrowIfPasswordIsTooShort(value);
@@ -26,9 +24,7 @@ public sealed record Password
     {
         if (value.Length > MaximumPasswordLength)
         {
-            throw new PasswordIsTooLongException(
-                MaximumPasswordLength
-            );
+            throw new PasswordIsTooLongException(MaximumPasswordLength);
         }
     }
 

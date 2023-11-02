@@ -9,7 +9,8 @@ public class ConflictException
         string entityName,
         string key,
         string keyValue
-    ) : base($"Entity `{entityName}` with `{key} = {keyValue}` already exists.")
+    )
+        : base($"Entity `{entityName}` with `{key} = {keyValue}` already exists.")
     {
         EntityName = entityName;
     }
@@ -17,7 +18,8 @@ public class ConflictException
     public ConflictException(
         string message,
         string entityName
-    ) : base(message)
+    )
+        : base(message)
     {
         EntityName = entityName;
     }

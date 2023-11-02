@@ -16,7 +16,8 @@ namespace WebAPI.Identity;
 [Route("api/identity")]
 [Consumes("application/json")]
 [Produces("application/json")]
-public sealed class IdentityController : ControllerBase
+public sealed class IdentityController
+    : ControllerBase
 {
     private readonly ICommandHandler<RegisterCommand> _register;
     private readonly ICommandHandler<LoginCommand> _login;
@@ -35,12 +36,18 @@ public sealed class IdentityController : ControllerBase
         IUserService userService
     )
     {
-        _register = register;
-        _login = login;
-        _refresh = refresh;
-        _logout = logout;
-        _tokenStorage = tokenStorage;
-        _userService = userService;
+        _register = register
+            ?? throw new ArgumentNullException(nameof(register));
+        _login = login
+            ?? throw new ArgumentNullException(nameof(login));
+        _refresh = refresh
+            ?? throw new ArgumentNullException(nameof(refresh));
+        _logout = logout
+            ?? throw new ArgumentNullException(nameof(logout));
+        _tokenStorage = tokenStorage
+            ?? throw new ArgumentNullException(nameof(tokenStorage));
+        _userService = userService
+            ?? throw new ArgumentNullException(nameof(userService));
     }
 
     /// <summary>

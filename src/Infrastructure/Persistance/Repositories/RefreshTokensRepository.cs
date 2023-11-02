@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistance.Repositories;
 
-internal sealed class RefreshTokensRepository : IRefreshTokensRepository
+internal sealed class RefreshTokensRepository
+    : IRefreshTokensRepository
 {
     private readonly SmugetDbContext _dbContext;
 

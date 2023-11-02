@@ -6,7 +6,7 @@ namespace Application.Unit.Tests.MonthlyBillings.TestUtilities;
 public static class AddIncomeCommandUtilities
 {
     public static AddIncomeCommand CreateCommand()
-        => new AddIncomeCommand(
+        => new(
             Constants.MonthlyBilling.Id,
             Constants.Income.Name,
             Constants.Income.Amount,

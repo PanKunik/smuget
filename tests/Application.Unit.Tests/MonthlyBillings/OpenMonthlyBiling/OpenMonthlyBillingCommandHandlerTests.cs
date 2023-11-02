@@ -1,4 +1,3 @@
-using System.Data;
 using Application.Exceptions;
 using Application.MonthlyBillings.OpenMonthlyBilling;
 using Application.Unit.Tests.MonthlyBillings.TestUtilities;

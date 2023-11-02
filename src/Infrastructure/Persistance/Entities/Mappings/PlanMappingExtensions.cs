@@ -28,7 +28,10 @@ internal static class PlanMappingExtensions
         );
     }
 
-    public static PlanEntity ToEntity(this Plan domain, Guid monthlyBillingId)
+    public static PlanEntity ToEntity(
+        this Plan domain,
+        Guid monthlyBillingId
+    )
     {
         return new PlanEntity()
         {
@@ -39,10 +42,9 @@ internal static class PlanMappingExtensions
             SortOrder = domain.SortOrder,
             MonthlyBillingId = monthlyBillingId,
             Active = domain.Active,
-            Expenses = domain.Expenses.Select(
-                e => e.ToEntity(domain.Id.Value)
-            )
-            .ToList()
+            Expenses = domain.Expenses
+                .Select(e => e.ToEntity(domain.Id.Value))
+                .ToList()
         };
     }
 }

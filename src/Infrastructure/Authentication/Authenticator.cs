@@ -12,7 +12,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Authentication;
 
-internal sealed class Authenticator : IAuthenticator
+internal sealed class Authenticator
+    : IAuthenticator
 {
     private readonly string _issuer;
     private readonly string _audience;

@@ -27,9 +27,7 @@ public sealed record Category
     {
         if (value.Length > MaxLengthForCategoryName)
         {
-            throw new CategoryIsTooLongException(
-                MaxLengthForCategoryName
-            );
+            throw new CategoryIsTooLongException(MaxLengthForCategoryName);
         }
     }
 }

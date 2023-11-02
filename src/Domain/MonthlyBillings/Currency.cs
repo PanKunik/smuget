@@ -51,12 +51,18 @@ public sealed class Currency
         return Value.GetHashCode();
     }
 
-    public static bool operator ==(Currency left, Currency right)
+    public static bool operator ==(
+        Currency left,
+        Currency right
+    )
     {
         return Equals(left, right);
     }
 
-    public static bool operator !=(Currency left, Currency right)
+    public static bool operator !=(
+        Currency left,
+        Currency right
+    )
     {
         return !Equals(left, right);
     }

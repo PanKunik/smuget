@@ -3,7 +3,8 @@ using Microsoft.IO;
 
 namespace WebAPI.Middlewares;
 
-public sealed class HTTPLoggingMiddleware : IMiddleware
+public sealed class HTTPLoggingMiddleware
+    : IMiddleware
 {
     private readonly ILogger<HTTPLoggingMiddleware> _logger;
     private readonly RecyclableMemoryStreamManager _streamManager;
@@ -12,15 +13,22 @@ public sealed class HTTPLoggingMiddleware : IMiddleware
         ILogger<HTTPLoggingMiddleware> logger
     )
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger
+            ?? throw new ArgumentNullException(nameof(logger));
         _streamManager = new RecyclableMemoryStreamManager();
     }
 
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task InvokeAsync(
+        HttpContext context,
+        RequestDelegate next
+    )
     {
         var httpRequestId = Guid.NewGuid();
         context.Request.EnableBuffering();
-        await LogRequest(context, httpRequestId);
+        await LogRequest(
+            context,
+            httpRequestId
+        );
 
         var originalBodyStream = context.Response.Body;
         await using var responseStream = _streamManager.GetStream("response");
@@ -28,12 +36,18 @@ public sealed class HTTPLoggingMiddleware : IMiddleware
 
         await next.Invoke(context);
 
-        await LogResponse(context, httpRequestId);
+        await LogResponse(
+            context,
+            httpRequestId
+        );
         await responseStream.CopyToAsync(originalBodyStream);
         context.Response.Body = originalBodyStream;
     }
 
-    private async Task LogRequest(HttpContext context, Guid httpRequestId)
+    private async Task LogRequest(
+        HttpContext context,
+        Guid httpRequestId
+    )
     {
         var requestLogContent = new StringBuilder("Request:\r\n");
 
@@ -81,7 +95,10 @@ public sealed class HTTPLoggingMiddleware : IMiddleware
                 .Replace("\t", "");
     }
 
-    private async Task LogResponse(HttpContext context, Guid httpRequestId)
+    private async Task LogResponse(
+        HttpContext context,
+        Guid httpRequestId
+    )
     {
         var responseLogContent = new StringBuilder("Response:\r\n");
 

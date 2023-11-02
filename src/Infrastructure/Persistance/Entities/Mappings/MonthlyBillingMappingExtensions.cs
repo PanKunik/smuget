@@ -44,14 +44,12 @@ internal static class MonthlyBillingMappingExtensions
             State = domain.State.ToString(),
             Currency = domain.Currency.Value,
             UserId = domain.UserId.Value,
-            Plans = domain.Plans.Select(
-                p => p.ToEntity(domain.Id.Value)
-            )
-            .ToList(),
-            Incomes = domain.Incomes.Select(
-                i => i.ToEntity(domain.Id.Value)
-            )
-            .ToList()
+            Plans = domain.Plans
+                .Select(p => p.ToEntity(domain.Id.Value))
+                .ToList(),
+            Incomes = domain.Incomes
+                .Select(i => i.ToEntity(domain.Id.Value))
+                .ToList()
         };
     }
 }

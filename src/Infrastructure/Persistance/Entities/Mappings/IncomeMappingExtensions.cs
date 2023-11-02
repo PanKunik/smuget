@@ -22,7 +22,10 @@ internal static class IncomeMappingExtensions
         );
     }
 
-    public static IncomeEntity ToEntity(this Income domain, Guid monthlyBillingId)
+    public static IncomeEntity ToEntity(
+        this Income domain,
+        Guid monthlyBillingId
+    )
     {
         return new IncomeEntity()
         {

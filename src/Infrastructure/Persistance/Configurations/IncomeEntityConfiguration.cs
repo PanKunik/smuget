@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistance.Configurations;
 
-internal sealed class IncomeEntityConfiguration : IEntityTypeConfiguration<IncomeEntity>
+internal sealed class IncomeEntityConfiguration
+    : IEntityTypeConfiguration<IncomeEntity>
 {
     public void Configure(EntityTypeBuilder<IncomeEntity> builder)
     {

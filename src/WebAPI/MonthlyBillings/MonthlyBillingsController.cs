@@ -17,7 +17,8 @@ namespace WebAPI.MonthlyBillings;
 [Route("api/monthlyBillings")]
 [Consumes("application/json")]
 [Produces("application/json")]
-public sealed class MonthlyBillingsController : ControllerBase
+public sealed class MonthlyBillingsController
+    : ControllerBase
 {
     private readonly ICommandHandler<OpenMonthlyBillingCommand> _openMonthlyBilling;
     private readonly IQueryHandler<GetMonthlyBillingByYearAndMonthQuery, MonthlyBillingDTO> _getMonthlyBilling;
@@ -33,11 +34,16 @@ public sealed class MonthlyBillingsController : ControllerBase
         IUserService userService
     )
     {
-        _openMonthlyBilling = openMonthlyBilling;
-        _getMonthlyBilling = getMonthlyBilling;
-        _closeMonthlyBilling = closeMonthlyBilling;
-        _reopenMonthlyBilling = reopenMonthlyBilling;
-        _userService = userService;
+        _openMonthlyBilling = openMonthlyBilling
+            ?? throw new ArgumentNullException(nameof(openMonthlyBilling));
+        _getMonthlyBilling = getMonthlyBilling
+            ?? throw new ArgumentNullException(nameof(getMonthlyBilling));
+        _closeMonthlyBilling = closeMonthlyBilling
+            ?? throw new ArgumentNullException(nameof(closeMonthlyBilling));
+        _reopenMonthlyBilling = reopenMonthlyBilling
+            ?? throw new ArgumentNullException(nameof(reopenMonthlyBilling));
+        _userService = userService
+            ?? throw new ArgumentNullException(nameof(userService));
     }
 
     /// <summary>

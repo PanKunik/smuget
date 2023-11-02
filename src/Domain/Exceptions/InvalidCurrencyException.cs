@@ -5,9 +5,7 @@ public sealed class InvalidCurrencyException
 {
     public string Currency { get; }
 
-    public InvalidCurrencyException(
-        string currency
-    )
+    public InvalidCurrencyException(string currency)
         : base(
             $"There is no currency like `{currency}` supported in application.",
             nameof(Currency)

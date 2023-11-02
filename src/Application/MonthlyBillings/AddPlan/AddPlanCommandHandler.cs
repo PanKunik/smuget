@@ -5,7 +5,8 @@ using Domain.Repositories;
 
 namespace Application.MonthlyBillings.AddPlan;
 
-public sealed class AddPlanCommandHandler : ICommandHandler<AddPlanCommand>
+public sealed class AddPlanCommandHandler
+    : ICommandHandler<AddPlanCommand>
 {
     private readonly IMonthlyBillingsRepository _repository;
 
@@ -13,7 +14,8 @@ public sealed class AddPlanCommandHandler : ICommandHandler<AddPlanCommand>
         IMonthlyBillingsRepository repository
     )
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _repository = repository
+            ?? throw new ArgumentNullException(nameof(repository));
     }
 
     public async Task HandleAsync(
@@ -24,11 +26,10 @@ public sealed class AddPlanCommandHandler : ICommandHandler<AddPlanCommand>
         MonthlyBillingId monthlyBillingId = new(command.MonthlyBillingId);
 
         var entity = await _repository.GetById(
-            monthlyBillingId,
-            new(command.UserId)
-        ) ?? throw new MonthlyBillingNotFoundException(
-            monthlyBillingId
-        );
+                monthlyBillingId,
+                new(command.UserId)
+            )
+            ?? throw new MonthlyBillingNotFoundException(monthlyBillingId);
 
         var plan = new Plan(
             new(Guid.NewGuid()),

@@ -8,7 +8,6 @@ using Domain.RefreshTokens;
 using Domain.Repositories;
 using Domain.Users;
 using Application.Abstractions.Authentication;
-using System.Reflection.Metadata;
 
 namespace Application.Unit.Tests.Identity.Login;
 

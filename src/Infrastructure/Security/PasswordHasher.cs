@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Security;
 
-internal sealed class PasswordHasher : IPasswordHasher
+internal sealed class PasswordHasher
+    : IPasswordHasher
 {
     private readonly IPasswordHasher<User> _passwordHasher;
 
@@ -19,10 +20,13 @@ internal sealed class PasswordHasher : IPasswordHasher
                 password
             );
 
-    public bool Validate(string password, string securedPassword)
+    public bool Validate(
+        string password,
+        string securedPassword
+    )
         => _passwordHasher.VerifyHashedPassword(
-            default,
-            securedPassword,
-            password
-        ) == PasswordVerificationResult.Success; 
+                default,
+                securedPassword,
+                password
+            ) == PasswordVerificationResult.Success; 
 }

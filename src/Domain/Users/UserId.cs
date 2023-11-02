@@ -6,9 +6,7 @@ public sealed record UserId
 {
     public Guid Value { get; }
 
-    public UserId(
-        Guid value
-    )
+    public UserId(Guid value)
     {
         ThrowIfValueEqualsEmptyGuid(value);
         Value = value;

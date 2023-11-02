@@ -16,7 +16,8 @@ namespace WebAPI.Expenses;
 [Route("api/monthlyBillings/{monthlyBillingId}/plans/{planId}/expenses")]
 [Consumes("application/json")]
 [Produces("application/json")]
-public sealed class ExpensesController : ControllerBase
+public sealed class ExpensesController
+    : ControllerBase
 {
     private readonly ICommandHandler<AddExpenseCommand> _addExpense;
     private readonly ICommandHandler<UpdateExpenseCommand> _updateExpense;
@@ -30,10 +31,14 @@ public sealed class ExpensesController : ControllerBase
         IUserService userService
     )
     {
-        _addExpense = addExpense;
-        _updateExpense = updateExpense;
-        _removeExpense = removeExpense;
-        _userService = userService;
+        _addExpense = addExpense
+            ?? throw new ArgumentNullException(nameof(addExpense));
+        _updateExpense = updateExpense
+            ?? throw new ArgumentNullException(nameof(updateExpense));
+        _removeExpense = removeExpense
+            ?? throw new ArgumentNullException(nameof(removeExpense));
+        _userService = userService
+            ?? throw new ArgumentNullException(nameof(userService));
     }
 
     /// <summary>

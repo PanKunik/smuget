@@ -22,7 +22,10 @@ internal static class ExpenseMappingExtensions
         );
     }
 
-    public static ExpenseEntity ToEntity(this Expense domain, Guid planId)
+    public static ExpenseEntity ToEntity(
+        this Expense domain,
+        Guid planId
+    )
     {
         return new ExpenseEntity()
         {

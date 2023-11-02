@@ -4,12 +4,15 @@ using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.Authentication;
 
-internal sealed class HttpContextTokenStorage : ITokenStorage
+internal sealed class HttpContextTokenStorage
+    : ITokenStorage
 {
     private const string TokenKey = "jwt";
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public HttpContextTokenStorage(IHttpContextAccessor httpContextAccessor)
+    public HttpContextTokenStorage(
+        IHttpContextAccessor httpContextAccessor
+    )
     {
         _httpContextAccessor = httpContextAccessor;
     }

@@ -15,7 +15,8 @@ namespace WebAPI.Plans;
 [Route("api/monthlyBillings/{monthlyBillingId}/plans")]
 [Consumes("application/json")]
 [Produces("application/json")]
-public sealed class PlansController : ControllerBase
+public sealed class PlansController
+    : ControllerBase
 {
     private readonly ICommandHandler<AddPlanCommand> _addPlan;
     private readonly ICommandHandler<UpdatePlanCommand> _updatePlan;
@@ -29,10 +30,14 @@ public sealed class PlansController : ControllerBase
         IUserService userService
     )
     {
-        _addPlan = addPlan;
-        _updatePlan = updatePlan;
-        _removePlan = removePlan;
-        _userService = userService;
+        _addPlan = addPlan
+            ?? throw new ArgumentNullException(nameof(addPlan));
+        _updatePlan = updatePlan
+            ?? throw new ArgumentNullException(nameof(updatePlan));
+        _removePlan = removePlan
+            ?? throw new ArgumentNullException(nameof(removePlan));
+        _userService = userService
+            ?? throw new ArgumentNullException(nameof(userService));
     }
 
     /// <summary>

@@ -14,9 +14,7 @@ public sealed record Email
 
     public string Value { get; }
 
-    public Email(
-        string value
-    )
+    public Email(string value)
     {
         ThrowIfEmailIsNullOrEmpty(value);
         ThrowIfEmailIsTooLong(value);
@@ -36,9 +34,7 @@ public sealed record Email
     {
         if (value.Length > MaximumLengthOfEmail)
         {
-            throw new EmailIsTooLongException(
-                MaximumLengthOfEmail
-            );
+            throw new EmailIsTooLongException(MaximumLengthOfEmail);
         }
     }
 

@@ -1,5 +1,4 @@
 using Application.Abstractions.CQRS;
-using Application.MonthlyBillings;
 
 namespace Application.MonthlyBillings.GetByYearAndMonth;
 

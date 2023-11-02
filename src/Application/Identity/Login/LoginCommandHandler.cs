@@ -8,7 +8,8 @@ using Domain.Users;
 
 namespace Application.Identity.Login;
 
-public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
+public sealed class LoginCommandHandler
+    : ICommandHandler<LoginCommand>
 {
     private readonly IUsersRepository _usersRepository;
     private readonly IPasswordHasher _passwordHasher;
@@ -24,11 +25,16 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
         ITokenStorage tokenStorage
     )
     {
-        _usersRepository = repository;
-        _passwordHasher = passwordHasher;
-        _refreshTokensRepository = refreshTokensRepository;
-        _authenticator = authenticator;
-        _tokenStorage = tokenStorage;
+        _usersRepository = repository
+            ?? throw new ArgumentNullException(nameof(repository));
+        _passwordHasher = passwordHasher
+            ?? throw new ArgumentNullException(nameof(passwordHasher));
+        _refreshTokensRepository = refreshTokensRepository
+            ?? throw new ArgumentNullException(nameof(refreshTokensRepository));
+        _authenticator = authenticator
+            ?? throw new ArgumentNullException(nameof(authenticator));
+        _tokenStorage = tokenStorage
+            ?? throw new ArgumentNullException(nameof(tokenStorage));
     }
 
     public async Task HandleAsync(
@@ -45,18 +51,14 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand>
             throw new InvalidCredentialsException();
         }
 
-        var existingRefreshToken = await _refreshTokensRepository.GetActiveByUserId(
-            entity.Id.Value
-        );
+        var existingRefreshToken = await _refreshTokensRepository.GetActiveByUserId(entity.Id.Value);
 
         if (existingRefreshToken is not null)
         {
             throw new UserAlreadyLoggedInException();
         }
 
-        var token = _authenticator.CreateToken(
-            entity
-        );
+        var token = _authenticator.CreateToken(entity);
 
         var refreshTokenEntity = new RefreshToken(
             new(Guid.NewGuid()),

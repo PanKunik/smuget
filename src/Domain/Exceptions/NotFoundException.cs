@@ -9,7 +9,8 @@ public class NotFoundException
         string entityName,
         string key,
         string keyValue
-    ) : base($"Entity `{entityName}` with key `{key} = {keyValue}` couldn't be found.")
+    )
+        : base($"Entity `{entityName}` with key `{key} = {keyValue}` couldn't be found.")
     {
         EntityName = entityName;
     }
@@ -17,7 +18,8 @@ public class NotFoundException
     public NotFoundException(
         string message,
         string entityName
-    ) : base(message)
+    )
+        : base(message)
     {
         EntityName = entityName;
     }

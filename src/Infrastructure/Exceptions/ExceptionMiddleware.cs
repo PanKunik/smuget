@@ -5,7 +5,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Exceptions;
 
-internal sealed class ExceptionMiddleware : IMiddleware
+internal sealed class ExceptionMiddleware
+    : IMiddleware
 {
     private readonly ILogger<ExceptionMiddleware> _logger;
 
@@ -13,10 +14,14 @@ internal sealed class ExceptionMiddleware : IMiddleware
         ILogger<ExceptionMiddleware> logger
     )
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger
+            ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task InvokeAsync(
+        HttpContext context,
+        RequestDelegate next
+    )
     {
         try
         {
@@ -24,58 +29,75 @@ internal sealed class ExceptionMiddleware : IMiddleware
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, exception.Message);
-            await HandleExceptionAsync(exception, context);
+            _logger.LogError(
+                exception,
+                exception.Message
+            );
+
+            await HandleExceptionAsync(
+                exception,
+                context
+            );
         }
     }
 
-    private async Task HandleExceptionAsync(Exception exception, HttpContext context)
+    private async Task HandleExceptionAsync(
+        Exception exception,
+        HttpContext context
+    )
     {
         var (statusCode, error) = exception switch
         {
-            ForbiddenException => (StatusCodes.Status403Forbidden,
+            ForbiddenException => (
+                StatusCodes.Status403Forbidden,
                 new Error(
                     "Permission denied",
                     "Forbidden",
                     context.Request.Path
                 )
             ),
-            IdentityException => (StatusCodes.Status401Unauthorized,
+            IdentityException => (
+                StatusCodes.Status401Unauthorized,
                 new Error(
                     "Not authorized",
                     "Identity",
                     context.Request.Path
                 )
             ),
-            ValidationException => (StatusCodes.Status422UnprocessableEntity,
+            ValidationException => (
+                StatusCodes.Status422UnprocessableEntity,
                 new Error(
                     exception.Message,
                     exception.GetType().Name?.Replace("Exception", "") ?? "UnprocessableEntity",
                     context.Request.Path
                 )
             ),
-            ConflictException => (StatusCodes.Status409Conflict,
+            ConflictException => (
+                StatusCodes.Status409Conflict,
                 new Error(
                     exception.Message,
                     exception.GetType().Name?.Replace("Exception", "") ?? "Conflict",
                     context.Request.Path
                 )
             ),
-            NotFoundException => (StatusCodes.Status404NotFound,
+            NotFoundException => (
+                StatusCodes.Status404NotFound,
                 new Error(
                     exception.Message,
                     exception.GetType().Name?.Replace("Exception", "") ?? "NotFound",
                     context.Request.Path
                 )
             ),
-            SmugetException => (StatusCodes.Status400BadRequest,
+            SmugetException => (
+                StatusCodes.Status400BadRequest,
                 new Error(
                     exception.Message,
                     exception.GetType().Name?.Replace("Exception", "") ?? "Exception",
                     context.Request.Path
                 )
             ),
-            _ => (StatusCodes.Status500InternalServerError,
+            _ => (
+                StatusCodes.Status500InternalServerError,
                 new Error(
                     "Internal server error has occured. Please contact with administrator.",
                     "Exception",

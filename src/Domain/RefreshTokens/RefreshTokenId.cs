@@ -6,9 +6,7 @@ public sealed record RefreshTokenId
 {
     public Guid Value { get; }
 
-    public RefreshTokenId(
-        Guid value
-    )
+    public RefreshTokenId(Guid value)
     {
         ThrowIfValueIsEqualToEmptyGuid(value);
         Value = value;

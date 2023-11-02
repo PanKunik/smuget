@@ -20,9 +20,13 @@ public sealed record AddExpenseRequest(
     string Description
 );
 
-public class AddExpenseRequestFilter : ISchemaFilter
+public class AddExpenseRequestFilter
+    : ISchemaFilter
 {
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    public void Apply(
+        OpenApiSchema schema,
+        SchemaFilterContext context
+    )
     {
         schema.Example = new OpenApiObject()
         {

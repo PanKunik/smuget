@@ -5,7 +5,8 @@ using Domain.Repositories;
 
 namespace Application.MonthlyBillings.UpdateIncome;
 
-public sealed class UpdateIncomeCommandHandler : ICommandHandler<UpdateIncomeCommand>
+public sealed class UpdateIncomeCommandHandler
+    : ICommandHandler<UpdateIncomeCommand>
 {
     private readonly IMonthlyBillingsRepository _repository;
 
@@ -13,7 +14,8 @@ public sealed class UpdateIncomeCommandHandler : ICommandHandler<UpdateIncomeCom
         IMonthlyBillingsRepository repository
     )
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _repository = repository
+            ?? throw new ArgumentNullException(nameof(repository));
     }
 
     public async Task HandleAsync(
@@ -24,16 +26,18 @@ public sealed class UpdateIncomeCommandHandler : ICommandHandler<UpdateIncomeCom
         MonthlyBillingId monthlyBillingId = new(command.MonthlyBillingId);
 
         var entity = await _repository.GetById(
-            monthlyBillingId,
-            new(command.UserId)
-        ) ?? throw new MonthlyBillingNotFoundException(
-            monthlyBillingId
-        );
+                monthlyBillingId,
+                new(command.UserId)
+            )
+            ?? throw new MonthlyBillingNotFoundException(monthlyBillingId);
 
         entity.UpdateIncome(
             new(command.IncomeId),
             new(command.Name),
-            new(command.MoneyAmount, new(command.Currency)),
+            new(
+                command.MoneyAmount,
+                new(command.Currency)
+            ),
             command.Include
         );
         await _repository.Save(entity);

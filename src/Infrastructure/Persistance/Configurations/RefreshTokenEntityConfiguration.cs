@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistance.Configurations;
 
-internal sealed class RefreshTokenEntityConfiguration : IEntityTypeConfiguration<RefreshTokenEntity>
+internal sealed class RefreshTokenEntityConfiguration
+    : IEntityTypeConfiguration<RefreshTokenEntity>
 {
     public void Configure(EntityTypeBuilder<RefreshTokenEntity> builder)
     {

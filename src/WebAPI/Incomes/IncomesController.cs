@@ -15,7 +15,8 @@ namespace WebAPI.Incomes;
 [Route("api/monthlyBillings/{monthlyBillingId}/incomes")]
 [Consumes("application/json")]
 [Produces("application/json")]
-public sealed class IncomesController : ControllerBase
+public sealed class IncomesController
+    : ControllerBase
 {
     private readonly ICommandHandler<AddIncomeCommand> _addIncome;
     private readonly ICommandHandler<UpdateIncomeCommand> _updateIncome;
@@ -29,10 +30,14 @@ public sealed class IncomesController : ControllerBase
         IUserService userService
     )
     {
-        _addIncome = addIncome;
-        _updateIncome = updateIncome;
-        _removeIncome = removeIncome;
-        _userService = userService;
+        _addIncome = addIncome
+            ?? throw new ArgumentNullException(nameof(addIncome));
+        _updateIncome = updateIncome
+            ?? throw new ArgumentNullException(nameof(updateIncome));
+        _removeIncome = removeIncome
+            ?? throw new ArgumentNullException(nameof(removeIncome));
+        _userService = userService
+            ?? throw new ArgumentNullException(nameof(userService));
     }
 
     /// <summary>

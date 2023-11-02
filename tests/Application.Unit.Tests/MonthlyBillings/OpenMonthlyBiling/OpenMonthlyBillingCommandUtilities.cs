@@ -6,7 +6,7 @@ namespace Application.Unit.Tests.MonthlyBillings.TestUtilities;
 public static class OpenMonthlyBilingCommandUtilities
 {
     public static OpenMonthlyBillingCommand CreateCommand()
-        => new (
+        => new(
             Constants.MonthlyBilling.Year + 1,
             Constants.MonthlyBilling.Month + 1,
             Constants.MonthlyBilling.Currency,

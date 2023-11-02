@@ -6,9 +6,7 @@ namespace Application.Exceptions;
 public sealed class UserWithSameEmailAlreadyExistsException
     : ConflictException
 {
-    public UserWithSameEmailAlreadyExistsException(
-        Email email
-    )
+    public UserWithSameEmailAlreadyExistsException(Email email)
         : base(
             nameof(User),
             nameof(Email),

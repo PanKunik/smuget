@@ -16,7 +16,10 @@ public sealed record Money
         Currency = currency;
     }
 
-    public static Money operator +(Money left, Money right)
+    public static Money operator +(
+        Money left,
+        Money right
+    )
     {
         if (left.Currency != right.Currency)
         {
@@ -30,7 +33,10 @@ public sealed record Money
         return new Money(sum, left.Currency);
     }
 
-    public static Money operator -(Money left, Money right)
+    public static Money operator -(
+        Money left,
+        Money right
+    )
     {
         if (left.Currency != right.Currency)
         {

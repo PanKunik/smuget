@@ -6,7 +6,10 @@ namespace Infrastructure.Persistance;
 
 internal static class DbContextExtensions
 {
-    internal static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
+    internal static IServiceCollection AddDbContext(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         services.AddDbContext<SmugetDbContext>(
             c => c.UseNpgsql(configuration.GetConnectionString("smuget-db"))

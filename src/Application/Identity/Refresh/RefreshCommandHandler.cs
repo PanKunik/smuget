@@ -6,7 +6,8 @@ using Domain.Repositories;
 
 namespace Application.Identity.Refresh;
 
-public sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand>
+public sealed class RefreshCommandHandler
+    : ICommandHandler<RefreshCommand>
 {
     private readonly IUsersRepository _usersRepository;
     private readonly IRefreshTokensRepository _refreshTokensRepository;
@@ -20,10 +21,14 @@ public sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand>
         ITokenStorage tokenStorage
     )
     {
-        _usersRepository = repository;
-        _refreshTokensRepository = refreshTokensRepository;
-        _authenticator = authenticator;
-        _tokenStorage = tokenStorage;
+        _usersRepository = repository
+            ?? throw new ArgumentNullException(nameof(repository));
+        _refreshTokensRepository = refreshTokensRepository
+            ?? throw new ArgumentNullException(nameof(refreshTokensRepository));
+        _authenticator = authenticator
+            ?? throw new ArgumentNullException(nameof(authenticator));
+        _tokenStorage = tokenStorage
+            ?? throw new ArgumentNullException(nameof(tokenStorage));
     }
 
     public async Task HandleAsync(
@@ -31,14 +36,11 @@ public sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand>
         CancellationToken cancellationToken = default
     )
     {
-        var existingRefreshToken = await _refreshTokensRepository.Get(
-            command.RefreshToken
-        ) ?? throw new InvalidRefreshTokenException("Refresh token wasn't found.");
+        var existingRefreshToken = await _refreshTokensRepository.Get(command.RefreshToken)
+            ?? throw new InvalidRefreshTokenException("Refresh token wasn't found.");
 
         var user = await _usersRepository.Get(existingRefreshToken.UserId)
-            ?? throw new UserNotFoundException(
-                existingRefreshToken.UserId
-            );
+            ?? throw new UserNotFoundException(existingRefreshToken.UserId);
 
         if (existingRefreshToken.Used || existingRefreshToken.Invalidated)
         {

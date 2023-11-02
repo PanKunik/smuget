@@ -4,7 +4,8 @@ using Domain.Repositories;
 
 namespace Application.MonthlyBillings.CloseMonthlyBilling;
 
-public sealed class CloseMonthlyBillingCommandHandler : ICommandHandler<CloseMonthlyBillingCommand>
+public sealed class CloseMonthlyBillingCommandHandler
+    : ICommandHandler<CloseMonthlyBillingCommand>
 {
     private readonly IMonthlyBillingsRepository _repository;
 
@@ -12,7 +13,8 @@ public sealed class CloseMonthlyBillingCommandHandler : ICommandHandler<CloseMon
         IMonthlyBillingsRepository repository
     )
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _repository = repository
+            ?? throw new ArgumentNullException(nameof(repository));
     }
 
     public async Task HandleAsync(
@@ -21,10 +23,11 @@ public sealed class CloseMonthlyBillingCommandHandler : ICommandHandler<CloseMon
     )
     {
         var entity = await _repository.Get(
-            new(command.Year),
-            new(command.Month),
-            new(command.UserId)
-        ) ?? throw new MonthlyBillingNotFoundException(
+                new(command.Year),
+                new(command.Month),
+                new(command.UserId)
+            )
+            ?? throw new MonthlyBillingNotFoundException(
                 (ushort)command.Year,
                 (byte)command.Month
             );

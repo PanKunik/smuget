@@ -8,7 +8,10 @@ public abstract record Enumeration<T>
     public int Id { get; private set; }
     public string Name { get; private set; }
 
-    protected Enumeration(int id, string name)
+    protected Enumeration(
+        int id,
+        string name
+    )
     {
         Id = id;
         Name = name;
@@ -26,7 +29,12 @@ public abstract record Enumeration<T>
     public static T GetByName(string name)
     {
         return GetAll<T>()
-            .Single(s => s.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            .Single(
+                s => s.Name.Equals(
+                    name,
+                    StringComparison.InvariantCultureIgnoreCase
+                )
+            );
     }
 
     private static IEnumerable<T> GetAll<T>()

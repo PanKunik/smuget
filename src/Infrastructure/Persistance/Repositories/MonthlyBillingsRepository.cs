@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistance.Repositories;
 
-internal sealed class MonthlyBillingsRepository : IMonthlyBillingsRepository
+internal sealed class MonthlyBillingsRepository
+    : IMonthlyBillingsRepository
 {
     private readonly SmugetDbContext _dbContext;
 
@@ -127,7 +128,10 @@ internal sealed class MonthlyBillingsRepository : IMonthlyBillingsRepository
         }
     }
 
-    private async Task SaveExpenses(List<ExpenseEntity> existingExpenses, List<ExpenseEntity> expenseEntities)
+    private async Task SaveExpenses(
+        List<ExpenseEntity> existingExpenses,
+        List<ExpenseEntity> expenseEntities
+    )
     {
         foreach (var expenseEntity in expenseEntities)
         {

@@ -5,7 +5,16 @@ namespace Domain.Repositories;
 
 public interface IMonthlyBillingsRepository
 {
-    Task<MonthlyBilling?> Get(Year year, Month month, UserId userId);
-    Task<MonthlyBilling?> GetById(MonthlyBillingId monthlyBillingId, UserId userId);
+    Task<MonthlyBilling?> Get(
+        Year year,
+        Month month,
+        UserId userId
+    );
+
+    Task<MonthlyBilling?> GetById(
+        MonthlyBillingId monthlyBillingId,
+        UserId userId
+    );
+
     Task Save(MonthlyBilling monthlyBilling);
 }

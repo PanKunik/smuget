@@ -27,9 +27,7 @@ public sealed record Name
     {
         if (value.Length > MaximumNameLength)
         {
-            throw new NameIsToLongException(
-                MaximumNameLength
-            );
+            throw new NameIsToLongException(MaximumNameLength);
         }
     }
 }

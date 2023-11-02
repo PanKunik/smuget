@@ -15,7 +15,8 @@ public sealed class GetMonthlyBillingByYearAndMonthQueryHandler
         IMonthlyBillingsRepository repository
     )
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _repository = repository
+            ?? throw new ArgumentNullException(nameof(repository));
     }
 
     public async Task<MonthlyBillingDTO> HandleAsync(
@@ -24,10 +25,11 @@ public sealed class GetMonthlyBillingByYearAndMonthQueryHandler
     )
     {
         var entity = await _repository.Get(
-            new(query.Year),
-            new(query.Month),
-            new(query.UserId)
-        ) ?? throw new MonthlyBillingNotFoundException(
+                new(query.Year),
+                new(query.Month),
+                new(query.UserId)
+            )
+            ?? throw new MonthlyBillingNotFoundException(
                 query.Year,
                 query.Month
             );

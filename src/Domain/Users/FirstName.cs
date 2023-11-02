@@ -8,9 +8,7 @@ public sealed record FirstName
 
     public string Value { get; }
 
-    public FirstName(
-        string value
-    )
+    public FirstName(string value)
     {
         ThrowIfFirstNameIsNullOrWhiteSpace(value);
         ThrowIfFirstNameIsTooLong(value);
@@ -29,9 +27,7 @@ public sealed record FirstName
     {
         if (value.Length > MaximumLengthOfFirstName)
         {
-            throw new FirstNameIsTooLongException(
-                MaximumLengthOfFirstName
-            );
+            throw new FirstNameIsTooLongException(MaximumLengthOfFirstName);
         }
     }
 }

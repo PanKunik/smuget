@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistance;
 
-internal sealed class DatabaseInitializer : IHostedService
+internal sealed class DatabaseInitializer
+    : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
 

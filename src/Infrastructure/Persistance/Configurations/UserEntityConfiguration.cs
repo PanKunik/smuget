@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistance.Configurations;
 
-internal sealed class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
+internal sealed class UserEntityConfiguration
+    : IEntityTypeConfiguration<UserEntity>
 {
     public void Configure(EntityTypeBuilder<UserEntity> builder)
     {

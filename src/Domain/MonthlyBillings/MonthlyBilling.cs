@@ -125,7 +125,10 @@ public sealed class MonthlyBilling
     {
         if (State == State.Closed)
         {
-            throw new MonthlyBillingAlreadyClosedException(Month, Year);
+            throw new MonthlyBillingAlreadyClosedException(
+                Month,
+                Year
+            );
         }
     }
 
@@ -342,7 +345,10 @@ public sealed class MonthlyBilling
     {
         if (State == State.Open)
         {
-            throw new MonthlyBillingAlreadyOpenedException(Month, Year);
+            throw new MonthlyBillingAlreadyOpenedException(
+                Month,
+                Year
+            );
         }
     }
 }

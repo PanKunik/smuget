@@ -11,10 +11,11 @@ public sealed class MoneyCurrencyMismatchException
     public MoneyCurrencyMismatchException(
         Currency left,
         Currency right
-    ) : base(
-        $"Cannot add money in {nameof(left)} to money in {nameof(right)}.",
-        nameof(Currency)
     )
+        : base(
+            $"Cannot add money in {nameof(left)} to money in {nameof(right)}.",
+            nameof(Currency)
+        )
     {
         Left = left;
         Right = right;

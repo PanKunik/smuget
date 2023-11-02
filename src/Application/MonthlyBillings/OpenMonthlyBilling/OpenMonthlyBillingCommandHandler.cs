@@ -6,7 +6,8 @@ using Domain.Users;
 
 namespace Application.MonthlyBillings.OpenMonthlyBilling;
 
-public sealed class OpenMonthlyBillingCommandHandler : ICommandHandler<OpenMonthlyBillingCommand>
+public sealed class OpenMonthlyBillingCommandHandler
+    : ICommandHandler<OpenMonthlyBillingCommand>
 {
     private readonly IMonthlyBillingsRepository _repository;
 
@@ -14,7 +15,8 @@ public sealed class OpenMonthlyBillingCommandHandler : ICommandHandler<OpenMonth
         IMonthlyBillingsRepository repository
     )
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _repository = repository
+            ?? throw new ArgumentNullException(nameof(repository));
     }
 
     public async Task HandleAsync(

@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistance.Configurations;
 
-internal sealed class PlanEntityConfiguration : IEntityTypeConfiguration<PlanEntity>
+internal sealed class PlanEntityConfiguration
+    : IEntityTypeConfiguration<PlanEntity>
 {
     public void Configure(EntityTypeBuilder<PlanEntity> builder)
     {

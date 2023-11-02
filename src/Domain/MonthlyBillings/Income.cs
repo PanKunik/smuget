@@ -4,7 +4,7 @@ namespace Domain.MonthlyBillings;
 
 public sealed class Income // TODO: Make internal?
 {
-    public IncomeId Id { get; } = new IncomeId(Guid.NewGuid()); // TODO: Remove identity from this class
+    public IncomeId Id { get; } = new IncomeId(Guid.NewGuid());
     public Name Name { get; private set; }
     public Money Money { get; private set; }
     public bool Include { get; private set; }

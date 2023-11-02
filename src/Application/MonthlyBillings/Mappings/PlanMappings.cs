@@ -4,11 +4,11 @@ namespace Application.MonthlyBillings.Mappings;
 
 public static class PlanMappings
 {
-    public static PlanDTO ToDTO(this Plan domain)
+    public static PlanDTO? ToDTO(this Plan domain)
     {
         if (domain is null)
         {
-            return null;
+            return null; //TODO: Throw?
         }
 
         return new PlanDTO()
@@ -17,9 +17,9 @@ public static class PlanMappings
             Category = domain.Category.Value,
             Money = domain.Money.ToString(),
             SortOrder = domain.SortOrder,
-            Expenses = domain.Expenses
+            Expenses = domain.Expenses?
                 .Select(e => e.ToDTO())
-                .ToList(),
+                .ToList() ?? new List<ExpenseDTO?>(),
             SumOfExpenses = domain.SumOfExpenses
         };
     }

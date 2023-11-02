@@ -4,11 +4,11 @@ namespace Application.MonthlyBillings.Mappings;
 
 public static class ExpenseMappings
 {
-    public static ExpenseDTO ToDTO(this Expense domain)
+    public static ExpenseDTO? ToDTO(this Expense domain)
     {
         if (domain is null)
         {
-            return null;
+            return null; //TODO: Throw?
         }
 
         return new ExpenseDTO()

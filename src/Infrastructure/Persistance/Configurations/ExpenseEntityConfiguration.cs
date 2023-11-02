@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistance.Configurations;
 
-internal sealed class ExpenseEntityConfiguration : IEntityTypeConfiguration<ExpenseEntity>
+internal sealed class ExpenseEntityConfiguration
+    : IEntityTypeConfiguration<ExpenseEntity>
 {
     public void Configure(EntityTypeBuilder<ExpenseEntity> builder)
     {

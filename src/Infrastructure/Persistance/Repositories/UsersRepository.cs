@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistance.Repositories;
 
-internal sealed class UsersRepository : IUsersRepository
+internal sealed class UsersRepository
+    : IUsersRepository
 {
     private readonly SmugetDbContext _dbContext;
 

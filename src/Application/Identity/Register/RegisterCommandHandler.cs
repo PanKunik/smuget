@@ -6,7 +6,8 @@ using Domain.Users;
 
 namespace Application.Identity.Register;
 
-public sealed class RegisterCommandHandler : ICommandHandler<RegisterCommand>
+public sealed class RegisterCommandHandler
+    : ICommandHandler<RegisterCommand>
 {
     private readonly IUsersRepository _repository;
     private readonly IPasswordHasher _passwordHasher;
@@ -16,8 +17,10 @@ public sealed class RegisterCommandHandler : ICommandHandler<RegisterCommand>
         IPasswordHasher passwordHasher
     )
     {
-        _repository = repository;
-        _passwordHasher = passwordHasher;
+        _repository = repository
+            ?? throw new ArgumentNullException(nameof(repository));
+        _passwordHasher = passwordHasher
+            ?? throw new ArgumentNullException(nameof(passwordHasher));
     }
 
     public async Task HandleAsync(
@@ -33,9 +36,7 @@ public sealed class RegisterCommandHandler : ICommandHandler<RegisterCommand>
 
         if (entity is not null)
         {
-            throw new UserWithSameEmailAlreadyExistsException(
-                email
-            );
+            throw new UserWithSameEmailAlreadyExistsException(email);
         }
 
         var securedPassword = _passwordHasher.Secure(password.Value);

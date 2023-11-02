@@ -4,7 +4,8 @@ using Domain.Repositories;
 
 namespace Application.Identity.Logout;
 
-public sealed class LogoutCommandHandler : ICommandHandler<LogoutCommand>
+public sealed class LogoutCommandHandler
+    : ICommandHandler<LogoutCommand>
 {
     private readonly IRefreshTokensRepository _refreshTokensRepository;
 
@@ -12,7 +13,8 @@ public sealed class LogoutCommandHandler : ICommandHandler<LogoutCommand>
         IRefreshTokensRepository refreshTokensRepository
     )
     {
-        _refreshTokensRepository = refreshTokensRepository;
+        _refreshTokensRepository = refreshTokensRepository
+            ?? throw new ArgumentNullException(nameof(refreshTokensRepository));
     }
 
     public async Task HandleAsync(
@@ -20,9 +22,8 @@ public sealed class LogoutCommandHandler : ICommandHandler<LogoutCommand>
         CancellationToken cancellationToken = default
     )
     {
-        var existingRefreshToken = await _refreshTokensRepository.GetActiveByUserId(
-            command.UserId
-        ) ?? throw new UserAlreadyLoggedOutException();
+        var existingRefreshToken = await _refreshTokensRepository.GetActiveByUserId(command.UserId)
+            ?? throw new UserAlreadyLoggedOutException();
 
         if (existingRefreshToken.Token != command.RefreshToken)
         {

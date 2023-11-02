@@ -13,5 +13,5 @@ public sealed class MonthlyBillingAlreadyOpenedException
         : base(
             $"You already have opened monthly billing for `{month}/{year}`.",
             nameof(MonthlyBilling)
-            ) { }
+        ) { }
 }
