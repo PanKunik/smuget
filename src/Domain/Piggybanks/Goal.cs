@@ -1,6 +1,6 @@
 using Domain.Exceptions;
 
-namespace Domain.Piggybanks;
+namespace Domain.PiggyBanks;
 
 public sealed record Goal
 {

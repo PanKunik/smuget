@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Domain.Exceptions;
 using Domain.PiggyBanks;
 using Domain.Unit.Tests.PiggyBanks.TestUtilities;
@@ -99,7 +100,7 @@ public sealed class PiggyBankTests
     }
 
     [Fact]
-    public void PiggBank_WhenPassedWithGoalSetToTrueAndGoalLowerOrEqualToZero_ShouldThrowXYZ()
+    public void PiggyBank_WhenPassedWithGoalSetToTrueAndGoalLowerOrEqualToZero_ShouldThrowXYZ()
     {
         // Arrange
         var createPiggyBank = () => new PiggyBank(

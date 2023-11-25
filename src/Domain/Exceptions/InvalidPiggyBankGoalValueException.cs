@@ -1,4 +1,4 @@
-using Domain.Piggybanks;
+using Domain.PiggyBanks;
 
 namespace Domain.Exceptions;
 

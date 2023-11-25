@@ -1,21 +1,26 @@
 using Domain.Exceptions;
 using Domain.MonthlyBillings;
-using Domain.Piggybanks;
 
 namespace Domain.PiggyBanks;
 
 public sealed class PiggyBank
 {
+    private readonly List<Transaction> _transactions;
+
     public PiggyBankId Id { get; }
     public Name Name { get; }
     public bool WithGoal { get; }
     public Goal Goal { get; }
 
+    public IReadOnlyCollection<Transaction> Transactions
+        => _transactions.AsReadOnly();
+
     public PiggyBank(
         PiggyBankId piggyBankId,
         Name name,
         bool withGoal,
-        Goal goal
+        Goal goal,
+        List<Transaction> transactions = null
     )
     {
         ThrowIfPiggyBankIdIsNull(piggyBankId);
@@ -27,6 +32,8 @@ public sealed class PiggyBank
         WithGoal = withGoal;
         ThrowIfGoalIsPassedWhenPiggyBankMarkedAsWithoutGoal(withGoal, goal);
         Goal = goal;
+
+        _transactions = transactions ?? new List<Transaction>();
     }
 
     private void ThrowIfPiggyBankIdIsNull(PiggyBankId piggyBankId)

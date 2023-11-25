@@ -1,5 +1,5 @@
 using Domain.Exceptions;
-using Domain.Piggybanks;
+using Domain.PiggyBanks;
 
 namespace Domain.Unit.Tests.PiggyBanks.ValueObjects;
 
