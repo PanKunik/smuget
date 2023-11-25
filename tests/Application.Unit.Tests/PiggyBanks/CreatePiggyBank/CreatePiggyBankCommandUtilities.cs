@@ -9,6 +9,7 @@ public static class CreatePiggyBankCommandUtilities
         => new(
             "New piggybank name",
             Constants.PiggyBank.WithGoal,
-            Constants.PiggyBank.Goal
+            Constants.PiggyBank.Goal,
+            Constants.User.Id
         );
 }

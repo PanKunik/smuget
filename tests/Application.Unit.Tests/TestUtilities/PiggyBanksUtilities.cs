@@ -9,6 +9,7 @@ public static class PiggyBanksUtilities
             new(Constants.Constants.PiggyBank.Id),
             new(Constants.Constants.PiggyBank.Name),
             Constants.Constants.PiggyBank.WithGoal,
-            new(Constants.Constants.PiggyBank.Goal)
+            new(Constants.Constants.PiggyBank.Goal),
+            new(Constants.Constants.User.Id)
         );
 }

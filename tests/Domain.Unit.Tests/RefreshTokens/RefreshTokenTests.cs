@@ -1,6 +1,6 @@
 using Domain.Exceptions;
 using Domain.RefreshTokens;
-using Domain.Unit.Tests.MonthlyBillings.TestUtilities;
+using Domain.Unit.Tests.RefreshTokens.TestUtilities;
 
 namespace Domain.Unit.Tests.RefreshTokens;
 
@@ -18,7 +18,7 @@ public sealed class RefreshTokenTests
             Constants.RefreshToken.ExpirationDateTime,
             Constants.RefreshToken.Used,
             Constants.RefreshToken.Invalidated,
-            Constants.User.Id
+            Constants.RefreshToken.UserId
         );
 
         // Assert
@@ -45,7 +45,7 @@ public sealed class RefreshTokenTests
             Constants.RefreshToken.ExpirationDateTime,
             Constants.RefreshToken.Used,
             Constants.RefreshToken.Invalidated,
-            Constants.User.Id
+            Constants.RefreshToken.UserId
         );
 
         // Act & Assert
@@ -67,7 +67,7 @@ public sealed class RefreshTokenTests
             Constants.RefreshToken.ExpirationDateTime,
             Constants.RefreshToken.Used,
             Constants.RefreshToken.Invalidated,
-            Constants.User.Id
+            Constants.RefreshToken.UserId
         );
 
         // Act & Assert

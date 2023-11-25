@@ -1,7 +1,7 @@
 using System;
 using Domain.Users;
 
-namespace Domain.Unit.Tests.MonthlyBillings.TestUtilities;
+namespace Domain.Unit.Tests.Users.TestUtilities;
 
 public static partial class Constants
 {

@@ -4,6 +4,7 @@ using Application.PiggyBanks.CreatePiggyBank;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using WebAPI.PiggyBanks;
+using WebAPI.Services.Users;
 
 namespace WebAPI.Unit.Tests.PiggyBanks;
 
@@ -12,13 +13,16 @@ public sealed class PiggyBanksControllerTests
     private readonly PiggyBanksController _cut;
 
     private readonly ICommandHandler<CreatePiggyBankCommand> _mockCreateaPiggyBank;
+    private readonly IUserService _mockUserService;
 
     public PiggyBanksControllerTests()
     {
         _mockCreateaPiggyBank = Substitute.For<ICommandHandler<CreatePiggyBankCommand>>();
+        _mockUserService = Substitute.For<IUserService>();
 
         _cut = new PiggyBanksController(
-            _mockCreateaPiggyBank
+            _mockCreateaPiggyBank,
+            _mockUserService
         );
     }
 
@@ -68,7 +72,8 @@ public sealed class PiggyBanksControllerTests
     [Theory]
     [InlineData("New piggy bank", false, 0)]
     [InlineData("New piggy bank 2", true, 1500.23)]
-    [InlineData("Piggy", true, 0)]    public async Task Create_WhenInvoked_ShouldCallCreatePiggyBankCommandHandler(
+    [InlineData("Piggy", true, 0)]
+    public async Task Create_WhenInvoked_ShouldCallCreatePiggyBankCommandHandler(
         string name,
         bool withGoal,
         decimal goal

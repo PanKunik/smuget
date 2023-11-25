@@ -6,5 +6,6 @@ internal sealed class PiggyBankEntity
     public string Name { get; set; }
     public bool WithGoal { get; set; }
     public decimal Goal { get; set; }
+    public Guid UserId { get; set; }
     public List<TransactionEntity> Transactions { get; set; }
 }

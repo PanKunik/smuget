@@ -4,6 +4,7 @@ using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.Unit.Tests.PiggyBanks.CreatePiggyBank;
 
@@ -21,6 +22,9 @@ public sealed class CreatePiggyBankCommandHandlerTests
             .GetByName(
                 Arg.Is<Name>(
                     n => n.Value == Constants.PiggyBank.Name
+                ),
+                Arg.Is<UserId>(
+                    u => u.Value == Constants.User.Id
                 )
             )
             .Returns(PiggyBanksUtilities.CreatePiggyBank());
@@ -65,6 +69,9 @@ public sealed class CreatePiggyBankCommandHandlerTests
             .GetByName(
                 Arg.Is<Name>(
                     n => n.Value == command.Name
+                ),
+                Arg.Is<UserId>(
+                    u => u.Value == command.UserId
                 )
             );
     }
@@ -76,7 +83,8 @@ public sealed class CreatePiggyBankCommandHandlerTests
         var command = new CreatePiggyBankCommand(
             Constants.PiggyBank.Name,
             Constants.PiggyBank.WithGoal,
-            Constants.PiggyBank.Goal
+            Constants.PiggyBank.Goal,
+            Constants.User.Id
         );
 
         var handle = async () => await _cut.HandleAsync(

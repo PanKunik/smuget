@@ -33,6 +33,10 @@ internal sealed class PiggyBankEntityConfiguration
             .IsRequired();
 
         builder
+            .Property(p => p.UserId)
+            .IsRequired();
+
+        builder
             .HasMany(p => p.Transactions)
             .WithOne()
             .HasForeignKey(t => t.PiggyBankId)

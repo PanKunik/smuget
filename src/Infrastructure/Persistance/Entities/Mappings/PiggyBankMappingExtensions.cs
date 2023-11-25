@@ -16,6 +16,7 @@ internal static class PiggyBankMappingExtensions
             new(entity.Name),
             entity.WithGoal,
             new(entity.Goal),
+            new(entity.UserId),
             entity.Transactions
                 .ConvertAll(t => t.ToDomain())
         );
@@ -29,6 +30,7 @@ internal static class PiggyBankMappingExtensions
             Name = domain.Name.Value,
             WithGoal = domain.WithGoal,
             Goal = domain.Goal.Value,
+            UserId = domain.UserId.Value,
             Transactions = domain.Transactions
                 .Select(t => t.ToEntity(domain.Id.Value))
                 .ToList()

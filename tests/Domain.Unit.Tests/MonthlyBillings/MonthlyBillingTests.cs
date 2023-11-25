@@ -52,7 +52,7 @@ public sealed class MonthlyBillingTests
                 Constants.MonthlyBilling.Month,
                 Constants.MonthlyBilling.Currency,
                 Constants.MonthlyBilling.State,
-                Constants.User.Id
+                Constants.MonthlyBilling.UserId
             );
 
         // Act & Assert
@@ -70,7 +70,7 @@ public sealed class MonthlyBillingTests
                 null,
                 Constants.MonthlyBilling.Currency,
                 Constants.MonthlyBilling.State,
-                Constants.User.Id
+                Constants.MonthlyBilling.UserId
             );
 
         // Act & Assert
@@ -106,7 +106,7 @@ public sealed class MonthlyBillingTests
                 Constants.MonthlyBilling.Month,
                 null,
                 Constants.MonthlyBilling.State,
-                Constants.User.Id
+                Constants.MonthlyBilling.UserId
             );
 
         // Act & Assert
@@ -123,7 +123,7 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
-            Constants.User.Id
+            Constants.MonthlyBilling.UserId
         );
 
         // Act
@@ -215,7 +215,7 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
-            Constants.User.Id
+            Constants.MonthlyBilling.UserId
         );
 
         var addIncomeWithOtherCurrency = () => cut.AddIncome(
@@ -386,7 +386,7 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
-            Constants.User.Id
+            Constants.MonthlyBilling.UserId
         );
 
         // Act
@@ -423,7 +423,7 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
-            Constants.User.Id
+            Constants.MonthlyBilling.UserId
         );
 
         // Act
@@ -458,7 +458,7 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
-            Constants.User.Id
+            Constants.MonthlyBilling.UserId
         );
 
         // Act
@@ -499,7 +499,7 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
-            Constants.User.Id
+            Constants.MonthlyBilling.UserId
         );
 
         var plan = new Plan(
@@ -573,7 +573,7 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
-            Constants.User.Id
+            Constants.MonthlyBilling.UserId
         );
 
         var addPlanWithOtherCurrency = () => cut.AddPlan(
@@ -951,7 +951,7 @@ public sealed class MonthlyBillingTests
             Constants.MonthlyBilling.Month,
             Constants.MonthlyBilling.Currency,
             Constants.MonthlyBilling.State,
-            Constants.User.Id,
+            Constants.MonthlyBilling.UserId,
             plans: MonthlyBillingUtilities.CreatePlans()
         );
 

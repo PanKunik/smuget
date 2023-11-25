@@ -1,6 +1,7 @@
 using Domain.MonthlyBillings;
 using Domain.PiggyBanks;
 using Domain.Repositories;
+using Domain.Users;
 using Infrastructure.Persistance.Entities.Mappings;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,7 @@ internal sealed class PiggyBanksRepository
 
     public async Task<PiggyBank?> GetByName(
         Name name,
+        UserId userId,
         CancellationToken token = default
     )
     {
@@ -26,6 +28,7 @@ internal sealed class PiggyBanksRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(
                 p => p.Name == name.Value
+                  && p.UserId == userId.Value
             );
 
         return entity?.ToDomain();
@@ -39,6 +42,7 @@ internal sealed class PiggyBanksRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(
                 p => p.Id == piggyBank.Id.Value
+                  && p.UserId == piggyBank.UserId.Value
             );
 
         if (existingEntity is null)

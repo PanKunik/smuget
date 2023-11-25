@@ -3,6 +3,7 @@ using Application.PiggyBanks.CreatePiggyBank;
 using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Services.Users;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebAPI.PiggyBanks;
@@ -16,13 +17,17 @@ public sealed class PiggyBanksController
     : ControllerBase
 {
     private readonly ICommandHandler<CreatePiggyBankCommand> _createPiggyBank;
+    private readonly IUserService _userService;
 
     public PiggyBanksController(
-        ICommandHandler<CreatePiggyBankCommand> createPiggyBank
+        ICommandHandler<CreatePiggyBankCommand> createPiggyBank,
+        IUserService userService
     )
     {
         _createPiggyBank = createPiggyBank
             ?? throw new ArgumentNullException(nameof(createPiggyBank));
+        _userService = userService
+            ?? throw new ArgumentNullException(nameof(userService));
     }
 
     [HttpPost]
@@ -44,7 +49,8 @@ public sealed class PiggyBanksController
             new CreatePiggyBankCommand(
                 name,
                 withGoal,
-                goal
+                goal,
+                _userService.UserId
             ),
             token
         );

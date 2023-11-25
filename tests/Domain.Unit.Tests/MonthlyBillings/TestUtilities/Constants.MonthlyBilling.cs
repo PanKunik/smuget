@@ -1,5 +1,6 @@
 using System;
 using Domain.MonthlyBillings;
+using Domain.Users;
 
 namespace Domain.Unit.Tests.MonthlyBillings.TestUtilities;
 
@@ -12,5 +13,6 @@ public static partial class Constants
         public static readonly Month Month = new(2);
         public static readonly Currency Currency = new("PLN");
         public static readonly State State = State.Open;
+        public static readonly UserId UserId = new(new Guid(0, 0, 0, new byte[] { 0, 0, 0, 0, 0, 0, 0, 1 }));
     }
 }
