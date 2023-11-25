@@ -21,18 +21,23 @@ public sealed class MonthlyBillingTests
         var result = createMonthlyBilling();
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Match<MonthlyBilling>(
-              m => m.Year == new Year(2023)
-              && m.Month == new Month(2)
-              && m.Currency == new Currency("PLN")
-              && m.State == State.Open
-              && m.SumOfIncome == 11.75m
-              && m.SumOfIncomeAvailableForPlanning == 11.75m
-              && m.SumOfPlan == 12.5m
-              && m.SumOfExpenses == 137.01m
-              && m.SavingsForecast == -0.75m
-              && m.AccountBalance == -125.26m
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .Match<MonthlyBilling>(
+                m => m.Year == new Year(2023)
+                && m.Month == new Month(2)
+                && m.Currency == new Currency("PLN")
+                && m.State == State.Open
+                && m.SumOfIncome == 11.75m
+                && m.SumOfIncomeAvailableForPlanning == 11.75m
+                && m.SumOfPlan == 12.5m
+                && m.SumOfExpenses == 137.01m
+                && m.SavingsForecast == -0.75m
+                && m.AccountBalance == -125.26m
         );
     }
 
@@ -42,11 +47,11 @@ public sealed class MonthlyBillingTests
         // Arrange
         var createMonthlyBilling = ()
             => new MonthlyBilling(
-                new MonthlyBillingId(Guid.NewGuid()),
+                Constants.MonthlyBilling.Id,
                 null,
-                new Month(3),
-                new Currency("PLN"),
-                State.Open,
+                Constants.MonthlyBilling.Month,
+                Constants.MonthlyBilling.Currency,
+                Constants.MonthlyBilling.State,
                 Constants.User.Id
             );
 
@@ -60,11 +65,11 @@ public sealed class MonthlyBillingTests
         // Arrange
         var createMonthlyBilling = ()
             => new MonthlyBilling(
-                new MonthlyBillingId(Guid.NewGuid()),
-                new Year(2007),
+                Constants.MonthlyBilling.Id,
+                Constants.MonthlyBilling.Year,
                 null,
-                new Currency("PLN"),
-                State.Open,
+                Constants.MonthlyBilling.Currency,
+                Constants.MonthlyBilling.State,
                 Constants.User.Id
             );
 
@@ -78,11 +83,11 @@ public sealed class MonthlyBillingTests
         // Arrange
         var createMonthlyBilling = ()
             => new MonthlyBilling(
-                new MonthlyBillingId(Guid.NewGuid()),
-                new Year(2007),
-                new Month(3),
-                new Currency("PLN"),
-                State.Open,
+                Constants.MonthlyBilling.Id,
+                Constants.MonthlyBilling.Year,
+                Constants.MonthlyBilling.Month,
+                Constants.MonthlyBilling.Currency,
+                Constants.MonthlyBilling.State,
                 null
             );
 
@@ -96,11 +101,11 @@ public sealed class MonthlyBillingTests
         // Arrange
         var createMonthlyBilling = ()
             => new MonthlyBilling(
-                new MonthlyBillingId(Guid.NewGuid()),
-                new Year(2007),
-                new Month(3),
+                Constants.MonthlyBilling.Id,
+                Constants.MonthlyBilling.Year,
+                Constants.MonthlyBilling.Month,
                 null,
-                State.Open,
+                Constants.MonthlyBilling.State,
                 Constants.User.Id
             );
 

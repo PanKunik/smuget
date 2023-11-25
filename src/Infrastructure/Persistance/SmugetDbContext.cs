@@ -10,6 +10,7 @@ internal sealed class SmugetDbContext
         : base(options) { }
 
     public DbSet<MonthlyBillingEntity> MonthlyBillings { get; set; }
+    public DbSet<PiggyBankEntity> PiggyBanks { get; set; }
     public DbSet<UserEntity> Users { get; set; }
     public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }
 
