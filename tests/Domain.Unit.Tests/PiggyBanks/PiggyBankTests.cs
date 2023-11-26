@@ -39,7 +39,8 @@ public sealed class PiggyBankTests
             null,
             Constants.PiggyBank.Name,
             Constants.PiggyBank.WithGoal,
-            Constants.PiggyBank.Goal
+            Constants.PiggyBank.Goal,
+            Constants.PiggyBank.UserId
         );
 
         // Act & Assert
@@ -56,7 +57,8 @@ public sealed class PiggyBankTests
             Constants.PiggyBank.Id,
             null,
             Constants.PiggyBank.WithGoal,
-            Constants.PiggyBank.Goal
+            Constants.PiggyBank.Goal,
+            Constants.PiggyBank.UserId
         );
 
         // Act & Assert
@@ -73,13 +75,32 @@ public sealed class PiggyBankTests
             Constants.PiggyBank.Id,
             Constants.PiggyBank.Name,
             Constants.PiggyBank.WithGoal,
-            null
+            null,
+            Constants.PiggyBank.UserId
         );
 
         // Act & Assert
         createPiggyBank
             .Should()
             .ThrowExactly<GoalIsNullException>();
+    }
+
+    [Fact]
+    public void PiggyBank_WhenPassedNullUserId_ShouldThrowUserIdIsNullException()
+    {
+        // Arrange
+        var createPiggyBank = () => new PiggyBank(
+            Constants.PiggyBank.Id,
+            Constants.PiggyBank.Name,
+            Constants.PiggyBank.WithGoal,
+            Constants.PiggyBank.Goal,
+            null
+        );
+
+        // Act & Assert
+        createPiggyBank
+            .Should()
+            .ThrowExactly<UserIdIsNullException>();
     }
 
     [Fact]
@@ -90,7 +111,8 @@ public sealed class PiggyBankTests
             Constants.PiggyBank.Id,
             Constants.PiggyBank.Name,
             false,
-            new(1000m)
+            new(1000m),
+            Constants.PiggyBank.UserId
         );
 
         // Act & Assert
@@ -107,7 +129,8 @@ public sealed class PiggyBankTests
             Constants.PiggyBank.Id,
             Constants.PiggyBank.Name,
             true,
-            new(0m)
+            new(0m),
+            Constants.PiggyBank.UserId
         );
 
         // Act & Assert

@@ -3,6 +3,7 @@ using Application.Exceptions;
 using Domain.MonthlyBillings;
 using Domain.PiggyBanks;
 using Domain.Repositories;
+using Domain.Users;
 
 namespace Application.PiggyBanks.CreatePiggyBank;
 
@@ -15,7 +16,8 @@ public sealed class CreatePiggyBankCommandHandler
         IPiggyBanksRepository repository
     )
     {
-        _repository = repository;
+        _repository = repository
+            ?? throw new ArgumentNullException(nameof(repository));
     }
 
     public async Task HandleAsync(
@@ -24,9 +26,11 @@ public sealed class CreatePiggyBankCommandHandler
     )
     {
         var name = new Name(command.Name);
+        var userId = new UserId(command.UserId);
 
         var existingPiggyBankWithSameName = await _repository.GetByName(
             name,
+            userId,
             cancellationToken
         );
 
@@ -43,7 +47,8 @@ public sealed class CreatePiggyBankCommandHandler
             new(Guid.NewGuid()),
             name,
             command.WithGoal,
-            goal
+            goal,
+            userId
         );
 
         await _repository.Save(newPiggyBank);

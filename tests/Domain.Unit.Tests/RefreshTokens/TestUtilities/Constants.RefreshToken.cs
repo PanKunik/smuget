@@ -1,7 +1,8 @@
 using System;
 using Domain.RefreshTokens;
+using Domain.Users;
 
-namespace Domain.Unit.Tests.MonthlyBillings.TestUtilities;
+namespace Domain.Unit.Tests.RefreshTokens.TestUtilities;
 
 public static partial class Constants
 {
@@ -14,5 +15,6 @@ public static partial class Constants
         public static readonly DateTime ExpirationDateTime = DateTime.Now.AddDays(1);
         public const bool Used = false;
         public const bool Invalidated = false;
+        public static readonly UserId UserId = new(new Guid(0, 0, 0, new byte[] { 0, 0, 0, 0, 0, 0, 0, 1 }));
     }
 }
