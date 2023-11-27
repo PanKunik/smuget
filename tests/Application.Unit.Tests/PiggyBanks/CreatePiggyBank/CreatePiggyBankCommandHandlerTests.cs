@@ -3,6 +3,7 @@ using Application.PiggyBanks.CreatePiggyBank;
 using Application.Unit.Tests.TestUtilities;
 using Application.Unit.Tests.TestUtilities.Constants;
 using Domain.MonthlyBillings;
+using Domain.PiggyBanks;
 using Domain.Repositories;
 using Domain.Users;
 
@@ -96,5 +97,67 @@ public sealed class CreatePiggyBankCommandHandlerTests
         await handle
             .Should()
             .ThrowExactlyAsync<PiggyBankAlreadyExistsException>();
+    }
+
+    [Fact]
+    public async Task HandleAsync_OnSuccess_ShouldCallSaveOnRepositoryOnce()
+    {
+        // Arrange
+        var command = CreatePiggyBankCommandUtilities.CreateCommand();
+
+        // Act
+        await _cut.HandleAsync(
+            command,
+            default
+        );
+
+        // Assert
+        await _mockRepository
+            .Received(1)
+            .Save(Arg.Any<PiggyBank>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_OnSuccess_PassedArgumentShoudlContainNewTransaction()
+    {
+        // Arrange
+        PiggyBank passedArgument = null;
+
+        await _mockRepository
+            .Save(Arg.Do<PiggyBank>(p => passedArgument = p));
+
+        var command = new CreatePiggyBankCommand(
+            "New piggy bank 2",
+            Constants.PiggyBank.WithGoal,
+            Constants.PiggyBank.Goal,
+            Constants.User.Id
+        );
+
+        // Act
+        await _cut.HandleAsync(
+            command,
+            default
+        );
+
+        // Assert
+        passedArgument
+            .Should()
+            .NotBeNull();
+
+        passedArgument?.Name.Value
+            .Should()
+            .Be(command.Name);
+
+        passedArgument?.WithGoal
+            .Should()
+            .Be(command.WithGoal);
+
+        passedArgument?.Goal.Value
+            .Should()
+            .Be(command.Goal);
+
+        passedArgument?.UserId.Value
+            .Should()
+            .Be(command.UserId);
     }
 }
