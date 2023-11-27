@@ -138,4 +138,44 @@ public sealed class PiggyBankTests
             .Should()
             .ThrowExactly<InvalidPiggyBankGoalValueException>();
     }
+
+    [Fact]
+    public void AddTransaction_WhenPassedProperData_ShouldAddTransactionToPiggyBank()
+    {
+        // Arrange
+        var piggyBank = PiggyBankUtilities.CreatePiggyBank();
+        var transaction = TransactionUtilities.CreateTransaction();
+
+        // Act
+        piggyBank.AddTransaction(transaction);
+
+        // Assert
+        piggyBank.Transactions
+            .Should()
+            .BeEquivalentTo(
+                new List<Transaction>()
+                {
+                    new Transaction(
+                        Constants.Transaction.Id,
+                        Constants.Transaction.Value,
+                        Constants.Transaction.Date
+                    )
+                }
+            );
+    }
+
+    [Fact]
+    public void AddTransaction_WhenPassedTransactionThatAlreadyExists_ShouldThrowTransactionAlreadyExists()
+    {
+        // Arrange
+        var piggyBank = PiggyBankUtilities.CreatePiggyBank();
+        var transaction = TransactionUtilities.CreateTransaction();
+        piggyBank.AddTransaction(transaction);
+        var addTransaction = () => piggyBank.AddTransaction(transaction);
+
+        // Act & Assert
+        addTransaction
+            .Should()
+            .ThrowExactly<TransactionAlreadyExistsException>();
+    }
 }

@@ -4,7 +4,7 @@ public static partial class Constants
 {
     public static class User
     {
-        public static readonly Guid Id = new Guid(0, 0, 0, new byte[] { 0, 0, 0, 0, 0, 0, 0, 1 });
+        public static readonly Guid Id = new Guid(0, 0, 0, new byte[8] { 0, 0, 0, 0, 0, 0, 0, 1 });
         public const string Email = "regular-user@smuget.com";
         public const string FirstName = "Regular";
         public const string Password = "P@$sw0rd1";

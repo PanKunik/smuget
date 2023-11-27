@@ -12,5 +12,11 @@ public interface IPiggyBanksRepository
         CancellationToken token = default
     );
 
+    Task<PiggyBank?> GetById(
+        PiggyBankId piggyBankId,
+        UserId userId,
+        CancellationToken token = default
+    );
+
     Task Save(PiggyBank piggyBank);
 }

@@ -83,4 +83,18 @@ public sealed class PiggyBank
             throw new InvalidPiggyBankGoalValueException();
         }
     }
+
+    public void AddTransaction(Transaction transaction)
+    {
+        ThrowIfTransactionAlreadyExists(transaction);
+        _transactions.Add(transaction);
+    }
+
+    private void ThrowIfTransactionAlreadyExists(Transaction transaction)
+    {
+        if (_transactions.Any(t => t.Id == transaction.Id))
+        {
+            throw new TransactionAlreadyExistsException(transaction.Id);
+        }
+    }
 }

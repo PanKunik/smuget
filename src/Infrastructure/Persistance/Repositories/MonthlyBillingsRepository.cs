@@ -91,7 +91,10 @@ internal sealed class MonthlyBillingsRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    private async Task SaveIncomes(List<IncomeEntity> existingIncomes, List<IncomeEntity> incomeEntities)
+    private async Task SaveIncomes(
+        List<IncomeEntity> existingIncomes,
+        List<IncomeEntity> incomeEntities
+    )
     {
         foreach (var incomeEntity in incomeEntities)
         {
