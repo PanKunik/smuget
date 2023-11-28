@@ -9,9 +9,9 @@ public static class TransactionsUtilities
     )
         => Enumerable.Range(0, index)
             .Select(r => new Transaction(
-                new(Constants.Constants.Transaction.IdFromIndex(index)),
-                Constants.Constants.Transaction.ValueFromIndex(index),
-                Constants.Constants.Transaction.DateFromIndex(index)
+                new(Constants.Constants.Transaction.IdFromIndex(r)),
+                Constants.Constants.Transaction.ValueFromIndex(r),
+                Constants.Constants.Transaction.DateFromIndex(r)
             ))
             .ToList();
 }

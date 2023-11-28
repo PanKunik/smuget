@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Application.Abstractions.CQRS;
 using Application.PiggyBanks.AddTransaction;
+using Application.PiggyBanks.RemoveTransaction;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using WebAPI.Services.Users;
@@ -15,16 +16,19 @@ public sealed class TransactionsControllerTests
 
     private readonly IUserService _mockUserService;
     private readonly ICommandHandler<AddTransactionCommand> _mockAddTransaction;
+    private readonly ICommandHandler<RemoveTransactionCommand> _mockRemoveTransaction;
 
     public TransactionsControllerTests()
     {
         _mockUserService = Substitute.For<IUserService>();
 
         _mockAddTransaction = Substitute.For<ICommandHandler<AddTransactionCommand>>();
+        _mockRemoveTransaction = Substitute.For<ICommandHandler<RemoveTransactionCommand>>();
 
         _cut = new TransactionsController(
             _mockUserService,
-            _mockAddTransaction
+            _mockAddTransaction,
+            _mockRemoveTransaction
         );
     }
 
@@ -55,7 +59,7 @@ public sealed class TransactionsControllerTests
     }
 
     [Fact]
-    public async Task Add_OnSuccess_SHouldReturnStatusCode201Created()
+    public async Task Add_OnSuccess_ShouldReturnStatusCode201Created()
     {
         // Arrange
         var request = new AddTransactionRequest(
@@ -103,6 +107,60 @@ public sealed class TransactionsControllerTests
                       && c.Date == request.Date
                 ),
                 default
+            );
+    }
+
+    [Fact]
+    public async Task Remove_OnSuccess_ShouldReturnNoContentResult()
+    {
+        // Act
+        var result = await _cut.Remove(
+            Guid.NewGuid(),
+            Guid.NewGuid()
+        );
+
+        // Assert
+        result
+            .Should()
+            .BeOfType<NoContentResult>();
+    }
+
+    [Fact]
+    public async Task Remove_OnSuccess_ShouldReturnStatusCode204NoContent()
+    {
+        // Act
+        var result = (NoContentResult)await _cut.Remove(
+            Guid.NewGuid(),
+            Guid.NewGuid()
+        );
+
+        // Assert
+        result.StatusCode
+            .Should()
+            .Be(204);
+    }
+
+    [Fact]
+    public async Task Remove_WhenInvoked_ShouldCallHandleAsyncOnCommandHandler()
+    {
+        // Arrange
+        var piggyBankId = Guid.NewGuid();
+        var transactionId = Guid.NewGuid();
+
+        // Act
+        await _cut.Remove(
+            piggyBankId,
+            transactionId
+        );
+
+        // Assert
+        await _mockRemoveTransaction
+            .Received(1)
+            .HandleAsync(
+                Arg.Is<RemoveTransactionCommand>(
+                    c => c.PiggyBankId == piggyBankId
+                      && c.TransactionId == transactionId
+                )
             );
     }
 }
