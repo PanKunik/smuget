@@ -97,4 +97,16 @@ public sealed class PiggyBank
             throw new TransactionAlreadyExistsException(transaction.Id);
         }
     }
+
+    public void RemoveTransaction(TransactionId transactionId)
+    {
+        var transactionToRemove = _transactions.Find(t => t.Id == transactionId);
+
+        if (transactionToRemove is null)
+        {
+            throw new TransactionNotFoundException(transactionId);
+        }
+
+        _transactions.Remove(transactionToRemove);
+    }
 }

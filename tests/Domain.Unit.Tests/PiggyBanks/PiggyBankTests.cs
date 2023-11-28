@@ -178,4 +178,41 @@ public sealed class PiggyBankTests
             .Should()
             .ThrowExactly<TransactionAlreadyExistsException>();
     }
+
+    [Fact]
+    public void RemoveTransaction_WhenPassedProperData_ShouldRemoveTransactionFromPiggyBank()
+    {
+        // Arrange
+        var piggyBank = PiggyBankUtilities.CreatePiggyBank(
+            new List<Transaction>()
+            {
+                new Transaction(
+                    Constants.Transaction.Id,
+                    Constants.Transaction.Value,
+                    Constants.Transaction.Date
+                )
+            }
+        );
+
+        // Act
+        piggyBank.RemoveTransaction(Constants.Transaction.Id);
+
+        // Assert
+        piggyBank.Transactions
+            .Should()
+            .HaveCount(0);
+    }
+
+    [Fact]
+    public void RemoveTransaction_WhenTransactionWasntFound_ShouldThrowTransactionNotFoundException()
+    {
+        // Arrange
+        var piggyBank = PiggyBankUtilities.CreatePiggyBank();
+        var removeTransaction = () => piggyBank.RemoveTransaction(Constants.Transaction.Id);
+
+        // Act & Assert
+        removeTransaction
+            .Should()
+            .ThrowExactly<TransactionNotFoundException>();
+    }
 }

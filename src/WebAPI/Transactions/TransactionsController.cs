@@ -1,5 +1,6 @@
 using Application.Abstractions.CQRS;
 using Application.PiggyBanks.AddTransaction;
+using Application.PiggyBanks.RemoveTransaction;
 using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,14 +19,17 @@ public sealed class TransactionsController
 {
     private readonly IUserService _userService;
     private readonly ICommandHandler<AddTransactionCommand> _addTransaction;
+    private readonly ICommandHandler<RemoveTransactionCommand> _removeTransaction;
 
     public TransactionsController(
         IUserService userService,
-        ICommandHandler<AddTransactionCommand> addTransaction
+        ICommandHandler<AddTransactionCommand> addTransaction,
+        ICommandHandler<RemoveTransactionCommand> removeTransaction
     )
     {
         _userService = userService;
         _addTransaction = addTransaction;
+        _removeTransaction = removeTransaction;
     }
 
     [HttpPost]
@@ -49,9 +53,32 @@ public sealed class TransactionsController
                 value,
                 date,
                 _userService.UserId
-            )
+            ),
+            token
         );
 
         return Created("", null);
+    }
+
+    [HttpDelete("{transactionId}")]
+    [ProducesResponseType(typeof(NoContentResult), Status204NoContent)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
+    public async Task<IActionResult> Remove(
+        [FromRoute] Guid piggyBankId,
+        [FromRoute] Guid transactionId,
+        CancellationToken token = default
+    )
+    {
+        await _removeTransaction.HandleAsync(
+            new RemoveTransactionCommand(
+                piggyBankId,
+                transactionId,
+                _userService.UserId
+            ),
+            token
+        );
+
+        return NoContent();
     }
 }
