@@ -1,5 +1,7 @@
 using Application.Abstractions.CQRS;
+using Application.PiggyBanks;
 using Application.PiggyBanks.CreatePiggyBank;
+using Application.PiggyBanks.GetPiggyBankById;
 using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,15 +19,19 @@ public sealed class PiggyBanksController
     : ControllerBase
 {
     private readonly ICommandHandler<CreatePiggyBankCommand> _createPiggyBank;
+    private readonly IQueryHandler<GetPiggyBankByIdQuery, PiggyBankDTO> _getById;
     private readonly IUserService _userService;
 
     public PiggyBanksController(
         ICommandHandler<CreatePiggyBankCommand> createPiggyBank,
+        IQueryHandler<GetPiggyBankByIdQuery, PiggyBankDTO> getById,
         IUserService userService
     )
     {
         _createPiggyBank = createPiggyBank
             ?? throw new ArgumentNullException(nameof(createPiggyBank));
+        _getById = getById
+            ?? throw new ArgumentNullException(nameof(getById));
         _userService = userService
             ?? throw new ArgumentNullException(nameof(userService));
     }
@@ -56,5 +62,24 @@ public sealed class PiggyBanksController
         );
 
         return Created("", null);
+    }
+
+    [HttpGet("{piggyBankId}")]
+    [ProducesResponseType(typeof(PiggyBankDTO), Status200OK)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
+    public async Task<IActionResult> Get(
+        [FromRoute] Guid piggyBankId,
+        CancellationToken token = default
+    )
+    {
+        var result = await _getById.HandleAsync(
+            new GetPiggyBankByIdQuery(
+                piggyBankId,
+                _userService.UserId
+            ),
+            token
+        );
+
+        return Ok(result);
     }
 }
