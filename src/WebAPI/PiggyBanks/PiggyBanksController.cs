@@ -2,6 +2,7 @@ using Application.Abstractions.CQRS;
 using Application.PiggyBanks;
 using Application.PiggyBanks.CreatePiggyBank;
 using Application.PiggyBanks.GetPiggyBankById;
+using Application.PiggyBanks.GetPiggyBanks;
 using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,11 +21,13 @@ public sealed class PiggyBanksController
 {
     private readonly ICommandHandler<CreatePiggyBankCommand> _createPiggyBank;
     private readonly IQueryHandler<GetPiggyBankByIdQuery, PiggyBankDTO> _getById;
+    private readonly IQueryHandler<GetPiggyBanksQuery, IEnumerable<PiggyBankDTO?>> _getAll;
     private readonly IUserService _userService;
 
     public PiggyBanksController(
         ICommandHandler<CreatePiggyBankCommand> createPiggyBank,
         IQueryHandler<GetPiggyBankByIdQuery, PiggyBankDTO> getById,
+        IQueryHandler<GetPiggyBanksQuery, IEnumerable<PiggyBankDTO?>> getAll,
         IUserService userService
     )
     {
@@ -32,6 +35,8 @@ public sealed class PiggyBanksController
             ?? throw new ArgumentNullException(nameof(createPiggyBank));
         _getById = getById
             ?? throw new ArgumentNullException(nameof(getById));
+        _getAll = getAll
+            ?? throw new ArgumentNullException(nameof(getAll));
         _userService = userService
             ?? throw new ArgumentNullException(nameof(userService));
     }
@@ -75,6 +80,23 @@ public sealed class PiggyBanksController
         var result = await _getById.HandleAsync(
             new GetPiggyBankByIdQuery(
                 piggyBankId,
+                _userService.UserId
+            ),
+            token
+        );
+
+        return Ok(result);
+    }
+
+    [HttpGet()]
+    [ProducesResponseType(typeof(PiggyBankDTO), Status200OK)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
+    public async Task<IActionResult> GetAll(
+        CancellationToken token = default
+    )
+    {
+        var result = await _getAll.HandleAsync(
+            new GetPiggyBanksQuery(
                 _userService.UserId
             ),
             token

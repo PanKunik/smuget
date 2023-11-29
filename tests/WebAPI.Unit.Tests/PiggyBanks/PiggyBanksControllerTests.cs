@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Abstractions.CQRS;
 using Application.PiggyBanks;
 using Application.PiggyBanks.CreatePiggyBank;
 using Application.PiggyBanks.GetPiggyBankById;
+using Application.PiggyBanks.GetPiggyBanks;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using WebAPI.PiggyBanks;
@@ -17,17 +19,20 @@ public sealed class PiggyBanksControllerTests
 
     private readonly ICommandHandler<CreatePiggyBankCommand> _mockCreateaPiggyBank;
     private readonly IQueryHandler<GetPiggyBankByIdQuery, PiggyBankDTO> _mockGetById;
+    private readonly IQueryHandler<GetPiggyBanksQuery, IEnumerable<PiggyBankDTO?>> _mockGetAll;
     private readonly IUserService _mockUserService;
 
     public PiggyBanksControllerTests()
     {
         _mockCreateaPiggyBank = Substitute.For<ICommandHandler<CreatePiggyBankCommand>>();
         _mockGetById = Substitute.For<IQueryHandler<GetPiggyBankByIdQuery, PiggyBankDTO>>();
+        _mockGetAll = Substitute.For<IQueryHandler<GetPiggyBanksQuery, IEnumerable<PiggyBankDTO?>>>();
         _mockUserService = Substitute.For<IUserService>();
 
         _cut = new PiggyBanksController(
             _mockCreateaPiggyBank,
             _mockGetById,
+            _mockGetAll,
             _mockUserService
         );
     }
@@ -152,6 +157,59 @@ public sealed class PiggyBanksControllerTests
             .HandleAsync(
                 Arg.Is<GetPiggyBankByIdQuery>(
                     q => q.PiggyBankId == piggyBankId
+                )
+            );
+    }
+
+
+    [Fact]
+    public async Task GetAll_OnSuccess_ShouldReturnOkObjectResult()
+    {
+        // Act
+        var result = await _cut.GetAll(
+            default
+        );
+
+        // Assert
+        result
+            .Should()
+            .BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    public async Task GetAll_OnSuccess_ShouldReturnStatusCode200OK()
+    {
+        // Act
+        var result = (OkObjectResult)await _cut.GetAll(
+            default
+        );
+
+        // Assert
+        result.StatusCode
+            .Should()
+            .Be(200);
+    }
+
+    [Fact]
+    public async Task GetAll_WhenInvoked_ShouldCallHandleAsyncOnQueryHandler()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+
+        _mockUserService.UserId
+            .Returns(userId);
+
+        // Act
+        await _cut.GetAll(
+            default
+        );
+
+        // Assert
+        await _mockGetAll
+            .Received(1)
+            .HandleAsync(
+                Arg.Is<GetPiggyBanksQuery>(
+                    q => q.UserId == userId
                 )
             );
     }
