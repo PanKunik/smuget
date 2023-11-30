@@ -1,0 +1,8 @@
+@host = https://localhost:7188
+
+@piggyBankId = cd60af78-d71c-440d-8484-600eadd79d99
+@transactionId = b630bcb8-5ae6-46de-872a-42af0e1142c3
+
+DELETE {{host}}/api/piggy-banks/{{piggyBankId}}/transactions/{{transactionId}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImNhMjI5Mzk3LThkMzgtNDQ5MS05NmI2LWU3YmJjMjM5YTc5YyIsImp0aSI6ImI3ZjAwOWUzLTgyNGItNDVlYS1iN2U2LWNlZjc4ZTVjN2M0NiIsImVtYWlsIjoicGFua3VuaWsyQHBhbmt1bmlrLnBsIiwiaWQiOiJjYTIyOTM5Ny04ZDM4LTQ0OTEtOTZiNi1lN2JiYzIzOWE3OWMiLCJuYmYiOjE3MDEyODkxODUsImV4cCI6MTcwMTI4OTQ4NSwiaXNzIjoic211Z2V0LWlzc3VlciIsImF1ZCI6InNtdWdldC1hdWRpZW5jZSJ9.p01X3wtJdBalqHuf_288s_w9VvlwytcbkjJ9vvCyozY
+Accept: application/json

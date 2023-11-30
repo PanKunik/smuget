@@ -19,6 +19,6 @@ public static partial class Constants
 
         public static DateOnly DateFromIndex(int index)
             => new DateOnly(2023, 11, 11)
-                .AddDays(index + 1);
+                .AddDays(index);
     }
 }

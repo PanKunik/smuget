@@ -53,6 +53,22 @@ internal sealed class PiggyBanksRepository
         return entity?.ToDomain();
     }
 
+    public async Task<IEnumerable<PiggyBank?>> GetAll(
+        UserId userId,
+        CancellationToken token = default
+    )
+    {
+        var entities = await _dbContext.PiggyBanks
+            .Include(p => p.Transactions)
+            .AsNoTracking()
+            .Where(p => p.UserId == userId.Value)
+            .ToListAsync();
+
+        return entities?
+            .ConvertAll(p => p.ToDomain())
+            ?? new List<PiggyBank>();
+    }
+
     public async Task Save(PiggyBank piggyBank)
     {
         var newEntity = piggyBank.ToEntity();
@@ -86,15 +102,15 @@ internal sealed class PiggyBanksRepository
         List<TransactionEntity> transactionEntities
     )
     {
-        foreach (var incomeEntity in transactionEntities)
+        foreach (var transactionEntity in transactionEntities)
         {
-            if (existingTransactions.Any(i => i.Id == incomeEntity.Id))
+            if (existingTransactions.Any(i => i.Id == transactionEntity.Id))
             {
-                _dbContext.Update(incomeEntity);
+                _dbContext.Update(transactionEntity);
             }
             else
             {
-                await _dbContext.AddAsync(incomeEntity);
+                await _dbContext.AddAsync(transactionEntity);
             }
         }
     }
