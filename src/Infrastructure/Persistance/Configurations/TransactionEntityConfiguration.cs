@@ -30,5 +30,9 @@ internal sealed class TransactionEntityConfiguration
         builder
             .Property(p => p.PiggyBankId)
             .IsRequired();
+
+        builder
+            .Property(t => t.Active)
+            .IsRequired();
     }
 }

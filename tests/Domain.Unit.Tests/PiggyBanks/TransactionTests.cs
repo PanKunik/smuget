@@ -26,6 +26,7 @@ public sealed class TransactionTests
                 t => t.Id == Constants.Transaction.Id
                   && t.Value == Constants.Transaction.Value
                   && t.Date == Constants.Transaction.Date
+                  && t.Active == Constants.Transaction.Active
             );
     }
 
@@ -59,5 +60,20 @@ public sealed class TransactionTests
         createTransaction
             .Should()
             .ThrowExactly<TransactionValueEqualToZeroException>();
+    }
+
+    [Fact]
+    public void Remove_WhenCalled_ShouldChangeActiveToFalse()
+    {
+        // Arrange
+        var transaction = TransactionUtilities.CreateTransaction();
+
+        // Act
+        transaction.Remove();
+
+        // Assert
+        transaction.Active
+            .Should()
+            .BeFalse();
     }
 }

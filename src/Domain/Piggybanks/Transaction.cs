@@ -7,6 +7,7 @@ public sealed class Transaction
     public TransactionId Id { get; }
     public decimal Value { get; }
     public DateOnly Date { get; }
+    public bool Active { get; set; } = true;
 
     public Transaction(
         TransactionId id,
@@ -36,5 +37,10 @@ public sealed class Transaction
         {
             throw new TransactionValueEqualToZeroException();
         }
+    }
+
+    public void Remove()
+    {
+        Active = false;
     }
 }

@@ -107,6 +107,6 @@ public sealed class PiggyBank
             throw new TransactionNotFoundException(transactionId);
         }
 
-        _transactions.Remove(transactionToRemove);
+        transactionToRemove.Remove();
     }
 }
