@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Domain.Exceptions;
 using Domain.PiggyBanks;
 using Domain.Unit.Tests.PiggyBanks.TestUtilities;
@@ -200,7 +201,12 @@ public sealed class PiggyBankTests
         // Assert
         piggyBank.Transactions
             .Should()
-            .HaveCount(0);
+            .HaveCount(1);
+
+        piggyBank.Transactions
+            .First().Active
+                .Should()
+                .BeFalse();
     }
 
     [Fact]

@@ -6,4 +6,5 @@ internal sealed class TransactionEntity
     public decimal Value { get; set; }
     public DateOnly Date { get; set; }
     public Guid PiggyBankId { get; set; }
+    public bool Active { get; set; }
 }

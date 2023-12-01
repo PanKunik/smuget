@@ -28,7 +28,8 @@ internal static class TransactionMappingExtensions
             Id = domain.Id.Value,
             Value = domain.Value,
             Date = domain.Date,
-            PiggyBankId = piggyBankId
+            PiggyBankId = piggyBankId,
+            Active = domain.Active
         };
     }
 }

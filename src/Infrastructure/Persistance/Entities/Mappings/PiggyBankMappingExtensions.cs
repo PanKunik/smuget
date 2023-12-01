@@ -18,6 +18,8 @@ internal static class PiggyBankMappingExtensions
             new(entity.Goal),
             new(entity.UserId),
             entity.Transactions
+                .Where(t => t.Active)
+                .ToList()
                 .ConvertAll(t => t.ToDomain())
         );
     }

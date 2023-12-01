@@ -28,7 +28,7 @@ public sealed class RemoveTransactionCommandHandlerTests
                     i => i.Value == Constants.User.Id
                 )
             )
-            .Returns(PiggyBanksUtilities.CreatePiggyBank());
+            .Returns(PiggyBanksUtilities.CreatePiggyBank(TransactionsUtilities.CreateTransactions(1).ToList()));
 
         _cut = new RemoveTransactionCommandHandler(
             _mockRepository
