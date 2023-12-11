@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Domain.Exceptions;
@@ -218,6 +219,48 @@ public sealed class PiggyBankTests
 
         // Act & Assert
         removeTransaction
+            .Should()
+            .ThrowExactly<TransactionNotFoundException>();
+    }
+
+    [Fact]
+    public void UpdateTransaction_WhenPassedProperData_ShouldUpdateValues()
+    {
+        // Arrange
+        var transactionId = new TransactionId(Guid.NewGuid());
+
+        var cut = PiggyBankUtilities.CreatePiggyBank(
+            new List<Transaction>()
+            {
+                new Transaction(
+                    transactionId,
+                    125.45m,
+                    new DateOnly(2022, 11, 11)
+                )
+            });
+
+        // Act
+        cut.UpdateTransaction(
+            transactionId,
+            432.21m,
+            new DateOnly(2023, 6, 15)
+        );
+    }
+
+    [Fact]
+    public void UpdateTransaction_WhenTransactionWasntFound_SHouldThrowTransactionNotFoundException()
+    {
+        // Arrange
+        var cut = PiggyBankUtilities.CreatePiggyBank(new List<Transaction>());
+
+        var updateTransaction = () => cut.UpdateTransaction(
+            new TransactionId(Guid.NewGuid()),
+            1234.12m,
+            new DateOnly(2020, 11, 1)
+        );
+
+        // Act & Assert
+        updateTransaction
             .Should()
             .ThrowExactly<TransactionNotFoundException>();
     }

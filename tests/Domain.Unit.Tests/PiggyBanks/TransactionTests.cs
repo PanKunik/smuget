@@ -1,6 +1,7 @@
 using Domain.Exceptions;
 using Domain.PiggyBanks;
 using Domain.Unit.Tests.PiggyBanks.TestUtilities;
+using System;
 
 namespace Domain.Unit.Tests.PiggyBanks;
 
@@ -75,5 +76,43 @@ public sealed class TransactionTests
         transaction.Active
             .Should()
             .BeFalse();
+    }
+
+    [Fact]
+    public void Update_OnSuccessShouldUpdateTransaction()
+    {
+        // Arrange
+        var transaction = TransactionUtilities.CreateTransaction();
+
+        // Act
+        transaction.Update(
+            15.01m,
+            new DateOnly(2023, 1, 29)
+        );
+
+        // Assert
+        transaction
+            .Should()
+            .Match<Transaction>(
+                t => t.Value == 15.01m
+                  && t.Date == new DateOnly(2023, 1, 29)
+            );
+    }
+
+    [Fact]
+    public void Update_WhenPassedValueEqualToZer_ShouldThrowTransactionValueEqualToZeroException()
+    {
+        // Arrange
+        var transaction = TransactionUtilities.CreateTransaction();
+
+        var updateTransaction = () => transaction.Update(
+            0m,
+            new DateOnly(2023, 1, 29)
+        );
+
+        // Act & Assert
+        updateTransaction
+            .Should()
+            .ThrowExactly<TransactionValueEqualToZeroException>();
     }
 }

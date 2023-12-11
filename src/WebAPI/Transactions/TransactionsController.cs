@@ -1,6 +1,7 @@
 using Application.Abstractions.CQRS;
 using Application.PiggyBanks.AddTransaction;
 using Application.PiggyBanks.RemoveTransaction;
+using Application.PiggyBanks.UpdateTransaction;
 using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,16 +20,19 @@ public sealed class TransactionsController
 {
     private readonly IUserService _userService;
     private readonly ICommandHandler<AddTransactionCommand> _addTransaction;
+    private readonly ICommandHandler<UpdateTransactionCommand> _updateTransaction;
     private readonly ICommandHandler<RemoveTransactionCommand> _removeTransaction;
 
     public TransactionsController(
         IUserService userService,
         ICommandHandler<AddTransactionCommand> addTransaction,
+        ICommandHandler<UpdateTransactionCommand> updateTransaction,
         ICommandHandler<RemoveTransactionCommand> removeTransaction
     )
     {
         _userService = userService;
         _addTransaction = addTransaction;
+        _updateTransaction = updateTransaction;
         _removeTransaction = removeTransaction;
     }
 
@@ -58,6 +62,36 @@ public sealed class TransactionsController
         );
 
         return Created("", null);
+    }
+
+    [HttpPut("{transactionId}")]
+    [ProducesResponseType(typeof(NoContentResult), Status204NoContent)]
+    [ProducesResponseType(typeof(Error), Status400BadRequest)]
+    [ProducesResponseType(typeof(Error), Status500InternalServerError)]
+    public async Task<IActionResult> Update(
+        [FromRoute] Guid piggyBankId,
+        [FromRoute] Guid transactionId,
+        [FromBody] UpdateTransactionRequest request,
+        CancellationToken token = default
+    )
+    {
+        var (
+            value,
+            date
+        ) = request;
+
+        await _updateTransaction.HandleAsync(
+            new UpdateTransactionCommand(
+                piggyBankId,
+                transactionId,
+                _userService.UserId,
+                value,
+                date
+            ),
+            token
+        );
+
+        return NoContent();
     }
 
     [HttpDelete("{transactionId}")]

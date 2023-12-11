@@ -109,4 +109,23 @@ public sealed class PiggyBank
 
         transactionToRemove.Remove();
     }
+
+    public void UpdateTransaction(
+        TransactionId transactionId,
+        decimal value,
+        DateOnly date
+    )
+    {
+        var transactionToUpdate = _transactions.Find(t => t.Id == transactionId);
+
+        if (transactionToUpdate is null)
+        {
+            throw new TransactionNotFoundException(transactionId);
+        }
+
+        transactionToUpdate.Update(
+            value,
+            date
+        );
+    }
 }

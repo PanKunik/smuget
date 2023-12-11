@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Application.Abstractions.CQRS;
 using Application.PiggyBanks.AddTransaction;
 using Application.PiggyBanks.RemoveTransaction;
+using Application.PiggyBanks.UpdateTransaction;
+using Domain.PiggyBanks;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using WebAPI.Services.Users;
@@ -16,6 +18,7 @@ public sealed class TransactionsControllerTests
 
     private readonly IUserService _mockUserService;
     private readonly ICommandHandler<AddTransactionCommand> _mockAddTransaction;
+    private readonly ICommandHandler<UpdateTransactionCommand> _mockUpdateTransaction;
     private readonly ICommandHandler<RemoveTransactionCommand> _mockRemoveTransaction;
 
     public TransactionsControllerTests()
@@ -23,11 +26,13 @@ public sealed class TransactionsControllerTests
         _mockUserService = Substitute.For<IUserService>();
 
         _mockAddTransaction = Substitute.For<ICommandHandler<AddTransactionCommand>>();
+        _mockUpdateTransaction = Substitute.For<ICommandHandler<UpdateTransactionCommand>>();
         _mockRemoveTransaction = Substitute.For<ICommandHandler<RemoveTransactionCommand>>();
 
         _cut = new TransactionsController(
             _mockUserService,
             _mockAddTransaction,
+            _mockUpdateTransaction,
             _mockRemoveTransaction
         );
     }
@@ -107,6 +112,86 @@ public sealed class TransactionsControllerTests
                       && c.Date == request.Date
                 ),
                 default
+            );
+    }
+
+    [Fact]
+    public async Task Update_OnSuccess_ShouldReturnNoContentResult()
+    {
+        // Arrange
+        var request = new UpdateTransactionRequest(
+            21m,
+            new DateOnly(2021, 12, 21)
+        );
+
+        // Act
+        var result = await _cut.Update(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            request
+        );
+
+        // Assert
+        result
+            .Should()
+            .NotBeNull();
+
+        result
+            .Should()
+            .BeOfType<NoContentResult>();
+    }
+
+    [Fact]
+    public async Task Update_OnSuccess_ShouldReturnStatusCode204NoContent()
+    {
+        // Arrange
+        var request = new UpdateTransactionRequest(
+            21m,
+            new DateOnly(2021, 12, 21)
+        );
+
+        // Act
+        var result = (NoContentResult)(await _cut.Update(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            request
+        ));
+
+        // Assert
+        result.StatusCode
+            .Should()
+            .Be(204);
+    }
+
+    [Fact]
+    public async Task Update_WhenInvoked_ShouldCallUpdateTransactionCommandHandler()
+    {
+        // Arrange
+        var piggyBankId = Guid.NewGuid();
+        var transactionId = Guid.NewGuid();
+        var request = new UpdateTransactionRequest(
+            123.45m,
+            new DateOnly(2020, 3, 8)
+        );
+
+        // Act
+        await _cut.Update(
+            piggyBankId,
+            transactionId,
+            request,
+            default
+        );
+
+        // Assert
+        await _mockUpdateTransaction
+            .Received(1)
+            .HandleAsync(
+                Arg.Is<UpdateTransactionCommand>(
+                    c => c.PiggyBankId == piggyBankId
+                      && c.TransactionId == transactionId
+                      && c.Value == 123.45m
+                      && c.Date == new DateOnly(2020, 3, 8)
+                )
             );
     }
 

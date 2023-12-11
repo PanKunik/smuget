@@ -5,8 +5,8 @@ namespace Domain.PiggyBanks;
 public sealed class Transaction
 {
     public TransactionId Id { get; }
-    public decimal Value { get; }
-    public DateOnly Date { get; }
+    public decimal Value { private set; get; }
+    public DateOnly Date { private set; get; }
     public bool Active { get; set; } = true;
 
     public Transaction(
@@ -42,5 +42,16 @@ public sealed class Transaction
     public void Remove()
     {
         Active = false;
+    }
+
+    public void Update(
+        decimal value,
+        DateOnly date
+    )
+    {
+        ThrowIfValueIsEqualToZero(value);
+
+        Value = value;
+        Date = date;
     }
 }
