@@ -1,5 +1,6 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.CQRS;
+using Application.Abstractions.Time;
 using Application.Exceptions;
 using Domain.RefreshTokens;
 using Domain.Repositories;
@@ -13,12 +14,14 @@ public sealed class RefreshCommandHandler
     private readonly IRefreshTokensRepository _refreshTokensRepository;
     private readonly IAuthenticator _authenticator;
     private readonly ITokenStorage _tokenStorage;
+    private readonly IClock _clock;
 
     public RefreshCommandHandler(
         IUsersRepository repository,
         IRefreshTokensRepository refreshTokensRepository,
         IAuthenticator authenticator,
-        ITokenStorage tokenStorage
+        ITokenStorage tokenStorage,
+        IClock clock
     )
     {
         _usersRepository = repository
@@ -29,6 +32,8 @@ public sealed class RefreshCommandHandler
             ?? throw new ArgumentNullException(nameof(authenticator));
         _tokenStorage = tokenStorage
             ?? throw new ArgumentNullException(nameof(tokenStorage));
+        _clock = clock
+            ?? throw new ArgumentNullException(nameof(clock));
     }
 
     public async Task HandleAsync(
@@ -47,7 +52,7 @@ public sealed class RefreshCommandHandler
             throw new InvalidRefreshTokenException("Rfresh token was used or invalidated.");
         }
 
-        if (DateTime.Now > existingRefreshToken.ExpirationDateTime)
+        if (_clock.Current() > existingRefreshToken.ExpirationDateTime)
         {
             throw new InvalidRefreshTokenException("Refresh token has expired.");
         }

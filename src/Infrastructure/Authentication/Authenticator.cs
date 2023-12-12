@@ -3,10 +3,12 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Application.Abstractions.Authentication;
+using Application.Abstractions.Time;
 using Application.Exceptions;
 using Application.Identity;
 using Domain.Users;
 using Infrastructure.Exceptions;
+using Infrastructure.Time;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -21,10 +23,12 @@ internal sealed class Authenticator
     private readonly TimeSpan _refreshTokenExpiry;
     private readonly SigningCredentials _signingCredentials;
     private readonly TokenValidationParameters _tokenValidationParameters;
+    private readonly IClock _clock;
 
     public Authenticator(
         IOptions<AuthenticationOptions> authenticationOptions,
-        TokenValidationParameters tokenValidationParameters
+        TokenValidationParameters tokenValidationParameters,
+        IClock clock
     )
     {
         _issuer = authenticationOptions.Value.Issuer;
@@ -43,6 +47,7 @@ internal sealed class Authenticator
             SecurityAlgorithms.HmacSha256
         );
         _tokenValidationParameters = tokenValidationParameters;
+        _clock = clock;
     }
 
     public AuthenticationDTO CreateToken(User user)
@@ -57,7 +62,7 @@ internal sealed class Authenticator
             new Claim("id", user.Id.Value.ToString())
         };
 
-        var now = DateTime.Now;
+        var now = _clock.Current();
         var expires = now.Add(_tokenExpiry);
 
         var jwt = new JwtSecurityToken(
@@ -97,7 +102,7 @@ internal sealed class Authenticator
         var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
             .AddSeconds(expiryDateUnix);
 
-        if (expiryDateTimeUtc > DateTime.UtcNow)
+        if (expiryDateTimeUtc > _clock.CurrentUtc())
         {
             throw new InvalidAccessTokenException("Access token hasn't expired yet.");
         }

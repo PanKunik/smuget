@@ -1,3 +1,4 @@
+using Application.Abstractions.Time;
 using Domain.RefreshTokens;
 using Domain.Repositories;
 using Infrastructure.Persistance.Entities.Mappings;
@@ -9,10 +10,15 @@ internal sealed class RefreshTokensRepository
     : IRefreshTokensRepository
 {
     private readonly SmugetDbContext _dbContext;
+    private readonly IClock _clock;
 
-    public RefreshTokensRepository(SmugetDbContext dbContext)
+    public RefreshTokensRepository(
+        SmugetDbContext dbContext,
+        IClock clock
+    )
     {
         _dbContext = dbContext;
+        _clock = clock;
     }
 
     public async Task<RefreshToken?> Get(string token)
@@ -35,7 +41,7 @@ internal sealed class RefreshTokensRepository
                 r => r.UserId == userId
                   && !r.Used
                   && !r.Invalidated
-                  && DateTime.Now < r.ExpirationDateTime
+                  && _clock.Current() < r.ExpirationDateTime
             );
 
         return entity?

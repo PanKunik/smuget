@@ -1,0 +1,13 @@
+@host = https://localhost:7188
+
+@id = 0d804cff-d2a0-4287-a905-bf6ef61db872
+@transactionId = 6702abfc-7ce9-4db1-a2eb-c8a4f19990a6
+
+PUT {{host}}/api/piggy-banks/{{id}}/transactions/{{transactionId}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjJiODU5Yjc1LWE0MjgtNGU5NS05ZjI0LWIyNjQ4MTE0MWIzMyIsImp0aSI6IjQ5ZmUzYmNkLTI0MDQtNGRmNy04NDE0LWM5Mjg4NmI2NjU5ZSIsImVtYWlsIjoicGFua3VuaWszQHBhbmt1bmlrLnBsIiwiaWQiOiIyYjg1OWI3NS1hNDI4LTRlOTUtOWYyNC1iMjY0ODExNDFiMzMiLCJuYmYiOjE3MDIyOTkxODQsImV4cCI6MTcwMjI5OTQ4NCwiaXNzIjoic211Z2V0LWlzc3VlciIsImF1ZCI6InNtdWdldC1hdWRpZW5jZSJ9.yJon9e1boFa3MBpiK-GkbMorBWgqwm3BEwIHszXu-k8
+Content-Type: application/json
+
+{
+    "value": 250,
+    "date": "2023-12-24"
+}

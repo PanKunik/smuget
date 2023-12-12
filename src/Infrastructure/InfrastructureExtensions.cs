@@ -6,6 +6,7 @@ using Infrastructure.Persistance.Repositories;
 using Microsoft.Extensions.Configuration;
 using Infrastructure.Security;
 using Infrastructure.Authentication;
+using Infrastructure.Time;
 
 namespace Infrastructure;
 
@@ -21,6 +22,7 @@ public static class InfrastructureExtensions
         services.AddAuthenticationWithJwt(configuration);
         services.AddRepositories();        
         services.AddSecurity();
+        services.AddTime();
 
         services.AddSingleton<ExceptionMiddleware>();
 
