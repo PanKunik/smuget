@@ -3,6 +3,10 @@ using Application;
 using Infrastructure;
 using WebAPI.Middlewares;
 using WebAPI.Services.Users;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+using Infrastructure.Exceptions;
+using WebAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 {
@@ -39,6 +43,7 @@ var app = builder.Build();
     app.UseAuthorization();
 
     app.MapControllers();
+    app.UseRateLimiting();
 
     app.Run();
 }
