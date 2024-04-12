@@ -170,26 +170,6 @@ public sealed class LoginCommandHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_WhenUserAlreadyHasRefreshToken_ShouldThrowUserAlreadyLoggedInException()
-    {
-        // Arrange
-        var login = LoginCommandUtilities.CreateCommand();
-
-        _refreshTokensRepository
-            .GetActiveByUserId(Constants.User.Id)
-            .Returns(RefreshTokensUtilities.CreateRefreshToken());
-
-        var loginAction = () => _cut.HandleAsync(
-            login,
-            default
-        );
-
-        // Act & Assert
-        await Assert.ThrowsAsync<UserAlreadyLoggedInException>(loginAction);
-
-    }
-
-    [Fact]
     public async Task HandleAsync_WhenUsersPasswordValidatedSuccessfully_ShouldCallCreateTokenOnAuthenticatorOnce()
     {
         // Arrange

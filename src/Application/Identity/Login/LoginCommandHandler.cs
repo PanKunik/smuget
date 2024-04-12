@@ -51,13 +51,6 @@ public sealed class LoginCommandHandler
             throw new InvalidCredentialsException();
         }
 
-        var existingRefreshToken = await _refreshTokensRepository.GetActiveByUserId(entity.Id.Value);
-
-        if (existingRefreshToken is not null)
-        {
-            throw new UserAlreadyLoggedInException();
-        }
-
         var token = _authenticator.CreateToken(entity);
 
         var refreshTokenEntity = new RefreshToken(
