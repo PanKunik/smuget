@@ -14,4 +14,7 @@ public sealed class UserService
     public Guid UserId
         => Guid.Parse(_httpContext.User.Identity?.Name
             ?? throw new UserIdentityNotFoundException());
+
+    public string? IpAddress
+        => _httpContext?.Connection?.RemoteIpAddress?.MapToIPv4()?.ToString();
 }

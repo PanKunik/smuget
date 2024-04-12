@@ -16,6 +16,7 @@ public sealed class RefreshTokenTests
             Constants.RefreshToken.JwtId,
             Constants.RefreshToken.CreationDateTime,
             Constants.RefreshToken.ExpirationDateTime,
+            Constants.RefreshToken.IssuedFrom,
             Constants.RefreshToken.Used,
             Constants.RefreshToken.Invalidated,
             Constants.RefreshToken.UserId
@@ -43,6 +44,7 @@ public sealed class RefreshTokenTests
             Constants.RefreshToken.JwtId,
             Constants.RefreshToken.CreationDateTime,
             Constants.RefreshToken.ExpirationDateTime,
+            Constants.RefreshToken.IssuedFrom,
             Constants.RefreshToken.Used,
             Constants.RefreshToken.Invalidated,
             Constants.RefreshToken.UserId
@@ -65,6 +67,7 @@ public sealed class RefreshTokenTests
             Constants.RefreshToken.JwtId,
             Constants.RefreshToken.CreationDateTime,
             Constants.RefreshToken.ExpirationDateTime,
+            Constants.RefreshToken.IssuedFrom,
             Constants.RefreshToken.Used,
             Constants.RefreshToken.Invalidated,
             Constants.RefreshToken.UserId
@@ -72,6 +75,29 @@ public sealed class RefreshTokenTests
 
         // Act & Assert
         Assert.Throws<InvalidTokenException>(cut);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(null)]
+    public void RefreshToken_WhenPassedNullOrWhiteSpaceIssuedFrom_ShouldThrowUserIdIsNullException(string issuedFrom)
+    {
+        // Arrange
+        var cut = () => new RefreshToken(
+            Constants.RefreshToken.Id,
+            Constants.RefreshToken.Token,
+            Constants.RefreshToken.JwtId,
+            Constants.RefreshToken.CreationDateTime,
+            Constants.RefreshToken.ExpirationDateTime,
+            issuedFrom,
+            Constants.RefreshToken.Used,
+            Constants.RefreshToken.Invalidated,
+            Constants.RefreshToken.UserId
+        );
+
+        // Act & Assert
+        Assert.Throws<InvalidIpAddressException>(cut);
     }
 
     [Fact]
@@ -84,6 +110,7 @@ public sealed class RefreshTokenTests
             Constants.RefreshToken.JwtId,
             Constants.RefreshToken.CreationDateTime,
             Constants.RefreshToken.ExpirationDateTime,
+            Constants.RefreshToken.IssuedFrom,
             Constants.RefreshToken.Used,
             Constants.RefreshToken.Invalidated,
             null

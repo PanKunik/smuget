@@ -4,5 +4,6 @@ namespace Application.Identity.Login;
 
 public sealed record LoginCommand(
     string Email,
-    string Password
+    string Password,
+    string IpAddress
 ) : ICommand;

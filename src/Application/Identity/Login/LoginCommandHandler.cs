@@ -59,6 +59,7 @@ public sealed class LoginCommandHandler
             token.Id,
             token.CreationDateTime,
             token.ExpirationDateTime,
+            command.IpAddress,
             false,
             false,
             entity.Id

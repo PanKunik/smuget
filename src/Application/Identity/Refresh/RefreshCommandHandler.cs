@@ -69,6 +69,7 @@ public sealed class RefreshCommandHandler
             token.Id,
             token.CreationDateTime,
             token.ExpirationDateTime,
+            command.IpAddess,
             false,
             false,
             user.Id

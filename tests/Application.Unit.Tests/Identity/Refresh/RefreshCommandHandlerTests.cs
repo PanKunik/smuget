@@ -116,7 +116,8 @@ public sealed class RefreshCommandHandlerTests
 		// Arrange
 		var command = new RefreshCommand(
 			"abc123",
-			"123def"
+			"123def",
+			"192.168.2.1"
 		);
 
 		var commandAction = () => _cut.HandleAsync(
@@ -156,8 +157,9 @@ public sealed class RefreshCommandHandlerTests
 		// Arrange
 		var command = new RefreshCommand(
 			Constants.User.AccessToken,
-			"token-for-other-user"
-		);
+			"token-for-other-user",
+            Constants.User.IpAddress
+        );
 
 		var commandAction = () => _cut.HandleAsync(
 			command,
@@ -174,7 +176,8 @@ public sealed class RefreshCommandHandlerTests
 		// Arrange
 		var command = new RefreshCommand(
 			Constants.User.AccessToken,
-			"used-token"
+			"used-token",
+			Constants.User.IpAddress
 		);
 
 		var commandAction = () => _cut.HandleAsync(
@@ -192,8 +195,9 @@ public sealed class RefreshCommandHandlerTests
 		// Arrange
 		var command = new RefreshCommand(
 			Constants.User.AccessToken,
-			"invalidated-token"
-		);
+			"invalidated-token",
+            Constants.User.IpAddress
+        );
 
 		var commandAction = () => _cut.HandleAsync(
 			command,
@@ -210,8 +214,9 @@ public sealed class RefreshCommandHandlerTests
 		// Arrange
 		var command = new RefreshCommand(
 			Constants.User.AccessToken,
-			"expired-token"
-		);
+			"expired-token",
+            Constants.User.IpAddress
+        );
 
 		var commandAction = () => _cut.HandleAsync(
 			command,

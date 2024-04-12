@@ -10,6 +10,7 @@ public sealed class RefreshToken
     public Guid JwtId { get; }
     public DateTime CreationDateTime { get; }
     public DateTime ExpirationDateTime { get; }
+    public string IssuedFrom { get; set; }
     public bool Used { get; private set; }
     public bool Invalidated { get; private set; }
     public UserId UserId { get; }
@@ -20,6 +21,7 @@ public sealed class RefreshToken
         Guid jwtId,
         DateTime creationDateTime,
         DateTime expirationDateTime,
+        string ipAddress,
         bool used,
         bool invalidated,
         UserId userId
@@ -28,12 +30,14 @@ public sealed class RefreshToken
         ThrowIfRefreshTokenIdIsNull(refreshTokenId);
         ThrowIfTokenIsNullOrWhiteSpace(token);
         ThrowIfUserIdIsNull(userId);
+        ThrowIfIpAddressIsNullOrWhiteSpace(ipAddress);
 
         Id = refreshTokenId;
         Token = token;
         JwtId = jwtId;
         CreationDateTime = creationDateTime;
         ExpirationDateTime = expirationDateTime;
+        IssuedFrom = ipAddress;
         Used = used;
         Invalidated = invalidated;
         UserId = userId;
@@ -66,6 +70,14 @@ public sealed class RefreshToken
         if (userId is null)
         {
             throw new UserIdIsNullException();
+        }
+    }
+
+    private void ThrowIfIpAddressIsNullOrWhiteSpace(string ipAddress)
+    {
+        if (string.IsNullOrWhiteSpace(ipAddress))
+        {
+            throw new InvalidIpAddressException();
         }
     }
 }
