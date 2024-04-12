@@ -309,4 +309,25 @@ public sealed class RefreshCommandHandlerTests
 				)
 			);
 	}
+
+	[Fact]
+	public async Task HandleAsync_WhenTokenSuccessfullyRefreshed_ShouldSaveRefreshedByProperty()
+	{
+        // Arrange
+        var refreshTokens = new List<RefreshToken>();
+		await _refreshTokensRepository.Save(Arg.Do<RefreshToken>(refreshTokens.Add));
+
+		var command = RefreshCommandUtilities.CreateCommand();
+
+		// Act
+		await _cut.HandleAsync(
+			command,
+			default
+		);
+
+		// Assert
+		refreshTokens.Should().HaveCount(2);
+		var newToken = refreshTokens.Single(rt => rt.RefreshedBy is null);
+		refreshTokens.Should().ContainSingle(c => c.RefreshedBy == newToken.Id);
+	}
 }
