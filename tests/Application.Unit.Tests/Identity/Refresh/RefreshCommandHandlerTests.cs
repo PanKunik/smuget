@@ -327,7 +327,7 @@ public sealed class RefreshCommandHandlerTests
 
 		// Assert
 		refreshTokens.Should().HaveCount(2);
-		var newToken = refreshTokens.Single(rt => rt.RefreshedBy is null);
-		refreshTokens.Should().ContainSingle(c => c.RefreshedBy == newToken.Id);
+		var existingToken = refreshTokens.Single(rt => rt.RefreshedBy is null);
+		refreshTokens.Should().ContainSingle(c => c.RefreshedBy == existingToken.Id);
 	}
 }

@@ -119,4 +119,57 @@ public sealed class RefreshTokenTests
         // Act & Assert
         Assert.Throws<UserIdIsNullException>(cut);
     }
+
+    [Fact]
+    public void RefreshToken_IsActive_ShouldReturnTrue()
+    {
+        // Arrange
+        var cut = new RefreshToken(
+            Constants.RefreshToken.Id,
+            Constants.RefreshToken.Token,
+            Constants.RefreshToken.JwtId,
+            Constants.RefreshToken.CreationDateTime,
+            Constants.RefreshToken.ExpirationDateTime,
+            Constants.RefreshToken.IssuedFrom,
+            Constants.RefreshToken.Used,
+            Constants.RefreshToken.Invalidated,
+            Constants.RefreshToken.UserId
+        );
+
+        // Act
+        bool result = cut.IsActive();
+
+        // Assert
+        result
+            .Should()
+            .BeTrue();
+    }
+
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    [InlineData(false, true)]
+    public void RefreshToken_IsActive_ShouldReturnFalse(bool used, bool invalidated)
+    {
+        // Arrange
+        var cut = new RefreshToken(
+            Constants.RefreshToken.Id,
+            Constants.RefreshToken.Token,
+            Constants.RefreshToken.JwtId,
+            Constants.RefreshToken.CreationDateTime,
+            Constants.RefreshToken.ExpirationDateTime,
+            Constants.RefreshToken.IssuedFrom,
+            used,
+            invalidated,
+            Constants.RefreshToken.UserId
+        );
+
+        // Act
+        bool result = cut.IsActive();
+
+        // Assert
+        result
+            .Should()
+            .BeFalse();
+    }
 }

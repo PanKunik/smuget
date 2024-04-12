@@ -52,6 +52,9 @@ public sealed class RefreshToken
     public void Invalidate()
         => Invalidated = true;
 
+    public bool IsActive()
+        => !Invalidated && !Used;
+
     private void ThrowIfRefreshTokenIdIsNull(RefreshTokenId refreshTokenId)
     {
         if (refreshTokenId is null)

@@ -48,6 +48,18 @@ internal sealed class RefreshTokensRepository
             .ToDomain();
     }
 
+    public async Task<RefreshToken?> GetByRefreshedBy(Guid refreshedBy)
+    {
+        var entity = await _dbContext.RefreshTokens
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                r => r.RefreshedBy == refreshedBy
+            );
+
+        return entity?
+            .ToDomain();
+    }
+
     public async Task Save(RefreshToken refreshToken)
     {
         var newEntity = refreshToken.ToEntity();
