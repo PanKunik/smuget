@@ -1,5 +1,6 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.CQRS;
+using Application.Exceptions;
 using Application.Identity.Login;
 using Application.Identity.Logout;
 using Application.Identity.Refresh;
@@ -90,10 +91,16 @@ public sealed class IdentityController
     {
         var (email, password) = request;
 
+        if (string.IsNullOrWhiteSpace(_userService.IpAddress))
+        {
+            throw new SourceAddressNotFoundException();
+        }
+
         await _login.HandleAsync(
             new LoginCommand(
                 email,
-                password
+                password,
+                _userService.IpAddress
             ),
             token
         );
@@ -119,10 +126,16 @@ public sealed class IdentityController
     {
         var (accessToken, refreshToken) = request;
 
+        if (string.IsNullOrWhiteSpace(_userService.IpAddress))
+        {
+            throw new SourceAddressNotFoundException();
+        }
+
         await _refresh.HandleAsync(
             new RefreshCommand(
                 accessToken,
-                refreshToken
+                refreshToken,
+                _userService.IpAddress
             ),
             token
         );

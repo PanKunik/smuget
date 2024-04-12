@@ -96,7 +96,8 @@ public sealed class LoginCommandHandlerTests
         // Arrange
         var login = new LoginCommand(
             "notfounduser@example.com",
-            "P@$w0rd1."
+            "P@$w0rd1.",
+            "192.168.0.1"
         );
 
         var loginAction = () => _cut.HandleAsync(
@@ -135,7 +136,8 @@ public sealed class LoginCommandHandlerTests
         // Arrange
         var login = new LoginCommand(
             Constants.User.Email,
-            "password"
+            "password",
+            Constants.User.IpAddress
         );
 
         var loginAction = () => _cut.HandleAsync(
@@ -145,48 +147,6 @@ public sealed class LoginCommandHandlerTests
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidCredentialsException>(loginAction);
-    }
-
-    [Fact]
-    public async Task HandleAsync_WhenUserPasswordValidatedSuccessfully_ShouldCallGetActiveByUserIdOnRefreshTokensRepositoryOnce()
-    {
-        // Arrange
-        var login = LoginCommandUtilities.CreateCommand();
-
-        // Act
-        await _cut.HandleAsync(
-            login,
-            default
-        );
-
-        // Assert
-        await _refreshTokensRepository
-            .Received(1)
-            .GetActiveByUserId(
-                Arg.Is<Guid>(
-                    g => g == Constants.User.Id
-                )
-            );
-    }
-
-    [Fact]
-    public async Task HandleAsync_WhenUserAlreadyHasRefreshToken_ShouldThrowUserAlreadyLoggedInException()
-    {
-        // Arrange
-        var login = LoginCommandUtilities.CreateCommand();
-
-        _refreshTokensRepository
-            .GetActiveByUserId(Constants.User.Id)
-            .Returns(RefreshTokensUtilities.CreateRefreshToken());
-
-        var loginAction = () => _cut.HandleAsync(
-            login,
-            default
-        );
-
-        // Act & Assert
-        await Assert.ThrowsAsync<UserAlreadyLoggedInException>(loginAction);
-
     }
 
     [Fact]

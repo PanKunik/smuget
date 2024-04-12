@@ -47,9 +47,10 @@ public sealed class RefreshCommandHandler
         var user = await _usersRepository.Get(existingRefreshToken.UserId)
             ?? throw new UserNotFoundException(existingRefreshToken.UserId);
 
-        if (existingRefreshToken.Used || existingRefreshToken.Invalidated)
+        if (!existingRefreshToken.IsActive())
         {
-            throw new InvalidRefreshTokenException("Rfresh token was used or invalidated.");
+            await RevokeDescendantRefreshTokens(existingRefreshToken);
+            throw new InvalidRefreshTokenException("Refresh token was used or invalidated. Invalidating all descendant refresh tokens.");
         }
 
         if (_clock.Current() > existingRefreshToken.ExpirationDateTime)
@@ -69,14 +70,33 @@ public sealed class RefreshCommandHandler
             token.Id,
             token.CreationDateTime,
             token.ExpirationDateTime,
+            command.IpAddess,
             false,
             false,
-            user.Id
+            user.Id,
+            existingRefreshToken.Id
         );
 
         existingRefreshToken.Use();
         await _refreshTokensRepository.Save(existingRefreshToken);
         await _refreshTokensRepository.Save(refreshTokenEntity);
         _tokenStorage.Store(token);
+    }
+
+    private async Task RevokeDescendantRefreshTokens(RefreshToken potentiallyCompromisedToken)
+    {
+        if (!potentiallyCompromisedToken.Invalidated)
+        {
+            potentiallyCompromisedToken.Invalidate();
+            await _refreshTokensRepository.Save(potentiallyCompromisedToken);
+        }
+
+        var getDescendantRefreshToken = await _refreshTokensRepository.GetByRefreshedBy(potentiallyCompromisedToken.Id.Value);
+        if (getDescendantRefreshToken is null)
+        {
+            return;
+        }
+
+        await RevokeDescendantRefreshTokens(getDescendantRefreshToken);
     }
 }

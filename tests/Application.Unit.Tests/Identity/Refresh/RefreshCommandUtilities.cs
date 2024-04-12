@@ -8,6 +8,7 @@ public static class RefreshCommandUtilities
     public static RefreshCommand CreateCommand()
         => new(
             Constants.User.AccessToken,
-            Constants.RefreshToken.Token
+            Constants.RefreshToken.Token,
+            Constants.User.IpAddress
         );
 }

@@ -44,6 +44,8 @@ public sealed class IdentityControllerTests
             );
 
         _mockUserService = Substitute.For<IUserService>();
+        _mockUserService.IpAddress
+            .Returns("127.0.0.1");
 
         _cut = new IdentityController(
             _mockRegister,
@@ -178,6 +180,24 @@ public sealed class IdentityControllerTests
     }
 
     [Fact]
+    public async Task Login_WhenIpAddressNotPresent_ShouldThrowSourceAddressNotFoundException()
+    {
+        // Arrange
+        var request = new LoginRequest(
+            "test2@example.com",
+            "P@##w0rd1."
+        );
+
+        _mockUserService.IpAddress
+            .Returns("");
+
+        // Act & Assert
+        var result = await Assert.ThrowsAsync<SourceAddressNotFoundException>(
+            async () => await _cut.Login(request)
+        );
+    }
+
+    [Fact]
     public async Task Login_OnSuccess_ShouldReturn200StatusCode()
     {
         // Arrange
@@ -285,6 +305,24 @@ public sealed class IdentityControllerTests
         result
             .Should()
             .BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    public async Task RefreshToken_WhenIpAddressNotPresent_ShouldThrowSourceAddressNotFoundException()
+    {
+        // Arrange
+        var request = new RefreshRequest(
+            "eyJHBn01.",
+            "M8Xy+-=="
+        );
+
+        _mockUserService.IpAddress
+            .Returns("");
+
+        // Act & Assert
+        var result = await Assert.ThrowsAsync<SourceAddressNotFoundException>(
+            async () => await _cut.Refresh(request)
+        );
     }
 
     [Fact]

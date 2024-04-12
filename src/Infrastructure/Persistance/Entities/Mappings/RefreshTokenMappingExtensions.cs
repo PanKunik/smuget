@@ -17,9 +17,11 @@ internal static class RefreshTokenMappingExtensions
             entity.JwtId,
             entity.CreationDateTime,
             entity.ExpirationDateTime,
+            entity.IssuedFrom,
             entity.Used,
             entity.Invalidated,
-            new(entity.UserId)
+            new(entity.UserId),
+            entity.RefreshedBy.HasValue ? new(entity.RefreshedBy.Value) : null
         );
     }
 
@@ -32,9 +34,11 @@ internal static class RefreshTokenMappingExtensions
             JwtId = domain.JwtId,
             CreationDateTime = domain.CreationDateTime,
             ExpirationDateTime = domain.ExpirationDateTime,
+            IssuedFrom = domain.IssuedFrom,
             Used = domain.Used,
             Invalidated = domain.Invalidated,
-            UserId = domain.UserId.Value
+            UserId = domain.UserId.Value,
+            RefreshedBy = domain.RefreshedBy?.Value
         };
     }
 }
