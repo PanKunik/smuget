@@ -11,4 +11,5 @@ internal sealed class RefreshTokenEntity
     public bool Used { get; set; }
     public bool Invalidated { get; set; }
     public Guid UserId { get; set; }
+    public Guid? RefreshedBy { get; set; }
 }

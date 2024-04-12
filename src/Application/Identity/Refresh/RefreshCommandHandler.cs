@@ -72,7 +72,8 @@ public sealed class RefreshCommandHandler
             command.IpAddess,
             false,
             false,
-            user.Id
+            user.Id,
+            existingRefreshToken.Id
         );
 
         existingRefreshToken.Use();

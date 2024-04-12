@@ -14,6 +14,7 @@ public sealed class RefreshToken
     public bool Used { get; private set; }
     public bool Invalidated { get; private set; }
     public UserId UserId { get; }
+    public RefreshTokenId? RefreshedBy { get; private set; }
 
     public RefreshToken(
         RefreshTokenId refreshTokenId,
@@ -24,7 +25,8 @@ public sealed class RefreshToken
         string ipAddress,
         bool used,
         bool invalidated,
-        UserId userId
+        UserId userId,
+        RefreshTokenId? refreshedBy = null
     )
     {
         ThrowIfRefreshTokenIdIsNull(refreshTokenId);
@@ -41,6 +43,7 @@ public sealed class RefreshToken
         Used = used;
         Invalidated = invalidated;
         UserId = userId;
+        RefreshedBy = refreshedBy;
     }
 
     public void Use()

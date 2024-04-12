@@ -2,5 +2,6 @@ namespace WebAPI.Identity;
 
 public sealed record AuthenticationResponse(
     string AccessToken,
-    string RefreshToken
+    string RefreshToken,
+    DateTime AccessTokenExpiry
 );

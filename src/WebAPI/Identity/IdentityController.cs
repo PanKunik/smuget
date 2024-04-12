@@ -108,7 +108,8 @@ public sealed class IdentityController
         var jwtToken = _tokenStorage.Get();
         return Ok(new AuthenticationResponse(
             jwtToken.AccessToken,
-            jwtToken.RefreshToken
+            jwtToken.RefreshToken,
+            jwtToken.ExpirationDateTime
         ));
     }
 
@@ -143,7 +144,8 @@ public sealed class IdentityController
         var jwtToken = _tokenStorage.Get();
         return Ok(new AuthenticationResponse(
             jwtToken.AccessToken,
-            jwtToken.RefreshToken
+            jwtToken.RefreshToken,
+            jwtToken.ExpirationDateTime
         ));
     }
 

@@ -8,7 +8,6 @@ using Application.Exceptions;
 using Application.Identity;
 using Domain.Users;
 using Infrastructure.Exceptions;
-using Infrastructure.Time;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
